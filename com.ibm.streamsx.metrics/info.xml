@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info:toolkitInfoModel xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common"
+ xmlns:info="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo">
+ 	<info:identity>
+		<info:name>com.ibm.streamsx.metrics</info:name>
+		<info:description><![CDATA[
+The com.ibm.streamsx.metrics toolkit supports monitoring Streams applications by
+providing an operator that can produce a stream of metrics.
+
+IBM Streams supports standard and custom metrics that are assigned to operators
+in a Streams application, for example, the number of received and sent tuples.
+These metrics can be observed with the Streams console or Streams Studio to
+identify whether a Streams application runs as expected or whether it has some
+issues.
+
+IBM Streams provides the spl.adapter::MetricsSink operator to set metrics values
+from within a Streams applications, and SPL functions to create custom metrics,
+and to set and get metrics values:
+
+* spl.utility::createCustomMetric
+* spl.utility::getCustomMetricNames
+* spl.utility::getCustomMetricValue
+* spl.utility::getInputPortMetricValue
+* spl.utility::getOutputPortMetricValue
+* spl.utility::hasCustomMetric
+* spl.utility::setCustomMetricValue
+
+The functions are limited to the operator that own a metric. An operator A
+cannot access the metrics of an operator B.
+
+If you want to monitor Streams or Streams applications, you can use the
+following API:
+
+* [http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.ref.doc/doc/jmxapi.html|JMX API]
+* [http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.restapi.doc/doc/restapis.html|REST API]
+
+The com.ibm.streamsx.metrics toolkit completes this list of APIs with the
+[com.ibm.streamsx.metrics::MetricsSource|MetricsSource] operator that uses
+the JMX API to get metrics values and provide them as tuple stream.
+
++ Operator design (TODO This sub page must be moved to the operator description)
+
+The MetricsSource operator requires a **connectionURL** to connect via JMX
+to a domain. If it cannot connect, it retries after a **retryPeriod** (default:
+10 seconds) for the specified **retryCount** times (default: -1, which means
+infinite retries) before failing.
+
+The operator registers itself to be notified about started and stopped Streams
+instances. With the started Streams instance, if the instance name matches at
+least one of the **instanceFilters** regular expressions, the operator registers
+itself to be notified about added and removed jobs.
+
+If a job is added and the **jobFilters** match (also regular expressions),
+the operator stores the job's data (domain, instance, job id, job name, etc) for
+later periodic metric retrievals.
+
+If the optional **operatorFilters** are specified, only those operator names
+that match the filter's regular expressions, are stored additionally for the
+job. If no match occurs, the job is not stored for periodic metric retrievals.
+If the filter is not specified, no operator name is stored for the job, but it
+participates the periodic metric retrieval.
+
+Since the Streams JMX API does not support notifications for changed metrics,
+the MetricsSource operator periodically retrieves metrics for the jobs that
+match the instance, job, and operator name filters. The **scanPeriod** defaults
+to 5 seconds.
+
+If the job data has no operator names (means: no operator name filter), the
+operator uses the *snapshotMetrics* operation (domain.instance.job) to get an
+URL with which the operator can get all metrics of the job. The operator
+accesses this URL to get the job's metrics information in JSON format.
+
+If the job data has operator names (means: an operator name filter is specified),
+the operator uses the *retrieveMetrics* operation (domain.instance.job.operator)
+for each operator to get its metrics. 
+
+After the metrics are retrieved, the **metricFilters** are applied.
+This is done in this step, because custom metrics might be created after the
+operator startup phase depending on the implemented logic.
+
+**TODO**: Shall we have separated filters or related filters? Related filters
+mean that for each instance filter's regular expression, one or more job filters
+are specified, and for each job filter, one or more operator filters, etc.
+(`map<rstring /\* instance \*/, map<rstring /\* job \*/, map<rstring /\* operator \*/, list<rstring> /\* metrics \*/>>>`).
+The relations could be established by allowing a parameter cardinality > 1.
+
+TODO Remove job --> remove from job data
+TODO Remove instance -> remove all jobs for the instance
+TODO Stop domain -> remove everything
+
+The operator parameters are described [com.ibm.streamsx.metrics::MetricsSource].
+
++ Developing and running applications that use the com.ibm.streamsx.metrics toolkit
+
+To create applications that use the com.ibm.streamsx.metrics toolkit, you must
+configure either Streams Studio or the SPL compiler to be aware of the location
+of the toolkit. 
+
+# Before you begin
+
+Install IBM Streams. Configure the product environment variables by entering the
+following command:
+ 
+    source <product-installation-root-directory>/4.0.0.0/bin/streamsprofile.sh
+
+# About this task
+
+After the location of the toolkit is communicated to the compiler, the SPL
+artifacts that are specified in the toolkit can be used by an application.
+The application can include a `use` directive to bring the necessary namespaces
+into scope. Alternatively, you can fully qualify the operators that are provided
+by toolkit with their namespaces as prefixes.
+
+# Procedure
+
+1. Configure the SPL compiler to find the toolkit root directory. Use one of the
+  following methods:
+
+  * Set the **STREAMS_SPLPATH** environment variable to the root directory of a
+    toolkit or multiple toolkits (with : as a separator). For example:
+
+      export STREAMS_SPLPATH=$HOME/toolkits/com.ibm.streamsx.metrics
+
+  * Specify the **-t** or **--spl-path** command parameter when you run the
+    **sc** command. For example:
+
+      sc -t $HOME/toolkits/com.ibm.streamsx.metrics -M MyMain
+
+    where MyMain is the name of the SPL main composite.
+
+    **Note**: These command parameters override the **STREAMS_SPLPATH**
+    environment variable.
+
+  * Add the toolkit location in InfoSphere Streams Studio.
+
+2. Develop your application. To avoid the need to fully qualify the operators,
+  add a use directive in your application. 
+
+  * For example, you can add the following clause in your SPL source file:
+
+      use com.ibm.streamsx.metrics::*;
+
+    You can also specify a use clause for individual operators by replacing the
+    asterisk (\*) with the operator name. For example: 
+
+      use com.ibm.streamsx.metrics::MetricsSource;
+
+3. Build your application. You can use the **sc** command or Streams Studio.  
+
+4. Start the InfoSphere Streams instance. 
+
+5. Run the application. You can submit the application as a job by using the
+  **streamtool submitjob** command or by using Streams Studio. 
+
+		]]></info:description>
+		<info:version>1.0.0</info:version>
+		<info:requiredProductVersion>4.2.0.0</info:requiredProductVersion>
+	</info:identity>
+	<info:dependencies/>
+</info:toolkitInfoModel>

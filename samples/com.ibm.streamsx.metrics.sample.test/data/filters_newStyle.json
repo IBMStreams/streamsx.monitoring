@@ -1,0 +1,35 @@
+[
+	{
+		domainNames:a,b
+		instances:
+		[
+			{
+				instanceNames:[a,b]
+				jobs:
+				[
+					{
+						jobNames:[x,y]
+						operators:
+						[
+							{
+								operatorNames:a,s,d
+								metrics:[nPuncts,nSent,rnd]
+								(input|output)Ports: # optional
+								[
+									{
+										index:[1,2,3]
+										metrics:[a,b,c]
+									}
+								]
+							},
+							...
+						],
+					},
+				]
+			}
+		]
+	},
+	{
+		...
+	},
+]
