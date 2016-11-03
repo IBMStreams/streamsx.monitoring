@@ -112,7 +112,7 @@ public class JobHandler implements NotificationListener {
 	@Override
 	public void handleNotification(Notification notification, Object handback) {
 		//		if (notification.getSequenceNumber())
-		if (notification.getType() == Notifications.INACTIVITY_WARNING) {
+		if (notification.getType().equals(Notifications.INACTIVITY_WARNING)) {
 			_job.keepRegistered();
 		}
 		else {

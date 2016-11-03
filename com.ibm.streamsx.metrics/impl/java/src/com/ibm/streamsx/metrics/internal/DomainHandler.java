@@ -92,11 +92,8 @@ public class DomainHandler implements NotificationListener {
 	 */
 	@Override
 	public void handleNotification(Notification notification, Object handback) {
-		_trace.error(notification);
-		_trace.error(notification.getUserData());
-		_trace.error(handback);
 //		if (notification.getSequenceNumber())
-		if (notification.getType() == Notifications.INSTANCE_CREATED) {
+		if (notification.getType().equals(Notifications.INSTANCE_CREATED)) {
 			if(notification.getUserData() instanceof BigInteger) {
 				/*
 				 * Register instance.
@@ -108,7 +105,7 @@ public class DomainHandler implements NotificationListener {
 				_trace.error("received INSTANCE_CREATED notification: user data is not an instance of String");
 			}
 		}
-		else if (notification.getType() == Notifications.INSTANCE_DELETED) {
+		else if (notification.getType().equals(Notifications.INSTANCE_DELETED)) {
 			if(notification.getUserData() instanceof String) {
 				/*
 				 * Unregister existing instance.

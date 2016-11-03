@@ -95,23 +95,23 @@ public class InstanceHandler implements NotificationListener {
 	 */
 	@Override
 	public void handleNotification(Notification notification, Object handback) {
-		_trace.error(notification);
-		_trace.error(notification.getUserData());
-		_trace.error(handback);
 //		if (notification.getSequenceNumber())
-		if (notification.getType() == Notifications.JOB_ADDED) {
+		if (notification.getType().equals(Notifications.JOB_ADDED)) {
 			if(notification.getUserData() instanceof BigInteger) {
 				/*
 				 * Register existing jobs.
 				 */
 				BigInteger jobId = (BigInteger)notification.getUserData();
 				addValidJob(jobId);
+				if (_trace.isInfoEnabled()) {
+					_trace.info("received JOB_ADDED notification: jobId=" + jobId);
+				}
 			}
 			else {
 				_trace.error("received JOB_ADDED notification: user data is not an instance of BigInteger");
 			}
 		}
-		else if (notification.getType() == Notifications.JOB_REMOVED) {
+		else if (notification.getType().equals(Notifications.JOB_REMOVED)) {
 			if(notification.getUserData() instanceof BigInteger) {
 				/*
 				 * Unregister existing jobs.
@@ -119,10 +119,16 @@ public class InstanceHandler implements NotificationListener {
 				BigInteger jobId = (BigInteger)notification.getUserData();
 				if (_jobHandlers.containsKey(jobId)) {
 					_jobHandlers.remove(jobId);
+					if (_trace.isInfoEnabled()) {
+						_trace.info("received JOB_REMOVED notification for monitored job: jobId=" + jobId);
+					}
+				}
+				else if (_trace.isInfoEnabled()) {
+					_trace.info("received JOB_REMOVED notification for job that is not monitored: jobId=" + jobId);
 				}
 			}
 			else {
-				_trace.error("received JOB_ADDED notification: user data is not an instance of BigInteger");
+				_trace.error("received JOB_REMOVED notification: user data is not an instance of BigInteger");
 			}
 		}
 		else {
@@ -131,6 +137,13 @@ public class InstanceHandler implements NotificationListener {
 	}
 
 	protected void addValidJob(BigInteger jobId) {
+		boolean isDebugEnabled = _trace.isDebugEnabled();
+		if (isDebugEnabled) {
+			_trace.debug("--> addValidJob(" + jobId + ")");
+		}
+		// Registering the job must be done before attempting to access any of
+		// the job-related beans. 
+		_instance.registerJob(jobId);
 		// Special handling required because we do not have the job name easily accessible.
 		ObjectName jobObjName = ObjectNameBuilder.job(_domainName, _instanceName, jobId);
 		JobMXBean job = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), jobObjName, JobMXBean.class, true);
@@ -142,6 +155,9 @@ public class InstanceHandler implements NotificationListener {
 		else { // TODO if (_trace.isInfoEnabled()) {
 			_trace.error("The following job does not meet the filter criteria and is therefore, not monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=" + jobName + ", jobId=" + jobId);
 		}
+		if (isDebugEnabled) {
+			_trace.debug("<-- addValidJob(" + jobId + ")");
+		}
 	}
 	
 	/**
@@ -149,14 +165,15 @@ public class InstanceHandler implements NotificationListener {
 	 * @throws Exception 
 	 */
 	public void captureMetrics() throws Exception {
-		if (_trace.isDebugEnabled()) {
+		boolean isDebugEnabled = _trace.isDebugEnabled();
+		if (isDebugEnabled) {
 			_trace.debug("--> captureMetrics(domain=" + _domainName + ",instance=" + _instanceName + ")");
 		}
 		_operatorConfiguration.get_tupleContainer().setInstanceName(_instanceName);
 		for(BigInteger jobId : _jobHandlers.keySet()) {
 			_jobHandlers.get(jobId).captureMetrics();
 		}
-		if (_trace.isDebugEnabled()) {
+		if (isDebugEnabled) {
 			_trace.debug("<-- captureMetrics(domain=" + _domainName + ",instance=" + _instanceName + ")");
 		}
 	}

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import com.ibm.streams.operator.Attribute;
 import com.ibm.streams.operator.OutputTuple;
+import com.ibm.streams.operator.StreamSchema;
 import com.ibm.streams.operator.StreamingData.Punctuation;
 import com.ibm.streams.operator.StreamingOutput;
 import com.ibm.streams.operator.Type;
@@ -46,6 +47,11 @@ public class TupleContainer {
 	private Integer _metricValueAttributeIndex = null;
 
 	/**
+	 * Index of the lastTimeRetrieved attribute.
+	 */
+	private Integer _lastTimeRetrievedAttributeIndex = null;
+	
+	/**
 	 * The output port.
 	 */
 	private StreamingOutput<OutputTuple> _port = null;
@@ -64,42 +70,47 @@ public class TupleContainer {
 		// Create a tuple once.
 		_port = port;
 		_tuple = port.newTuple();
+		StreamSchema schema = port.getStreamSchema();
 		// Domain-related attributes.
 		if (_domainNameAttributeIndex == null) {
-			Attribute attribute = port.getStreamSchema().getAttribute("domainName");
+			Attribute attribute = schema.getAttribute("domainName");
 			_domainNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Instance-related attributes.
 		if (_instanceNameAttributeIndex  == null) {
-			Attribute attribute = port.getStreamSchema().getAttribute("instanceName");
+			Attribute attribute = schema.getAttribute("instanceName");
 			_instanceNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Job-related attributes.
 		if (_jobIdAttributeIndex  == null) {
-			Attribute attribute = port.getStreamSchema().getAttribute("jobId");
+			Attribute attribute = schema.getAttribute("jobId");
 			_jobIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
 			
 		}
 		if (_jobNameAttributeIndex  == null) {
-			Attribute attribute = port.getStreamSchema().getAttribute("jobName");
+			Attribute attribute = schema.getAttribute("jobName");
 			_jobNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Operator-related attributes.
 		if (_operatorNameAttributeIndex  == null) {
-			Attribute attribute = port.getStreamSchema().getAttribute("operatorName");
+			Attribute attribute = schema.getAttribute("operatorName");
 			_operatorNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Metric-related attributes.
 		if (_metricNameAttributeIndex  == null) {
-			Attribute attribute = port.getStreamSchema().getAttribute("metricName");
+			Attribute attribute = schema.getAttribute("metricName");
 			_metricNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		if (_metricValueAttributeIndex  == null) {
-			Attribute attribute = port.getStreamSchema().getAttribute("metricValue");
+			Attribute attribute = schema.getAttribute("metricValue");
 			_metricValueAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
 		}
+		if (_lastTimeRetrievedAttributeIndex  == null) {
+			Attribute attribute = schema.getAttribute("lastTimeRetrieved");
+			_lastTimeRetrievedAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
+		}
 	}
-	
+		
 	/**
 	 * Optionally set the domain name in the output tuple.
 	 * 
@@ -174,6 +185,17 @@ public class TupleContainer {
 	public void setMetricValue(long metricValue) {
 		if (_metricValueAttributeIndex != -1) {
 			_tuple.setLong(_metricValueAttributeIndex, metricValue);
+		}
+	}
+
+	/**
+	 * Optionally set the lastTimeRetrieved in the output tuple.
+	 * 
+	 * @param lastTimeRetrieved
+	 */
+	public void setLastTimeRetrieved(long lastTimeRetrieved) {
+		if (_lastTimeRetrievedAttributeIndex != -1) {
+			_tuple.setLong(_lastTimeRetrievedAttributeIndex, lastTimeRetrieved);
 		}
 	}
 

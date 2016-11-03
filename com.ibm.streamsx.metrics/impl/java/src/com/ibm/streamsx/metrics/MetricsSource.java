@@ -113,7 +113,7 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=true,
-			description="Specifies the period after which a failed JMX connect is repeated. The default is 10.0 seconds."
+			description="Specifies the period after which a failed JMX connect is retried. The default is 10.0 seconds."
 			)
 	public void setRetryPeriod(double retryPeriod) {
 		_operatorConfiguration.set_retryPeriod(retryPeriod);

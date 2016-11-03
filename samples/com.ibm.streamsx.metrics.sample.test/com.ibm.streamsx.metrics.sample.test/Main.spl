@@ -17,7 +17,8 @@ type Notification_t = tuple<
 	rstring jobName,
 	rstring operatorName,
 	rstring metricName,
-	int64 metricValue
+	int64 metricValue,
+	int64 lastTimeRetrieved
 >;
 
 /**
