@@ -1,30 +1,34 @@
 package com.ibm.streamsx.metrics.internal;
 
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.InstanceNotFoundException;
 import javax.management.JMX;
+import javax.management.Notification;
+import javax.management.NotificationFilterSupport;
+import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
 import com.ibm.streams.management.Metric;
+import com.ibm.streams.management.Notifications;
 import com.ibm.streams.management.ObjectNameBuilder;
 import com.ibm.streams.management.job.OperatorMXBean;
 
 /**
  * 
  */
-public class OperatorHandler {
+public class OperatorHandler extends MetricOwningHandler implements NotificationListener {
 
 	/**
 	 * Logger for tracing.
 	 */
 	private static Logger _trace = Logger.getLogger(OperatorHandler.class.getName());
-
-	private OperatorConfiguration _operatorConfiguration = null;
 
 	private String _domainName = null;
 
@@ -38,16 +42,14 @@ public class OperatorHandler {
 	
 	private OperatorMXBean _operator = null;
 
-	private Map<String /* metric name */, Metric> _capturedCustomMetrics = new HashMap<String, Metric>();
-	
-	private Set<String /* metric name */> _uncapturedCustomMetrics = new HashSet<String>();
-	
-	private Map<Integer /* port index */, Map<String /* metric Name*/, Metric>> _capturedInputPortMetrics = new HashMap<Integer, Map<String, Metric>>();
+	private Map<Integer /* port index */, InputPortHandler> _inputPortHandlers = new HashMap<Integer, InputPortHandler>();
 
-	private Map<Integer /* port index */, Map<String /* metric Name*/, Metric>> _capturedOutputPortMetrics = new HashMap<Integer, Map<String, Metric>>();
+	private Map<Integer /* port index */, OutputPortHandler> _outputPortHandlers = new HashMap<Integer, OutputPortHandler>();
 
 	public OperatorHandler(OperatorConfiguration operatorConfiguration, String domainName, String instanceName, BigInteger jobId, String jobName, String operatorName) {
 
+		super(MetricsRegistrationMode.DynamicMetricsRegistration);
+		
 		if (_trace.isDebugEnabled()) {
 			_trace.debug("OperatorHandler(" + domainName + "," + instanceName + ")");
 		}
@@ -63,89 +65,136 @@ public class OperatorHandler {
 		_operator = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), operatorObjName, OperatorMXBean.class, true);
 		
 		/*
+		 * Register to get job-related notifications.
+		 */
+		NotificationFilterSupport filter = new NotificationFilterSupport();
+		filter.enableType(Notifications.OPERATOR_CONNECTION_ADDED);
+		filter.enableType(Notifications.OPERATOR_CONNECTION_REMOVED);
+		try {
+			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(operatorObjName, this, filter, null);
+		} catch (InstanceNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//	TODO      jmxc.addConnectionNotificationListener(this, null, null); // listen for potential lost notifications
+
+		/*
+		 * Register input port metrics that match the specified filter criteria.
+		 */
+		registerMetrics();
+		
+		/*
 		 * Register input port metrics that match the specified filter criteria.
 		 */
 		for (Integer portIndex : _operator.getInputPorts()) {
-			
+			addValidInputPort(portIndex);
 		}
 		/*
 		 * Register output port metrics that match the specified filter criteria.
 		 */
 		for (Integer portIndex : _operator.getOutputPorts()) {
-			
+			addValidOutputPort(portIndex);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * 
+	 */
+	@Override
+	public void handleNotification(Notification notification, Object handback) {
+		//		if (notification.getSequenceNumber())
+		if (notification.getType().equals(Notifications.OPERATOR_CONNECTION_ADDED)) {
+			/*
+			 * userData is the connection's object name
+			 */
+			_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+		}
+		else if (notification.getType().equals(Notifications.OPERATOR_CONNECTION_REMOVED)) {
+			/*
+			 * userData is the connection's object name
+			 */
+			_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+		}
+		else {
+			_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+		}
+	}
+
+	@Override
+	protected boolean isRelevantMetric(String metricName) {
+		boolean isRelevant = _operatorConfiguration.get_filters().matches(_domainName, _instanceName, _jobName, _operatorName, metricName);
+		if (true || _trace.isInfoEnabled()) { // TODO remove "true ||"
+			if (isRelevant) {
+				_trace.error("The following operator custom metric meets the filter criteria and is therefore, monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", metric=" + metricName);
+			}
+			else {
+				_trace.error("The following operator custom metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", metric=" + metricName);
+			}
+		}
+		return isRelevant;
+	}
+
+	@Override
+	protected Set<Metric> retrieveMetrics() {
+		Set<Metric> metrics = _operator.retrieveMetrics(false);
+		return metrics;
+	}
+
+	protected void addValidInputPort(Integer portIndex) {
+		if(_operatorConfiguration.get_filters().matches(_domainName, _instanceName, _jobName, _operatorName)) {
+			_trace.error("The following input port meets the filter criteria and is therefore, monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
+			_inputPortHandlers.put(portIndex, new InputPortHandler(_operatorConfiguration, _domainName, _instanceName, _jobId, _jobName, _operatorName, portIndex));
+		}
+		else { // TODO if (_trace.isInfoEnabled()) {
+			_trace.error("The following input port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
+		}
+	}
+
+	protected void addValidOutputPort(Integer portIndex) {
+		if(_operatorConfiguration.get_filters().matches(_domainName, _instanceName, _jobName, _operatorName)) {
+			_trace.error("The following output port meets the filter criteria and is therefore, monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
+			_outputPortHandlers.put(portIndex, new OutputPortHandler(_operatorConfiguration, _domainName, _instanceName, _jobId, _jobName, _operatorName, portIndex));
+		}
+		else { // TODO if (_trace.isInfoEnabled()) {
+			_trace.error("The following output port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
 		}
 	}
 
 	/**
 	 * Iterate all jobs to capture the job metrics.
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
+	 * Throws Exception if submitting the tuple failed. 
 	 */
 	public void captureMetrics() throws Exception {
-		if (_trace.isDebugEnabled()) {
-			_trace.debug("--> captureMetrics(domain=" + _domainName + ",instance=" + _instanceName + ")");
+
+		// Determine the trace level status once per function.
+		boolean isDebugEnabled = _trace.isDebugEnabled();
+
+		if (isDebugEnabled) {
+			_trace.debug("--> captureMetrics(domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ")");
 		}
+
 		_operatorConfiguration.get_tupleContainer().setOperatorName(_operatorName);
+
+		captureAndSubmitChangedMetrics();
+
 		/*
-		 * The custom metrics can be created in an operator's state, onTuple,
-		 * or onPunct clause. Therefore, it is not ensured that the custom
-		 * metric is available as soon as the operator is available.
-		 * 
-		 * The OperatorContextMXBean supports a CUSTOM_METRIC_CREATED
-		 * notification, but this notification is not available via the
-		 * JMX API. It seems as if it is available only within an operator,
-		 * for this specific operator.
-		 * 
-		 * The implemented solution is not optimal:
-		 * 
-		 * Always retrieve the custom metrics. If a custom metric was not
-		 * handled before, verify whether its name matches the filters.
-		 * If it matches the filters, store the metric in the
-		 * _capturedCustomMetrics map. If it does not match, store the name
-		 * in the _uncapturedCustomMetrics set. If a custom metric was handled
-		 * before, check whether it is either in the _capturedCustomMetrics map
-		 * or the _uncapturedCustomMetrics set, and act accordingly.
+		 * Capture port metrics.
 		 */
-		for (Metric metric : _operator.retrieveMetrics(false)) {
-			String metricName = metric.getName();
-			/*
-			 * Metric shall be captured.
-			 */
-			if (_capturedCustomMetrics.containsKey(metricName)) {
-				Metric lastCapturedState = _capturedCustomMetrics.get(metricName);
-				if (lastCapturedState.getValue() != metric.getValue()) {
-					_capturedCustomMetrics.put(metricName, metric);
-					submitMetric(metric);
-				}
-			}
-			/*
-			 * Metric shall be ignored.
-			 */
-			else if (_uncapturedCustomMetrics.contains(metricName)) {
-				// Ignore this metric because it does not match the filters.
-			}
-			/*
-			 * Decide whether the metric shall be captured or ignored.
-			 */
-			else if(_operatorConfiguration.get_filters().matches(_domainName, _instanceName, _jobName, _operatorName, metricName)) {
-				_trace.error("The following custom metric meets the filter criteria and is therefore, monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", metric[custom]=" + metricName);
-				_capturedCustomMetrics.put(metricName, metric);
-				submitMetric(metric);
-			}
-			else { // TODO if (_trace.isInfoEnabled()) {
-				_trace.error("The following custom metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", metric[custom]=" + metricName);
-				_uncapturedCustomMetrics.add(metricName);
-			}
+		for(Integer portIndex : _inputPortHandlers.keySet()) {
+			_inputPortHandlers.get(portIndex).captureMetrics();
 		}
-		if (_trace.isDebugEnabled()) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainName + ",instance=" + _instanceName + ")");
+		for(Integer portIndex : _outputPortHandlers.keySet()) {
+			_outputPortHandlers.get(portIndex).captureMetrics();
+		}
+
+		if (isDebugEnabled) {
+			_trace.debug("<-- captureMetrics(domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ")");
 		}
 	}
 
-	protected void submitMetric(Metric metric) throws Exception {
-		_operatorConfiguration.get_tupleContainer().setMetricName(metric.getName());
-		_operatorConfiguration.get_tupleContainer().setMetricValue(metric.getValue());
-		_operatorConfiguration.get_tupleContainer().setLastTimeRetrieved(metric.getLastTimeRetrieved());
-		_operatorConfiguration.get_tupleContainer().submit();
-	}
-	
 }

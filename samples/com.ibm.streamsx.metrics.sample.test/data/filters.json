@@ -12,6 +12,7 @@
 		[
 			"instance4\\.2\\.0\\.0",
 			"instance4\\.2\\.0\\.1",
+			"streams4\\.2\\.0\\.0",
 		],
 		"jobNames":".*",
 		"operatorNames":"\\S+",
@@ -19,6 +20,7 @@
 		[
 			"nTuplesSubmitted",
 			"nWindowPunctsQueued",
+			"nTuplesProcessed",
 		]
 	},
 	{
@@ -26,7 +28,7 @@
 		"instanceNames":
 		[
 			"instance4\\.2\\.0\\.0",
-			"streams4\\.2\\.0\\.0"
+			"streams4\\.2\\.0\\.0",
 		],
 		"jobNames":".*",
 		"operatorNames":"Storage",
