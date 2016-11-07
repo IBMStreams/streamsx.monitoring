@@ -1,6 +1,7 @@
 namespace com.ibm.streamsx.metrics.sample.test;
 
 use com.ibm.streamsx.metrics::MetricsSource;
+use com.ibm.streamsx.metrics::Notification_t;
 
 /**
  * Several numbers that are created by the Beacon and stored in metrics.
@@ -8,17 +9,6 @@ use com.ibm.streamsx.metrics::MetricsSource;
 type Numbers_t = tuple<
 	int64 incrementingNumber,
 	int64 randomNumber
->;
-
-type Notification_t = tuple<
-	rstring domainName,
-	rstring instanceName,
-	int64 jobId,
-	rstring jobName,
-	rstring operatorName,
-	rstring metricName,
-	int64 metricValue,
-	int64 lastTimeRetrieved
 >;
 
 /**

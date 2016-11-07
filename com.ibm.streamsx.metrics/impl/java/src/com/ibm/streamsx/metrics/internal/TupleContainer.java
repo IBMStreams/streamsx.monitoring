@@ -37,6 +37,16 @@ public class TupleContainer {
 	private Integer _operatorNameAttributeIndex = null;
 
 	/**
+	 * Index of the origin attribute.
+	 */
+	private Integer _originAttributeIndex = null;
+	
+	/**
+	 * Index of the portIndex attribute.
+	 */
+	private Integer _portIndexAttributeIndex = null;
+	
+	/**
 	 * Index of the metricName attribute.
 	 */
 	private Integer _metricNameAttributeIndex = null;
@@ -96,7 +106,16 @@ public class TupleContainer {
 			Attribute attribute = schema.getAttribute("operatorName");
 			_operatorNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
+		// Port-related attributes.
+		if (_portIndexAttributeIndex  == null) {
+			Attribute attribute = schema.getAttribute("portIndex");
+			_portIndexAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT32 ? attribute.getIndex() : -1) ;
+		}
 		// Metric-related attributes.
+		if (_originAttributeIndex  == null) {
+			Attribute attribute = schema.getAttribute("origin");
+			_originAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.ENUM ? attribute.getIndex() : -1) ;
+		}
 		if (_metricNameAttributeIndex  == null) {
 			Attribute attribute = schema.getAttribute("metricName");
 			_metricNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
@@ -163,6 +182,28 @@ public class TupleContainer {
 	public void setOperatorName(String operatorName) {
 		if (_operatorNameAttributeIndex != -1) {
 			_tuple.setString(_operatorNameAttributeIndex, operatorName);
+		}
+	}
+
+	/**
+	 * Optionally set the port index in the output tuple.
+	 * 
+	 * @param portIndex
+	 */
+	public void setPortIndex(int portIndex) {
+		if (_portIndexAttributeIndex != -1) {
+			_tuple.setInt(_portIndexAttributeIndex, portIndex);
+		}
+	}
+
+	/**
+	 * Optionally set the origin in the output tuple.
+	 * 
+	 * @param origin
+	 */
+	public void setOrigin(String origin) {
+		if (_originAttributeIndex != -1) {
+			_tuple.setString(_originAttributeIndex, origin);
 		}
 	}
 

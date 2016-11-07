@@ -103,7 +103,8 @@ public class InputPortHandler extends MetricOwningHandler {
 			_trace.debug("--> captureMetrics(domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
 		}
 
-		_operatorConfiguration.get_tupleContainer().setOperatorName(_operatorName);
+		_operatorConfiguration.get_tupleContainer().setOrigin("OperatorInputPort");
+		_operatorConfiguration.get_tupleContainer().setPortIndex(_portIndex);
 		captureAndSubmitChangedMetrics();
 
 		if (isDebugEnabled) {

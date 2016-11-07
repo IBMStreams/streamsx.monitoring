@@ -1,0 +1,69 @@
+/**
+ * Some useful type definitions for use with the
+ * [com.ibm.streamsx.metrics::MetricsSource] operator.
+ */
+
+namespace com.ibm.streamsx.metrics;
+
+/**
+ * The Origin_t composite wraps the contained Type enumeration
+ * to prevent name clashes.
+ */
+public composite Origin_t {
+	type
+		/**
+		 * The origin type specifies the metric owner, which can be following:
+		 * 
+		 * * **Operator**
+		 * 
+		 *   The operator that is specified with the operatorName attribute, owns
+		 *   custom metrics.
+		 * 
+		 * * **OperatorInputPort**
+		 * 
+		 *   An operator's input port owns metrics that describe, for example, the
+		 *   number of processed, dropped, or queued tuples. The portIndex attribute
+		 *   specifies the index of the port.
+		 * 
+		 * * **OperatorOutputPort**
+		 * 
+		 *   An operator's output port owns metrics that describe, for example, the
+		 *   number of submitted tuples or markers. The portIndex attribute
+		 *   specifies the index of the port.
+		 * 
+		 * See [http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/metricaccess.html|Metrics Access]
+		 * in IBM's Knowledge Center for further details.
+		 */
+		static Type = enum {
+			Operator,
+			OperatorInputPort,
+			OperatorOutputPort
+		};
+}
+
+/**
+ * The notification type specifies all attributes that can be used to uniquely
+ * identify a changed metric value, starting with the domain and instance
+ * names, job and other information, and finally the metric name and its
+ * value.
+ * 
+ * The attribute names are fixed but if you are not interested in all
+ * information, create your own type with a subset of attributes.
+ * The [com.ibm.streamsx.metrics::MetricsSource|MetricsSource] operator
+ * takes care to set existing attributes only.
+ * 
+ * Hint: The portIndex is set only if the origin is either OperatorInputPort
+ * or OperatorOutputPort.
+ */
+type Notification_t = tuple<
+	rstring domainName,
+	rstring instanceName,
+	int64 jobId,
+	rstring jobName,
+	rstring operatorName,
+	Origin_t.Type origin,
+	int32 portIndex,
+	rstring metricName,
+	int64 metricValue,
+	int64 lastTimeRetrieved
+>;
