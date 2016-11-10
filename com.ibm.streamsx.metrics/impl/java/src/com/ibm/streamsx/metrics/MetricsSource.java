@@ -67,14 +67,51 @@ public class MetricsSource extends AbstractOperator {
 
 	// ------------------------------------------------------------------------
 	// Documentation.
+	// Attention: To add a newline, use \\n instead of \n.
 	// ------------------------------------------------------------------------
 	
 	static final String DESC_OPERATOR = 
 			"The MetricsSource operator uses the "
 			+ "[http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.ref.doc/doc/jmxapi.html|JMX] "
 			+ "API to retrieve metrics from one or more jobs, and provides "
-			+ "metric changes as tuple stream. Hint: Additional documentation "
-			+ "is located in the toolkit description."
+			+ "metric changes as tuple stream.\\n"
+			+ "\\n"
+			+ "As an application developer, you provide the so-called filter "
+			+ "document. The filter document specifies patterns for domain, "
+			+ "instance, job, operator, and metric names. It also specifies "
+			+ "which name patterns are related, for example: For a domain X "
+			+ "monitor all instances, whereas in each instance only jobs with "
+			+ "a Y in their names shall be evaluated. For another domain Z, "
+			+ "only jobs with a name ending with XYZ, are monitored, etc.\\n"
+			+ "\\n"
+			+ "If the MetricsSource evaluates whether, for example, a custom "
+			+ "metric of an operator shall be retrieved periodically, the name "
+			+ "patterns are applied. A custom metric is uniquely identified "
+			+ "with the domain, instance, job, operator, and metric name. All "
+			+ "these parts must match to the corresponding set of related name "
+			+ "patterns.\\n"
+			+ "\\n"
+			+ "Per default, the MetricsSource operator monitors neither any "
+			+ "domain, nor any instances, nor job, nor any other Streams job-"
+			+ "related object. Only those objects (and their parents) that "
+			+ "match the specified filters, are monitored.\\n"
+			+ "\\n"
+			+ "The MetricsSource operator monitors filter-matching domains, "
+			+ "instances, and jobs that are running while the application that "
+			+ "uses the MetricsSource operator, starts. Furthermore, the "
+			+ "operator gets notifications for created and deleted instances, "
+			+ "and submitted and cancelled jobs. Thererfore, the operator can "
+			+ "retrieve metrics from filter-matching jobs that are submitted "
+			+ "in the future.\\n"
+			+ "\\n"
+			+ "+ Filter document\\n"
+			+ "\\n"
+			+ "The filter document specifies patterns for domain, instance, "
+			+ "job, operator, and metric names, and their relations.\\n"
+			+ "\\n"
+			+ "The filter document is a JSON-encoded text file that is "
+			+ "configured with the **filterDocument** parameter.\\n"
+			+ "\\n"
 			;
 	
 	protected static final String DESC_OUTPUT_PORT = 

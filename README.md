@@ -39,6 +39,8 @@ to retrieve metrics from one or more jobs, and provides them as tuple stream.
 This introduction and further details are described in the toolkit's info.xml
 file, and the operator's implementation.
 
+## SPLDOC documentation
+
 You can generate HTML from the SPLDOC with the following commands:
 
 ```
