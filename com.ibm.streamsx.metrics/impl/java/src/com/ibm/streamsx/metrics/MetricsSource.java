@@ -44,14 +44,14 @@ import com.ibm.streams.operator.model.Parameter;
 @PrimitiveOperator(
 		name="MetricsSource",
 		namespace="com.ibm.streamsx.metrics",
-		description="MetricsSource"
+		description=MetricsSource.DESC_OPERATOR
 		)
 @OutputPorts({
 	@OutputPortSet(
-			description="Port that produces tuples",
 			cardinality=1,
 			optional=false,
-			windowPunctuationOutputMode=WindowPunctuationOutputMode.Generating
+			windowPunctuationOutputMode=WindowPunctuationOutputMode.Generating,
+			description=MetricsSource.DESC_OUTPUT_PORT
 			)
 })
 @Libraries({
@@ -65,6 +65,64 @@ import com.ibm.streams.operator.model.Parameter;
 	})
 public class MetricsSource extends AbstractOperator {
 
+	// ------------------------------------------------------------------------
+	// Documentation.
+	// ------------------------------------------------------------------------
+	
+	static final String DESC_OPERATOR = 
+			"The MetricsSource operator uses the "
+			+ "[http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.ref.doc/doc/jmxapi.html|JMX] "
+			+ "API to retrieve metrics from one or more jobs, and provides "
+			+ "metric changes as tuple stream. Hint: Additional documentation "
+			+ "is located in the toolkit description."
+			;
+	
+	protected static final String DESC_OUTPUT_PORT = 
+			"The MetricsSource operator emits a metric tuple to this "
+			+ "output port for each metric, for which the operator "
+			+ "identifies a changed value. You can use the "
+			+ "[type:com.ibm.streamsx.metrics::Notification_t|Notification_t] "
+			+ "tuple type, or any subset of the attributes specified for this "
+			+ "type. After each scan cycle, the operator emits a WindowMarker "
+			+ "to this port."
+			;
+	
+	private static final String DESC_PARAM_CONNECTION_URL = 
+			"Specifies the connection URL as returned by the `streamtool "
+			+ "getjmxconnect` command.";
+	
+	private static final String DESC_PARAM_USER = 
+			"Specifies the user that is required for the JMX connection.";
+	
+	private static final String DESC_PARAM_PASSWORD = 
+			"Specifies the password that is required for the JMX connection.";
+	
+	private static final String DESC_PARAM_DOMAIN = 
+			"Specifies the domain that is monitored.";
+	
+	private static final String DESC_PARAM_RETRY_PERIOD = 
+			"Specifies the period after which a failed JMX connect is retried. "
+			+ "The default is 10.0 seconds.";
+	
+	private static final String DESC_PARAM_RETRY_COUNT = 
+			"Specifies the retry count for failed JMX connects. The default is "
+			+ "-1, which means infinite retries.";
+	
+	private static final String DESC_PARAM_FILTER_DOCUMENT = 
+			"Specifies the path to a JSON-formatted document that specifies "
+			+ "the domain, instance, job, operator, and metric name filters as "
+			+ "regular expressions. Each regular expression must follow the "
+			+ "rules that are specified for Java "
+			+ "[https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern].";
+	
+	private static final String DESC_PARAM_SCAN_PERIOD = 
+			"Specifies the period after which a new metrics scan is "
+			+ "initiated. The default is 5.0 seconds.";
+	
+	// ------------------------------------------------------------------------
+	// Implementation.
+	// ------------------------------------------------------------------------
+	
 	/**
 	 * Thread for calling <code>produceTuples()</code> to produce tuples 
 	 */
@@ -81,7 +139,7 @@ public class MetricsSource extends AbstractOperator {
 	
 	@Parameter(
 			optional=false,
-			description="Specifies the connection URL as returned by the `streamtool getjmxconnect` command."
+			description=MetricsSource.DESC_PARAM_CONNECTION_URL
 			)
 	public void setConnectionURL(String connectionURL) {
 		_operatorConfiguration.set_connectionURL(connectionURL);
@@ -89,7 +147,7 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=false,
-			description="Specifies the user that is required for the JMX connection."
+			description=MetricsSource.DESC_PARAM_USER
 			)
 	public void setUser(String user) {
 		_operatorConfiguration.set_user(user);
@@ -97,7 +155,7 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=false,
-			description="Specifies the password that is required for the JMX connection."
+			description=MetricsSource.DESC_PARAM_PASSWORD
 			)
 	public void setPassword(String password) {
 		_operatorConfiguration.set_password(password);
@@ -105,7 +163,7 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=false,
-			description="Specifies the domain that is monitored."
+			description=MetricsSource.DESC_PARAM_DOMAIN
 			)
 	public void setDomain(String domain) {
 		_operatorConfiguration.set_domain(domain);
@@ -113,7 +171,7 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=true,
-			description="Specifies the period after which a failed JMX connect is retried. The default is 10.0 seconds."
+			description=MetricsSource.DESC_PARAM_RETRY_PERIOD
 			)
 	public void setRetryPeriod(double retryPeriod) {
 		_operatorConfiguration.set_retryPeriod(retryPeriod);
@@ -121,7 +179,7 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=true,
-			description="Specifies the retry count for failed JMX connects. The default is -1, which means infinite retries."
+			description=MetricsSource.DESC_PARAM_RETRY_COUNT
 			)
 	public void setRetryCount(int retryCount) {
 		_operatorConfiguration.set_retryCount(retryCount);
@@ -129,7 +187,7 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=false,
-			description="Specifies the path to a JSON-formatted document that specifies the domain, instance, job, operator, and metric name filters as regular expressions. Each regular expression must follow the rules that are specified for Java [https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]."
+			description=MetricsSource.DESC_PARAM_FILTER_DOCUMENT
 			)
 	public void setFilterDocument(String filterDocument) {
 		_operatorConfiguration.set_filterDocument(filterDocument);
@@ -137,7 +195,7 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=true,
-			description="Specifies the period after which a new metrics scan is initiated. The default is 5.0 seconds."
+			description=MetricsSource.DESC_PARAM_SCAN_PERIOD
 			)
 	public void setScanPeriod(Double scanPeriod) {
 		_operatorConfiguration.set_scanPeriod(scanPeriod);
