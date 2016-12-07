@@ -33,6 +33,11 @@ public class TupleContainer {
 	private Integer _jobNameAttributeIndex = null;
 
 	/**
+	 * Index of the peId attribute.
+	 */
+	private Integer _peIdAttributeIndex = null;
+
+	/**
 	 * Index of the operatorName attribute.
 	 */
 	private Integer _operatorNameAttributeIndex = null;
@@ -112,6 +117,11 @@ public class TupleContainer {
 			Attribute attribute = schema.getAttribute("jobName");
 			_jobNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
+		// PE-related attributes.
+		if (_peIdAttributeIndex  == null) {
+			Attribute attribute = schema.getAttribute("peId");
+			_peIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
+		}
 		// Operator-related attributes.
 		if (_operatorNameAttributeIndex  == null) {
 			Attribute attribute = schema.getAttribute("operatorName");
@@ -190,6 +200,17 @@ public class TupleContainer {
 	public void setJobName(String jobName) {
 		if (_jobNameAttributeIndex != -1) {
 			_tuple.setString(_jobNameAttributeIndex, jobName);
+		}
+	}
+	
+	/**
+	 * Optionally set the pe id in the output tuple.
+	 * 
+	 * @param peId
+	 */
+	public void setPeId(BigInteger peId) {
+		if (_peIdAttributeIndex != -1) {
+			_tuple.setLong(_peIdAttributeIndex, peId.longValue());
 		}
 	}
 

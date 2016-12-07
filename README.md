@@ -58,3 +58,22 @@ command:
 ```
 firefox com.ibm.streamsx.metrics/doc/spldoc/html/index.html &
 ```
+
+### Building Project
+The MetricsSink, MemoryMetricsSink, and CustomMetricsSink operators require you to build jars and include them in your project. You will also need to have an ElasticSearch server running.
+
+To get started:
+
+1.  Clone the repository
+2.  cd com.ibm.streamsx.metrics
+3.  Run `ant all` to build toolkit.
+
+To develop in Studio:
+
+1.  Clone the repository
+2.  Go to com.ibm.streamsx.metrics
+3.  Run `ant maven-deps` to download the dependencies required by the project
+3.  In Streams Studio, Import...
+5.  In the dialog, select InfoSphere Streams -> SPL Project
+6.  Select com.ibm.streamsx.mail to import the project into studio.
+

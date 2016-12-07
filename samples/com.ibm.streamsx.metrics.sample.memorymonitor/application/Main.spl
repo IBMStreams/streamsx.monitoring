@@ -1,0 +1,44 @@
+namespace application ;
+
+use com.ibm.streamsx.metrics::MemoryMetricsSource ;
+use com.ibm.streamsx.metrics::MemoryMetricsSink ;
+use com.ibm.streamsx.mail::SendMail ;
+
+composite Main
+{
+	graph
+		(stream<rstring metricName, int64 metricValue, int64 lastTimeRetrieved,
+			rstring domainName, rstring instanceName, int64 peId>
+			MemoryMetricsSource_1_out0) as MemoryMetricsSource_1 = MemoryMetricsSource()
+		{
+			param
+				connectionURL : getSubmissionTimeValue("connectionURL") ;
+				user : getSubmissionTimeValue("user") ;
+				password : getSubmissionTimeValue("password") ;
+				domain : getSubmissionTimeValue("domain") ;
+				instance : getSubmissionTimeValue("instance") ;
+				scanPeriod :(float64) getSubmissionTimeValue("scanPeriod", "5.0") ;
+		}
+
+		(stream<rstring content> MemoryMetricsSink_2_out0) as MemoryMetricsSink_2 =
+			MemoryMetricsSink(MemoryMetricsSource_1_out0)
+		{
+			param
+				_rolling_avg_interval : 180 ;
+		}
+
+		() as SendAlert = SendMail(MemoryMetricsSink_2_out0)
+		{
+			param
+				authentication : "TLS" ;
+				content : "There is a memory leak in your instance." ;
+				password : "mmpdddecbjjsuvml" ;
+				hostport : 587 ;
+				hostname : "smtp.gmail.com" ;
+				subject : "Memory leak detected!" ;
+				to : "2263748929@txt.bell.ca" ;
+				username : "nelsonong3@gmail.com" ;
+		}
+
+}
+
