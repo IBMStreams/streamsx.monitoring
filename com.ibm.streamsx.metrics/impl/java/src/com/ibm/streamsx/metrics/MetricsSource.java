@@ -118,7 +118,7 @@ public class MetricsSource extends AbstractOperator {
 			"The MetricsSource operator emits a metric tuple to this "
 			+ "output port for each metric, for which the operator "
 			+ "identifies a changed value. You can use the "
-			+ "[type:com.ibm.streamsx.metrics::Notification_t|Notification_t] "
+			+ "[type:com.ibm.streamsx.metrics::Notification|Notification] "
 			+ "tuple type, or any subset of the attributes specified for this "
 			+ "type. After each scan cycle, the operator emits a WindowMarker "
 			+ "to this port."
