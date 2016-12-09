@@ -6,10 +6,10 @@
 namespace com.ibm.streamsx.metrics;
 
 /**
- * The Origin_t composite wraps the contained Type enumeration
+ * The Origin composite wraps the contained Type enumeration
  * to prevent name clashes.
  */
-public composite Origin_t {
+public composite Origin {
 	type
 		/**
 		 * The origin type specifies the metric owner, which can be following:
@@ -55,13 +55,13 @@ public composite Origin_t {
  * Hint: The portIndex is set only if the origin is either OperatorInputPort
  * or OperatorOutputPort.
  */
-type Notification_t = tuple<
+type Notification = tuple<
 	rstring domainName,
 	rstring instanceName,
 	int64 jobId,
 	rstring jobName,
 	rstring operatorName,
-	Origin_t.Type origin,
+	Origin.Type origin,
 	int32 portIndex,
 	rstring metricName,
 	int64 metricValue,

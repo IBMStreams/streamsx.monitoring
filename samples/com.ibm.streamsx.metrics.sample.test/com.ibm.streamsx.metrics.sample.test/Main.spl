@@ -1,12 +1,12 @@
 namespace com.ibm.streamsx.metrics.sample.test;
 
 use com.ibm.streamsx.metrics::MetricsSource;
-use com.ibm.streamsx.metrics::Notification_t;
+use com.ibm.streamsx.metrics::Notification;
 
 /**
  * Several numbers that are created by the Beacon and stored in metrics.
  */
-type Numbers_t = tuple<
+type MetricNumbers = tuple<
 	int64 incrementingNumber,
 	int64 randomNumber
 >;
@@ -27,7 +27,7 @@ stateful boolean createMetrics() {
  * @param numbers
  * Specifies the numbers that are created by the Beacon operator.
  */
-stateful void setMetrics(Numbers_t numbers) {
+stateful void setMetrics(MetricNumbers numbers) {
 	setCustomMetricValue("inc", numbers.incrementingNumber);
 	setCustomMetricValue("rnd", numbers.randomNumber);
 }
@@ -46,7 +46,7 @@ composite Main {
 		/*
 		 * The Beacon generates incrementing and random numbers.
 		 */
-		stream<Numbers_t> Numbers as O = Beacon() {
+		stream<MetricNumbers> Numbers as O = Beacon() {
 			param period: 5.0;
 			output O:
 				incrementingNumber = (int64)IterationCount(),
@@ -87,7 +87,7 @@ composite Main {
 		 * The MetricsSource generates a tuple for each notified metric value
 		 * change.
 		 */
-		stream<Notification_t> Notifications as O = MetricsSource() {
+		stream<Notification> Notifications as O = MetricsSource() {
 			param
 				connectionURL: getSubmissionTimeValue("connectionURL");
 //				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
