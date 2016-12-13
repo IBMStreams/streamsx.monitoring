@@ -63,6 +63,8 @@ type Notification = tuple<
 	rstring operatorName,
 	Origin.Type origin,
 	int32 portIndex,
+	rstring metricType,
+	rstring metricKind,
 	rstring metricName,
 	int64 metricValue,
 	int64 lastTimeRetrieved

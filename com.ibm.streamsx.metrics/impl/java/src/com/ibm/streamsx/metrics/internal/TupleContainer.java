@@ -2,6 +2,7 @@ package com.ibm.streamsx.metrics.internal;
 
 import java.math.BigInteger;
 
+import com.ibm.streams.management.MetricMetadata.Kind;
 import com.ibm.streams.operator.Attribute;
 import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.StreamSchema;
@@ -46,6 +47,16 @@ public class TupleContainer {
 	 */
 	private Integer _portIndexAttributeIndex = null;
 	
+	/**
+	 * Index of the metricType attribute.
+	 */
+	private Integer _metricTypeAttributeIndex = null;
+
+	/**
+	 * Index of the metricKind attribute.
+	 */
+	private Integer _metricKindAttributeIndex = null;
+
 	/**
 	 * Index of the metricName attribute.
 	 */
@@ -115,6 +126,14 @@ public class TupleContainer {
 		if (_originAttributeIndex  == null) {
 			Attribute attribute = schema.getAttribute("origin");
 			_originAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.ENUM ? attribute.getIndex() : -1) ;
+		}
+		if (_metricTypeAttributeIndex  == null) {
+			Attribute attribute = schema.getAttribute("metricType");
+			_metricTypeAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+		}
+		if (_metricKindAttributeIndex  == null) {
+			Attribute attribute = schema.getAttribute("metricKind");
+			_metricKindAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		if (_metricNameAttributeIndex  == null) {
 			Attribute attribute = schema.getAttribute("metricName");
@@ -204,6 +223,28 @@ public class TupleContainer {
 	public void setOrigin(String origin) {
 		if (_originAttributeIndex != -1) {
 			_tuple.setString(_originAttributeIndex, origin);
+		}
+	}
+
+	/**
+	 * Optionally set the metric type in the output tuple.
+	 * 
+	 * @param metricType
+	 */
+	public void setMetricType(com.ibm.streams.management.MetricMetadata.Type metricType) {
+		if (_metricTypeAttributeIndex != -1) {
+			_tuple.setString(_metricTypeAttributeIndex, metricType.toString());
+		}
+	}
+
+	/**
+	 * Optionally set the metric kind in the output tuple.
+	 * 
+	 * @param metricKind
+	 */
+	public void setMetricKind(Kind metricKind) {
+		if (_metricKindAttributeIndex != -1) {
+			_tuple.setString(_metricKindAttributeIndex, metricKind.toString());
 		}
 	}
 
