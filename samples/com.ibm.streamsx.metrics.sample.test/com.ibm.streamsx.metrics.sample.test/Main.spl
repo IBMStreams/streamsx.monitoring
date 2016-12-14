@@ -141,4 +141,33 @@ composite Main {
 				appTrc(Trace.error, "Notification[periodic]: " + (rstring)currentPunct());
 			}
 		}
+		/*
+		 * The MetricsSource generates a tuple for each notified metric value
+		 * change.
+		 */
+//		stream<Notification> ChangeNotifications_UnspecifiedDomainId as O = MetricsSource() {
+//			param
+//				connectionURL: getSubmissionTimeValue("connectionURL");
+////				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
+//				user: getSubmissionTimeValue("user");
+//				password: getSubmissionTimeValue("password");
+////				domainId: getSubmissionTimeValue("domainId");
+//				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
+//				filterDocument: dataDirectory() + "/filters.json";
+//				emitMetricTuple: onChangedValue;
+//		}
+		
+		/*
+		 * The Custom traces the received metric value change notifications.
+		 */
+//		() as ChangeNotificationTracer_UnspecifiedDomainId = Custom(ChangeNotifications_UnspecifiedDomainId as I) {
+//			logic
+//			onTuple I: {
+//				appTrc(Trace.error, "Notification[change, unspecified domain id]: " + (rstring)I);
+//			}
+//			onPunct I: {
+//				appTrc(Trace.error, "Notification[change, unspecified domain id]: " + (rstring)currentPunct());
+//			}
+//		}
+
 }

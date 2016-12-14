@@ -135,7 +135,10 @@ public class MetricsSource extends AbstractOperator {
 			"Specifies the password that is required for the JMX connection.";
 	
 	private static final String DESC_PARAM_DOMAIN_ID = 
-			"Specifies the domain id that is monitored.";
+			"Specifies the domain id that is monitored. If no domain id is "
+			+ "specified, the domain id under which this operator is running "
+			+ "is used. If the operator is running in a standalone application "
+			+ "it raises an exception and aborts.";
 	
 	private static final String DESC_PARAM_RETRY_PERIOD = 
 			"Specifies the period after which a failed JMX connect is retried. "
@@ -210,7 +213,7 @@ public class MetricsSource extends AbstractOperator {
 	}
 
 	@Parameter(
-			optional=false,
+			optional=true,
 			description=MetricsSource.DESC_PARAM_DOMAIN_ID
 			)
 	public void setDomainId(String domainId) {
@@ -269,6 +272,19 @@ public class MetricsSource extends AbstractOperator {
 		super.initialize(context);
 		Logger.getLogger(this.getClass()).trace("Operator " + context.getName() + " initializing in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 
+		/*
+		 * The domainId parameter is optional. If the application developer does
+		 * not set it, use the domain id under which the operator itself is
+		 * running.
+		 */
+		if (_operatorConfiguration.get_domainId() == null) {
+			if (context.getPE().isStandalone()) {
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id.");
+			}
+			_operatorConfiguration.set_domainId(context.getPE().getDomainId());
+			Logger.getLogger(this.getClass()).error("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
+		}
+		
 		/*
 		 * Establish connections or resources to communicate an external system
 		 * or data store. The configuration information for this comes from
