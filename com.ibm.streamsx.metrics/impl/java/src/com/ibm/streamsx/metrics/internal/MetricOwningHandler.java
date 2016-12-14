@@ -88,6 +88,8 @@ abstract class MetricOwningHandler {
 	 * The exception is thrown if submitting the tuple fails.
 	 */
 	protected void submitMetric(Metric metric) throws Exception {
+		_operatorConfiguration.get_tupleContainer().setMetricType(metric.getMetricType());
+		_operatorConfiguration.get_tupleContainer().setMetricKind(metric.getMetricKind());
 		_operatorConfiguration.get_tupleContainer().setMetricName(metric.getName());
 		_operatorConfiguration.get_tupleContainer().setMetricValue(metric.getValue());
 		_operatorConfiguration.get_tupleContainer().setLastTimeRetrieved(metric.getLastTimeRetrieved());
