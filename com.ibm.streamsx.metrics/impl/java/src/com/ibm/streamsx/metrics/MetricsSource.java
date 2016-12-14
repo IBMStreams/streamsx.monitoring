@@ -270,7 +270,7 @@ public class MetricsSource extends AbstractOperator {
 			throws Exception {
 		// Must call super.initialize(context) to correctly setup an operator.
 		super.initialize(context);
-		Logger.getLogger(this.getClass()).trace("Operator " + context.getName() + " initializing in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
+		_trace.trace("Operator " + context.getName() + " initializing in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 
 		/*
 		 * The domainId parameter is optional. If the application developer does
@@ -282,7 +282,7 @@ public class MetricsSource extends AbstractOperator {
 				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id.");
 			}
 			_operatorConfiguration.set_domainId(context.getPE().getDomainId());
-			Logger.getLogger(this.getClass()).error("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
+			_trace.error("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
 		}
 		
 		/*
@@ -348,7 +348,7 @@ public class MetricsSource extends AbstractOperator {
 						try {
 							produceTuples();
 						} catch (Exception e) {
-							Logger.getLogger(this.getClass()).error("Operator error", e);
+							_trace.error("Operator error", e);
 						}                    
 					}
 
@@ -370,7 +370,7 @@ public class MetricsSource extends AbstractOperator {
 	@Override
 	public synchronized void allPortsReady() throws Exception {
 		OperatorContext context = getOperatorContext();
-		Logger.getLogger(this.getClass()).trace("Operator " + context.getName() + " all ports are ready in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
+		_trace.trace("Operator " + context.getName() + " all ports are ready in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 		// Start a thread for producing tuples because operator 
 		// implementations must not block and must return control to the caller.
 		_processThread.start();
@@ -410,7 +410,7 @@ public class MetricsSource extends AbstractOperator {
 			_processThread = null;
 		}
 		OperatorContext context = getOperatorContext();
-		Logger.getLogger(this.getClass()).trace("Operator " + context.getName() + " shutting down in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
+		_trace.trace("Operator " + context.getName() + " shutting down in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 
 		// Close connections or release resources related to any external system or data store.
 		
