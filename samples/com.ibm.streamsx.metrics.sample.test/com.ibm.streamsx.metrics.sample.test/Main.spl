@@ -94,7 +94,7 @@ composite Main {
 //				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
 				user: getSubmissionTimeValue("user");
 				password: getSubmissionTimeValue("password");
-				domain: getSubmissionTimeValue("domain");
+				domainId: getSubmissionTimeValue("domainId");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
 				filterDocument: dataDirectory() + "/filters.json";
 				emitMetricTuple: onChangedValue;
@@ -123,7 +123,7 @@ composite Main {
 //				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
 				user: getSubmissionTimeValue("user");
 				password: getSubmissionTimeValue("password");
-				domain: getSubmissionTimeValue("domain");
+				domainId: getSubmissionTimeValue("domainId");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
 				filterDocument: dataDirectory() + "/filters.json";
 				emitMetricTuple: periodic;

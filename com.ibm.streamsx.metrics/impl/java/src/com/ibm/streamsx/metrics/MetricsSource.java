@@ -134,8 +134,8 @@ public class MetricsSource extends AbstractOperator {
 	private static final String DESC_PARAM_PASSWORD = 
 			"Specifies the password that is required for the JMX connection.";
 	
-	private static final String DESC_PARAM_DOMAIN = 
-			"Specifies the domain that is monitored.";
+	private static final String DESC_PARAM_DOMAIN_ID = 
+			"Specifies the domain id that is monitored.";
 	
 	private static final String DESC_PARAM_RETRY_PERIOD = 
 			"Specifies the period after which a failed JMX connect is retried. "
@@ -211,10 +211,10 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=false,
-			description=MetricsSource.DESC_PARAM_DOMAIN
+			description=MetricsSource.DESC_PARAM_DOMAIN_ID
 			)
-	public void setDomain(String domain) {
-		_operatorConfiguration.set_domain(domain);
+	public void setDomainId(String domainId) {
+		_operatorConfiguration.set_domainId(domainId);
 	}
 
 	@Parameter(
@@ -277,10 +277,10 @@ public class MetricsSource extends AbstractOperator {
 		 */
 
 		_operatorConfiguration.set_filters(Filters.setupFilters(_operatorConfiguration.get_filterDocument()));
-		boolean isValidDomain = _operatorConfiguration.get_filters().matches(_operatorConfiguration.get_domain());
+		boolean isValidDomain = _operatorConfiguration.get_filters().matches(_operatorConfiguration.get_domainId());
 		if (!isValidDomain)
 		{
-			throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domain() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
+			throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domainId() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
 		}
 		
 		/*
@@ -317,7 +317,7 @@ public class MetricsSource extends AbstractOperator {
 		 * Further actions are handled in the domain handler that manages
 		 * instances that manages jobs, etc.
 		 */
-		_domainHandler = new DomainHandler(_operatorConfiguration, _operatorConfiguration.get_domain());
+		_domainHandler = new DomainHandler(_operatorConfiguration, _operatorConfiguration.get_domainId());
 
 		/*
 		 * Create the thread for producing tuples. 
