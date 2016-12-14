@@ -64,6 +64,8 @@ public class OperatorConfiguration {
 	private Filters _filters = new Filters();
 
 	private TupleContainer _tupleContainer = null;
+
+	private EmitMetricTupleMode _emitMetricTuple = EmitMetricTupleMode.onChangedValue;
 	
 	public String get_connectionURL() {
 		return _connectionURL;
@@ -161,4 +163,20 @@ public class OperatorConfiguration {
 		_tupleContainer = tupleContainer;
 		
 	}
+
+	public void set_emitMetricTuple(EmitMetricTupleMode mode) {
+		_emitMetricTuple = mode;
+	}
+
+	public IMetricEvaluator newDefaultMetricEvaluator() {
+		switch(_emitMetricTuple) {
+		case onChangedValue:
+			return new DeltaMetricEvaluator();
+		case periodic:
+			return new PeriodicMetricEvaluator();
+		default:
+			return null;
+		}
+	}
+
 }
