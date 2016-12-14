@@ -18,6 +18,7 @@ type MetricNumbers = tuple<
 stateful boolean createMetrics() {
 	createCustomMetric("inc", "The incrementing number.", Sys.Counter, 0l);
 	createCustomMetric("rnd", "The random number.", Sys.Counter, 0l);
+	createCustomMetric("const", "The constant number.", Sys.Counter, 5l);
 	return true;
 }
 
@@ -69,15 +70,15 @@ composite Main {
 		/*
 		 * The Custom traces the generated values.
 		 */
-		() as NumbersTracer = Custom(Numbers as I) {
-			logic
-			onTuple I: {
-				appTrc(Trace.error, "Numbers: " + (rstring)I);
-			}
-			onPunct I: {
-				appTrc(Trace.error, "Numbers: " + (rstring)currentPunct());
-			}
-		}
+//		() as NumbersTracer = Custom(Numbers as I) {
+//			logic
+//			onTuple I: {
+//				appTrc(Trace.error, "Numbers: " + (rstring)I);
+//			}
+//			onPunct I: {
+//				appTrc(Trace.error, "Numbers: " + (rstring)currentPunct());
+//			}
+//		}
 
 		// *********************************************************************
 		// MetricsSource
@@ -87,7 +88,7 @@ composite Main {
 		 * The MetricsSource generates a tuple for each notified metric value
 		 * change.
 		 */
-		stream<Notification> Notifications as O = MetricsSource() {
+		stream<Notification> ChangeNotifications as O = MetricsSource() {
 			param
 				connectionURL: getSubmissionTimeValue("connectionURL");
 //				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
@@ -96,18 +97,48 @@ composite Main {
 				domain: getSubmissionTimeValue("domain");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
 				filterDocument: dataDirectory() + "/filters.json";
+				emitMetricTuple: onChangedValue;
 		}
 		
 		/*
 		 * The Custom traces the received metric value change notifications.
 		 */
-		() as NotificationTracer = Custom(Notifications as I) {
+		() as ChangeNotificationTracer = Custom(ChangeNotifications as I) {
 			logic
 			onTuple I: {
-				appTrc(Trace.error, "Notification: " + (rstring)I);
+				appTrc(Trace.error, "Notification[change]: " + (rstring)I);
 			}
 			onPunct I: {
-				appTrc(Trace.error, "Notification: " + (rstring)currentPunct());
+				appTrc(Trace.error, "Notification[change]: " + (rstring)currentPunct());
+			}
+		}
+
+		/*
+		 * The MetricsSource generates a tuple for each notified metric value
+		 * change.
+		 */
+		stream<Notification> PeriodicNotifications as O = MetricsSource() {
+			param
+				connectionURL: getSubmissionTimeValue("connectionURL");
+//				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
+				user: getSubmissionTimeValue("user");
+				password: getSubmissionTimeValue("password");
+				domain: getSubmissionTimeValue("domain");
+				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
+				filterDocument: dataDirectory() + "/filters.json";
+				emitMetricTuple: periodic;
+		}
+		
+		/*
+		 * The Custom traces the received metric value change notifications.
+		 */
+		() as PeriodicNotificationTracer = Custom(PeriodicNotifications as I) {
+			logic
+			onTuple I: {
+				appTrc(Trace.error, "Notification[periodic]: " + (rstring)I);
+			}
+			onPunct I: {
+				appTrc(Trace.error, "Notification[periodic]: " + (rstring)currentPunct());
 			}
 		}
 }
