@@ -1,0 +1,9 @@
+[
+	{
+		"domainNames":".*",
+		"instanceNames":".*",
+		"jobNames":".*",
+		"operatorNames":".*",
+		"metricNames":".*",
+	},
+]
