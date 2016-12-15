@@ -1,0 +1,14 @@
+[
+	{
+		"domainNames":".*",
+		"instanceNames":".*",
+		"jobNames":".*",
+		"operatorNames":"Storage",
+		"metricNames":
+		[
+			"rnd",
+			"inc",
+			"const",
+		]
+	},
+]

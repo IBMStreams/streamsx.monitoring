@@ -29,7 +29,7 @@ public class OperatorConfiguration {
 	/**
 	 * Specifies the domain that is monitored.
 	 */
-	private String _domain = null;
+	private String _domainId = null;
 
 	/**
 	 * Specifies the period after which a failed JMX connect is repeated. The
@@ -91,12 +91,12 @@ public class OperatorConfiguration {
 		this._password = password;
 	}
 
-	public String get_domain() {
-		return _domain;
+	public String get_domainId() {
+		return _domainId;
 	}
 
-	public void set_domain(String domain) {
-		this._domain = domain;
+	public void set_domainId(String domainId) {
+		this._domainId = domainId;
 	}
 
 	public Double get_retryPeriod() {

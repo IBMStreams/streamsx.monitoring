@@ -134,8 +134,11 @@ public class MetricsSource extends AbstractOperator {
 	private static final String DESC_PARAM_PASSWORD = 
 			"Specifies the password that is required for the JMX connection.";
 	
-	private static final String DESC_PARAM_DOMAIN = 
-			"Specifies the domain that is monitored.";
+	private static final String DESC_PARAM_DOMAIN_ID = 
+			"Specifies the domain id that is monitored. If no domain id is "
+			+ "specified, the domain id under which this operator is running "
+			+ "is used. If the operator is running in a standalone application "
+			+ "it raises an exception and aborts.";
 	
 	private static final String DESC_PARAM_RETRY_PERIOD = 
 			"Specifies the period after which a failed JMX connect is retried. "
@@ -210,11 +213,11 @@ public class MetricsSource extends AbstractOperator {
 	}
 
 	@Parameter(
-			optional=false,
-			description=MetricsSource.DESC_PARAM_DOMAIN
+			optional=true,
+			description=MetricsSource.DESC_PARAM_DOMAIN_ID
 			)
-	public void setDomain(String domain) {
-		_operatorConfiguration.set_domain(domain);
+	public void setDomainId(String domainId) {
+		_operatorConfiguration.set_domainId(domainId);
 	}
 
 	@Parameter(
@@ -267,8 +270,21 @@ public class MetricsSource extends AbstractOperator {
 			throws Exception {
 		// Must call super.initialize(context) to correctly setup an operator.
 		super.initialize(context);
-		Logger.getLogger(this.getClass()).trace("Operator " + context.getName() + " initializing in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
+		_trace.trace("Operator " + context.getName() + " initializing in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 
+		/*
+		 * The domainId parameter is optional. If the application developer does
+		 * not set it, use the domain id under which the operator itself is
+		 * running.
+		 */
+		if (_operatorConfiguration.get_domainId() == null) {
+			if (context.getPE().isStandalone()) {
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id.");
+			}
+			_operatorConfiguration.set_domainId(context.getPE().getDomainId());
+			_trace.info("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
+		}
+		
 		/*
 		 * Establish connections or resources to communicate an external system
 		 * or data store. The configuration information for this comes from
@@ -277,10 +293,10 @@ public class MetricsSource extends AbstractOperator {
 		 */
 
 		_operatorConfiguration.set_filters(Filters.setupFilters(_operatorConfiguration.get_filterDocument()));
-		boolean isValidDomain = _operatorConfiguration.get_filters().matches(_operatorConfiguration.get_domain());
+		boolean isValidDomain = _operatorConfiguration.get_filters().matches(_operatorConfiguration.get_domainId());
 		if (!isValidDomain)
 		{
-			throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domain() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
+			throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domainId() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
 		}
 		
 		/*
@@ -317,7 +333,7 @@ public class MetricsSource extends AbstractOperator {
 		 * Further actions are handled in the domain handler that manages
 		 * instances that manages jobs, etc.
 		 */
-		_domainHandler = new DomainHandler(_operatorConfiguration, _operatorConfiguration.get_domain());
+		_domainHandler = new DomainHandler(_operatorConfiguration, _operatorConfiguration.get_domainId());
 
 		/*
 		 * Create the thread for producing tuples. 
@@ -332,7 +348,7 @@ public class MetricsSource extends AbstractOperator {
 						try {
 							produceTuples();
 						} catch (Exception e) {
-							Logger.getLogger(this.getClass()).error("Operator error", e);
+							_trace.error("Operator error", e);
 						}                    
 					}
 
@@ -354,7 +370,7 @@ public class MetricsSource extends AbstractOperator {
 	@Override
 	public synchronized void allPortsReady() throws Exception {
 		OperatorContext context = getOperatorContext();
-		Logger.getLogger(this.getClass()).trace("Operator " + context.getName() + " all ports are ready in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
+		_trace.trace("Operator " + context.getName() + " all ports are ready in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 		// Start a thread for producing tuples because operator 
 		// implementations must not block and must return control to the caller.
 		_processThread.start();
@@ -394,7 +410,7 @@ public class MetricsSource extends AbstractOperator {
 			_processThread = null;
 		}
 		OperatorContext context = getOperatorContext();
-		Logger.getLogger(this.getClass()).trace("Operator " + context.getName() + " shutting down in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
+		_trace.trace("Operator " + context.getName() + " shutting down in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 
 		// Close connections or release resources related to any external system or data store.
 		

@@ -53,9 +53,9 @@ public class JobHandler implements NotificationListener {
 
 	private OperatorConfiguration _operatorConfiguration = null;
 
-	private String _domainName = null;
+	private String _domainId = null;
 
-	private String _instanceName = null;
+	private String _instanceId = null;
 
 	private BigInteger _jobId = null;
 	
@@ -65,18 +65,19 @@ public class JobHandler implements NotificationListener {
 
 	private Map<String /* operatorName */, OperatorHandler> _operatorHandlers = new HashMap<String, OperatorHandler>();
 
-	public JobHandler(OperatorConfiguration applicationConfiguration, String domainName, String instanceName, BigInteger jobId) {
+	public JobHandler(OperatorConfiguration applicationConfiguration, String domainId, String instanceId, BigInteger jobId) {
 
-		if (_trace.isDebugEnabled()) {
-			_trace.debug("JobHandler(" + domainName + "," + instanceName + "," + jobId + ")");
+		boolean isDebugEnabled = _trace.isDebugEnabled();
+		if (isDebugEnabled) {
+			_trace.debug("JobHandler(" + domainId + "," + instanceId + "," + jobId + ")");
 		}
 		// Store parameters for later use.
 		_operatorConfiguration = applicationConfiguration;
-		_domainName = domainName;
-		_instanceName = instanceName;
+		_domainId = domainId;
+		_instanceId = instanceId;
 		_jobId = jobId;
 
-		ObjectName jobObjName = ObjectNameBuilder.job(_domainName, _instanceName, _jobId);
+		ObjectName jobObjName = ObjectNameBuilder.job(_domainId, _instanceId, _jobId);
 		_job = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), jobObjName, JobMXBean.class, true);
 
 		_jobName = _job.getName();
@@ -121,14 +122,18 @@ public class JobHandler implements NotificationListener {
 	}
 
 	protected void addValidOperator(String operatorName) {
-		if(_operatorConfiguration.get_filters().matches(_domainName, _instanceName, _jobName, operatorName)) {
-			_trace.error("The following operator meets the filter criteria and is therefore, monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + operatorName);
-			_operatorHandlers.put(operatorName, new OperatorHandler(_operatorConfiguration, _domainName, _instanceName, _jobId, _jobName, operatorName));
+		boolean matches = _operatorConfiguration.get_filters().matches(_domainId, _instanceId, _jobName, operatorName);
+		if (_trace.isInfoEnabled()) {
+			if (matches) {
+				_trace.info("The following operator meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + operatorName);
+			}
+			else { 
+				_trace.info("The following operator does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + operatorName);
+			}
 		}
-		else { // TODO if (_trace.isInfoEnabled()) {
-			_trace.error("The following operator does not meet the filter criteria and is therefore, not monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=[" + _jobId + "][" + _jobName + "], operator=" + operatorName);
+		if (matches) {
+			_operatorHandlers.put(operatorName, new OperatorHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, operatorName));
 		}
-
 	}
 	
 	/**
@@ -139,8 +144,9 @@ public class JobHandler implements NotificationListener {
 	 * @throws Exception 
 	 */
 	public void captureMetrics() throws Exception {
-		if (_trace.isDebugEnabled()) {
-			_trace.debug("--> captureMetrics(domain=" + _domainName + ",instance=" + _instanceName + ",jobId=" + _jobId + ")");
+		boolean isDebugEnabled = _trace.isDebugEnabled();
+		if (isDebugEnabled) {
+			_trace.debug("--> captureMetrics(domain=" + _domainId + ",instance=" + _instanceId + ",jobId=" + _jobId + ")");
 		}
 		TupleContainer schema = _operatorConfiguration.get_tupleContainer();
 		schema.setJobId(_jobId);
@@ -148,15 +154,15 @@ public class JobHandler implements NotificationListener {
 		for(String operatorName : _operatorHandlers.keySet()) {
 			_operatorHandlers.get(operatorName).captureMetrics();
 		}
-		if (_trace.isDebugEnabled()) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainName + ",instance=" + _instanceName + ",jobId=" + _jobId + ")");
+		if (isDebugEnabled) {
+			_trace.debug("<-- captureMetrics(domain=" + _domainId + ",instance=" + _instanceId + ",jobId=" + _jobId + ")");
 		}
 // -----------------------------------------------------------------------------
 // SNAPSHOT METRICS CODE (BEGIN)
 // -----------------------------------------------------------------------------
 //		String uri = _job.snapshotMetrics();
 //		try {
-//			_trace.error("[" + _domainName + "," + _instanceName + "," + _jobName + "] capture metrics from URI: " + uri);
+//			_trace.error("[" + _domainId + "," + _instanceId + "," + _jobName + "] capture metrics from URI: " + uri);
 //
 //			// TODO streamtool getdomainproperty jmx.sslOption
 //			String sslOption = "TLSv1";

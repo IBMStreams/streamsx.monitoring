@@ -43,25 +43,26 @@ public class InstanceHandler implements NotificationListener {
 
 	private OperatorConfiguration _operatorConfiguration = null;
 
-	private String _domainName = null;
+	private String _domainId = null;
 
-	private String _instanceName = null;
+	private String _instanceId = null;
 	
 	private InstanceMXBean _instance = null;
 
 	private Map<BigInteger /* jobId */, JobHandler> _jobHandlers = new HashMap<BigInteger, JobHandler>();
 
-	public InstanceHandler(OperatorConfiguration operatorConfiguration, String domainName, String instanceName) {
+	public InstanceHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId) {
 
-		if (_trace.isDebugEnabled()) {
-			_trace.debug("InstanceHandler(" + domainName + "," + instanceName + ")");
+		boolean isDebugEnabled = _trace.isDebugEnabled();
+		if (isDebugEnabled) {
+			_trace.debug("InstanceHandler(" + domainId + "," + instanceId + ")");
 		}
 		// Store parameters for later use.
 		_operatorConfiguration = operatorConfiguration;
-		_domainName = domainName;
-		_instanceName = instanceName;
+		_domainId = domainId;
+		_instanceId = instanceId;
 
-		ObjectName instanceObjName = ObjectNameBuilder.instance(_domainName, _instanceName);
+		ObjectName instanceObjName = ObjectNameBuilder.instance(_domainId, _instanceId);
 		_instance = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), instanceObjName, InstanceMXBean.class, true);
 		
 		/*
@@ -95,6 +96,7 @@ public class InstanceHandler implements NotificationListener {
 	 */
 	@Override
 	public void handleNotification(Notification notification, Object handback) {
+		boolean isInfoEnabled = _trace.isInfoEnabled();
 //		if (notification.getSequenceNumber())
 		if (notification.getType().equals(Notifications.JOB_ADDED)) {
 			if(notification.getUserData() instanceof BigInteger) {
@@ -103,7 +105,7 @@ public class InstanceHandler implements NotificationListener {
 				 */
 				BigInteger jobId = (BigInteger)notification.getUserData();
 				addValidJob(jobId);
-				if (_trace.isInfoEnabled()) {
+				if (isInfoEnabled) {
 					_trace.info("received JOB_ADDED notification: jobId=" + jobId);
 				}
 			}
@@ -119,11 +121,11 @@ public class InstanceHandler implements NotificationListener {
 				BigInteger jobId = (BigInteger)notification.getUserData();
 				if (_jobHandlers.containsKey(jobId)) {
 					_jobHandlers.remove(jobId);
-					if (_trace.isInfoEnabled()) {
+					if (isInfoEnabled) {
 						_trace.info("received JOB_REMOVED notification for monitored job: jobId=" + jobId);
 					}
 				}
-				else if (_trace.isInfoEnabled()) {
+				else if (isInfoEnabled) {
 					_trace.info("received JOB_REMOVED notification for job that is not monitored: jobId=" + jobId);
 				}
 			}
@@ -145,15 +147,20 @@ public class InstanceHandler implements NotificationListener {
 		// the job-related beans. 
 		_instance.registerJob(jobId);
 		// Special handling required because we do not have the job name easily accessible.
-		ObjectName jobObjName = ObjectNameBuilder.job(_domainName, _instanceName, jobId);
+		ObjectName jobObjName = ObjectNameBuilder.job(_domainId, _instanceId, jobId);
 		JobMXBean job = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), jobObjName, JobMXBean.class, true);
 		String jobName = job.getName();
-		if(_operatorConfiguration.get_filters().matches(_domainName, _instanceName, jobName)) {
-			_trace.error("The following job meets the filter criteria and is therefore, monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=" + jobName + ", jobId=" + jobId);
-			_jobHandlers.put(jobId, new JobHandler(_operatorConfiguration, _domainName, _instanceName, jobId));
+		boolean matches = _operatorConfiguration.get_filters().matches(_domainId, _instanceId, jobName);
+		if (_trace.isInfoEnabled()) {
+			if (matches) {
+				_trace.info("The following job meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=" + jobName + ", jobId=" + jobId);
+			}
+			else {
+				_trace.info("The following job does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=" + jobName + ", jobId=" + jobId);
+			}
 		}
-		else { // TODO if (_trace.isInfoEnabled()) {
-			_trace.error("The following job does not meet the filter criteria and is therefore, not monitored: domain=" + _domainName + ", instance=" + _instanceName + ", job=" + jobName + ", jobId=" + jobId);
+		if (matches) {
+			_jobHandlers.put(jobId, new JobHandler(_operatorConfiguration, _domainId, _instanceId, jobId));
 		}
 		if (isDebugEnabled) {
 			_trace.debug("<-- addValidJob(" + jobId + ")");
@@ -167,14 +174,14 @@ public class InstanceHandler implements NotificationListener {
 	public void captureMetrics() throws Exception {
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 		if (isDebugEnabled) {
-			_trace.debug("--> captureMetrics(domain=" + _domainName + ",instance=" + _instanceName + ")");
+			_trace.debug("--> captureMetrics(domain=" + _domainId + ",instance=" + _instanceId + ")");
 		}
-		_operatorConfiguration.get_tupleContainer().setInstanceName(_instanceName);
+		_operatorConfiguration.get_tupleContainer().setInstanceId(_instanceId);
 		for(BigInteger jobId : _jobHandlers.keySet()) {
 			_jobHandlers.get(jobId).captureMetrics();
 		}
 		if (isDebugEnabled) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainName + ",instance=" + _instanceName + ")");
+			_trace.debug("<-- captureMetrics(domain=" + _domainId + ",instance=" + _instanceId + ")");
 		}
 	}
 
