@@ -44,7 +44,7 @@ public composite Origin {
 /**
  * The notification type specifies all attributes that can be used to uniquely
  * identify a changed metric value, starting with the domain and instance
- * names, job and other information, and finally the metric name and its
+ * ids, job and other information, and finally the metric name and its
  * value.
  * 
  * The attribute names are fixed but if you are not interested in all
@@ -56,8 +56,8 @@ public composite Origin {
  * or OperatorOutputPort.
  */
 type Notification = tuple<
-	rstring domainName,
-	rstring instanceName,
+	rstring domainId,
+	rstring instanceId,
 	int64 jobId,
 	rstring jobName,
 	rstring operatorName,

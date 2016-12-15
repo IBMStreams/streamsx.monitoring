@@ -282,7 +282,7 @@ public class MetricsSource extends AbstractOperator {
 				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id.");
 			}
 			_operatorConfiguration.set_domainId(context.getPE().getDomainId());
-			_trace.error("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
+			_trace.info("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
 		}
 		
 		/*

@@ -13,14 +13,14 @@ import com.ibm.streams.operator.Type;
 public class TupleContainer {
 
 	/**
-	 * Index of the domainName attribute.
+	 * Index of the domainId attribute.
 	 */
-	private Integer _domainNameAttributeIndex = null;
+	private Integer _domainIdAttributeIndex = null;
 	
 	/**
-	 * Index of the instanceName attribute.
+	 * Index of the instanceId attribute.
 	 */
-	private Integer _instanceNameAttributeIndex = null;
+	private Integer _instanceIdAttributeIndex = null;
 
 	/**
 	 * Index of the jobId attribute.
@@ -93,14 +93,14 @@ public class TupleContainer {
 		_tuple = port.newTuple();
 		StreamSchema schema = port.getStreamSchema();
 		// Domain-related attributes.
-		if (_domainNameAttributeIndex == null) {
-			Attribute attribute = schema.getAttribute("domainName");
-			_domainNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+		if (_domainIdAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("domainId");
+			_domainIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Instance-related attributes.
-		if (_instanceNameAttributeIndex  == null) {
-			Attribute attribute = schema.getAttribute("instanceName");
-			_instanceNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+		if (_instanceIdAttributeIndex  == null) {
+			Attribute attribute = schema.getAttribute("instanceId");
+			_instanceIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Job-related attributes.
 		if (_jobIdAttributeIndex  == null) {
@@ -150,24 +150,24 @@ public class TupleContainer {
 	}
 		
 	/**
-	 * Optionally set the domain name in the output tuple.
+	 * Optionally set the domain id in the output tuple.
 	 * 
-	 * @param domainName
+	 * @param domainId
 	 */
-	public void setDomainName(String domainName) {
-		if (_domainNameAttributeIndex != -1) {
-			_tuple.setString(_domainNameAttributeIndex, domainName);
+	public void setDomainId(String domainId) {
+		if (_domainIdAttributeIndex != -1) {
+			_tuple.setString(_domainIdAttributeIndex, domainId);
 		}
 	}
 
 	/**
-	 * Optionally set the instance name in the output tuple.
+	 * Optionally set the instance id in the output tuple.
 	 * 
-	 * @param domainName
+	 * @param instanceId
 	 */
-	public void setInstanceName(String instanceName) {
-		if (_instanceNameAttributeIndex != -1) {
-			_tuple.setString(_instanceNameAttributeIndex, instanceName);
+	public void setInstanceId(String instanceId) {
+		if (_instanceIdAttributeIndex != -1) {
+			_tuple.setString(_instanceIdAttributeIndex, instanceId);
 		}
 	}
 	
