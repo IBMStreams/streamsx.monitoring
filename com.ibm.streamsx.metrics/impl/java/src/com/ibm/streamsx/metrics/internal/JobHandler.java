@@ -63,7 +63,7 @@ public class JobHandler implements NotificationListener {
 
 	private JobMXBean _job = null;
 
-	private Map<String /* operatorName */, OperatorHandler> _operatorHandlers = new HashMap<String, OperatorHandler>();
+	private Map<String /* operatorName */, OperatorHandler> _operatorHandlers = new HashMap<>();
 
 	public JobHandler(OperatorConfiguration applicationConfiguration, String domainId, String instanceId, BigInteger jobId) {
 

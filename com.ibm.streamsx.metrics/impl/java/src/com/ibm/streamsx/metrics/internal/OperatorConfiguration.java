@@ -173,7 +173,7 @@ public class OperatorConfiguration {
 		case onChangedValue:
 			return new DeltaMetricEvaluator();
 		case periodic:
-			return new PeriodicMetricEvaluator();
+			return PeriodicMetricEvaluator.getSingleton();
 		default:
 			return null;
 		}

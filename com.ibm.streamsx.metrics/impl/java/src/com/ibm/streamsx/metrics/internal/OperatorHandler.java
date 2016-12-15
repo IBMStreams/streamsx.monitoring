@@ -42,9 +42,9 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 	
 	private OperatorMXBean _operator = null;
 
-	private Map<Integer /* port index */, InputPortHandler> _inputPortHandlers = new HashMap<Integer, InputPortHandler>();
+	private Map<Integer /* port index */, InputPortHandler> _inputPortHandlers = new HashMap<>();
 
-	private Map<Integer /* port index */, OutputPortHandler> _outputPortHandlers = new HashMap<Integer, OutputPortHandler>();
+	private Map<Integer /* port index */, OutputPortHandler> _outputPortHandlers = new HashMap<>();
 
 	public OperatorHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId, BigInteger jobId, String jobName, String operatorName) {
 

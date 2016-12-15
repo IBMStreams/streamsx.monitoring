@@ -46,7 +46,7 @@ public class DomainHandler implements NotificationListener {
 	
 	private DomainMXBean _domain = null;
 	
-	private Map<String /* instanceId */, InstanceHandler> _instanceHandlers = new HashMap<String, InstanceHandler>();
+	private Map<String /* instanceId */, InstanceHandler> _instanceHandlers = new HashMap<>();
 
 	public DomainHandler(OperatorConfiguration operatorConfiguration, String domainId) {
 

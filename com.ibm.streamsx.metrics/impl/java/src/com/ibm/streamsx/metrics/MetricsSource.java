@@ -166,7 +166,7 @@ public class MetricsSource extends AbstractOperator {
 			+ "\\n"
 			+ "  For each monitored metric a tuple is emitted during each scan cycle.\\n"
 			+ "\\n"
-			+ "* **onChangedValue**\\n"
+			+ "* **onChangedValue** (default)\\n"
 			+ "\\n"
 			+ "  For each monitored metric a tuple is emitted during each scan cycle if the metric value changed.";
 	
@@ -302,7 +302,7 @@ public class MetricsSource extends AbstractOperator {
 		/*
 		 * Prepare the JMX environment settings.
 		 */
-		HashMap<String, Object> env = new HashMap<String, Object>();
+		HashMap<String, Object> env = new HashMap<>();
 		String [] credentials = { _operatorConfiguration.get_user(), _operatorConfiguration.get_password() };
 		env.put("jmx.remote.credentials", credentials);
 		env.put("jmx.remote.protocol.provider.pkgs", "com.ibm.streams.management");

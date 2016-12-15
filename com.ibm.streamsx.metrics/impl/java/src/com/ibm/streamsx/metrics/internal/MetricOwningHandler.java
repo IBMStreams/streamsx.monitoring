@@ -56,7 +56,7 @@ abstract class MetricOwningHandler {
 	/**
 	 * This map holds all metrics that are captured.
 	 */
-	private Map<String /* metric name */, IMetricEvaluator> _capturedMetrics = new HashMap<String, IMetricEvaluator>();
+	private Map<String /* metric name */, IMetricEvaluator> _capturedMetrics = new HashMap<>();
 	
 	/**
 	 * This set holds, in DynamicMetricsRegistration mode, all metric names 
@@ -64,7 +64,7 @@ abstract class MetricOwningHandler {
 	 * because we do not need to match the name against the configured filters
 	 * each time. 
 	 */
-	private Set<String /* metric name */> _ignoredMetrics = new HashSet<String>();
+	private Set<String /* metric name */> _ignoredMetrics = new HashSet<>();
 
 	/**
 	 * 

@@ -49,7 +49,7 @@ public class InstanceHandler implements NotificationListener {
 	
 	private InstanceMXBean _instance = null;
 
-	private Map<BigInteger /* jobId */, JobHandler> _jobHandlers = new HashMap<BigInteger, JobHandler>();
+	private Map<BigInteger /* jobId */, JobHandler> _jobHandlers = new HashMap<>();
 
 	public InstanceHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId) {
 

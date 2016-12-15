@@ -30,7 +30,7 @@ public class DeltaMetricEvaluator implements IMetricEvaluator {
 
 	@Override
 	public void updateStatus(Metric metric) {
-		_lastValue = Long.valueOf(metric.getValue());
+		_lastValue = metric.getValue();
 	}
 
 }

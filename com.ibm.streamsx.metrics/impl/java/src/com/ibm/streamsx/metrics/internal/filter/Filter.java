@@ -29,7 +29,7 @@ abstract class Filter {
 	/**
 	 * 
 	 */
-	protected Map<String /* regular expression */, Filter> _filters = new HashMap<String,Filter>();
+	protected Map<String /* regular expression */, Filter> _filters = new HashMap<>();
 	
 	/**
 	 * Construct a filter.
