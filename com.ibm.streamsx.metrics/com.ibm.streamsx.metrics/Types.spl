@@ -63,6 +63,7 @@ type Notification = tuple<
 	rstring instanceId,
 	int64 jobId,
 	rstring jobName,
+	rstring resource,
 	int64 peId,
 	Origin.Type origin,
 	rstring operatorName,

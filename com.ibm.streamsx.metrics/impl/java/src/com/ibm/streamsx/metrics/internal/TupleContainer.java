@@ -33,6 +33,11 @@ public class TupleContainer {
 	private Integer _jobNameAttributeIndex = null;
 
 	/**
+	 * Index of the resource attribute.
+	 */
+	private Integer _resourceAttributeIndex = null;
+
+	/**
 	 * Index of the operatorName attribute.
 	 */
 	private Integer _operatorNameAttributeIndex = null;
@@ -128,6 +133,10 @@ public class TupleContainer {
 			_operatorNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Operator- and PE-related attributes.
+		if (_resourceAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("resource");
+			_resourceAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+		}
 		if (_channelAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("channel");
 			_channelAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT32 ? attribute.getIndex() : -1) ;
@@ -209,6 +218,17 @@ public class TupleContainer {
 	public void setJobName(String jobName) {
 		if (_jobNameAttributeIndex != -1) {
 			_tuple.setString(_jobNameAttributeIndex, jobName);
+		}
+	}
+
+	/**
+	 * Optionally set the resource, which is the host, in the output tuple.
+	 * 
+	 * @param resource
+	 */
+	public void setResource(String resource) {
+		if (_resourceAttributeIndex != -1) {
+			_tuple.setString(_resourceAttributeIndex, resource);
 		}
 	}
 

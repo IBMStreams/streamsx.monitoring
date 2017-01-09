@@ -177,6 +177,7 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 		_operatorConfiguration.get_tupleContainer().setPortIndex(0);
 		_operatorConfiguration.get_tupleContainer().setChannel(-1);
 		_operatorConfiguration.get_tupleContainer().setPeId(_peId);
+		_operatorConfiguration.get_tupleContainer().setResource(_pe.getResource());
 
 		captureAndSubmitChangedMetrics();
 

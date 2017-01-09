@@ -193,6 +193,7 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 		_operatorConfiguration.get_tupleContainer().setPortIndex(0);
 		_operatorConfiguration.get_tupleContainer().setChannel(_operator.getChannel());
 		_operatorConfiguration.get_tupleContainer().setPeId(_operator.getPe());
+		_operatorConfiguration.get_tupleContainer().setResource(_operator.getResource());
 
 		captureAndSubmitChangedMetrics();
 
