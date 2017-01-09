@@ -48,6 +48,11 @@ public class TupleContainer {
 	private Integer _portIndexAttributeIndex = null;
 	
 	/**
+	 * Index of the channel attribute.
+	 */
+	private Integer _channelAttributeIndex = null;
+	
+	/**
 	 * Index of the metricType attribute.
 	 */
 	private Integer _metricTypeAttributeIndex = null;
@@ -81,7 +86,7 @@ public class TupleContainer {
 	 * The output tuple.
 	 */
 	private OutputTuple _tuple = null;
-	
+
 	/**
 	 * Determine the indexes of output attributes and verify their types.
 	 * 
@@ -116,6 +121,10 @@ public class TupleContainer {
 		if (_operatorNameAttributeIndex  == null) {
 			Attribute attribute = schema.getAttribute("operatorName");
 			_operatorNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+		}
+		if (_channelAttributeIndex  == null) {
+			Attribute attribute = schema.getAttribute("channel");
+			_channelAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT32 ? attribute.getIndex() : -1) ;
 		}
 		// Port-related attributes.
 		if (_portIndexAttributeIndex  == null) {
@@ -223,6 +232,18 @@ public class TupleContainer {
 	public void setOrigin(String origin) {
 		if (_originAttributeIndex != -1) {
 			_tuple.setString(_originAttributeIndex, origin);
+		}
+	}
+
+	/**
+	 * Optionally set the channel in the output tuple. If the channel information
+	 * is not available, set -1.
+	 * 
+	 * @param channel
+	 */
+	public void setChannel(Integer channel) {
+		if (_channelAttributeIndex != -1) {
+			_tuple.setInt(_channelAttributeIndex, (channel == null ? -1 : channel));
 		}
 	}
 

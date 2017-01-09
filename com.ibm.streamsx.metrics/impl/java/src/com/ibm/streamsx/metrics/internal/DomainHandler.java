@@ -126,7 +126,7 @@ public class DomainHandler implements NotificationListener {
 	}
 
 	protected void addValidInstance(String instanceId) {
-		boolean matches = _operatorConfiguration.get_filters().matches(_domainId, instanceId);
+		boolean matches = _operatorConfiguration.get_filters().matchesInstanceId(_domainId, instanceId);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
 				_trace.info("The following instance meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + instanceId);

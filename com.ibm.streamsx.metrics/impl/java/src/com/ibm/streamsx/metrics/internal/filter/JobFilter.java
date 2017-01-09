@@ -1,50 +1,91 @@
 package com.ibm.streamsx.metrics.internal.filter;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
-final class JobFilter extends Filter {
+final class JobFilter extends PatternMatcher implements Filter {
 
 	/**
 	 * Logger for tracing.
 	 */
-	private static Logger _trace = Logger.getLogger(DomainFilter.class.getName());
+	private static Logger _trace = Logger.getLogger(JobFilter.class.getName());
 
-	public JobFilter(String regularExpression) throws PatternSyntaxException {
+	/**
+	 * A job has many operators.
+	 */
+	protected Map<String /* regular expression */, OperatorFilter> _operatorFilters = new HashMap<>();
+
+	/**
+	 * A job has many PEs.
+	 */
+	protected Map<String /* regular expression */, PEFilter> _peFilters = new HashMap<>();
+
+	public JobFilter(String regularExpression, Set<Filter> operatorFilters, Set<Filter> peFilters) throws PatternSyntaxException {
 		super(regularExpression);
-	}
-
-	public void add(String operatorNameRegEx, String metricNameRegEx) {
-		if (operatorNameRegEx != null) {
-			if (!_filters.containsKey(operatorNameRegEx)) {
-				addFilter(new OperatorFilter(operatorNameRegEx));
-			}
-			((OperatorFilter)_filters.get(operatorNameRegEx)).add(metricNameRegEx);
+		for(Filter filter : operatorFilters) {
+			OperatorFilter operatorFilter = (OperatorFilter)filter;
+			_operatorFilters.put(operatorFilter.getRegularExpression(), operatorFilter);
 		}
 	}
 
-	public boolean matches(String jobName, String operatorName, String metricName, int stopLevel) {
-		final boolean isInfoEnabled = _trace.isInfoEnabled();
-		if(isInfoEnabled) {
-			_trace.info(String.format("matches(jobName=%s, operatorName=%s, metricName=%s, stopLevel=%d): %s\n", jobName, operatorName, metricName, stopLevel, _regularExpression));
-		}
-		boolean matches = (jobName != null) && _matcher.reset(jobName).matches();
+	public boolean matchesJobName(String jobName) {
+		boolean matches = matches(jobName);
+		return matches;
+	}
+
+	public boolean matchesOperatorName(String jobName, String operatorName) {
+		boolean matches = matchesJobName(jobName);
 		if (matches) {
-			--stopLevel;
-			if (stopLevel > 0) {
-				for(Filter filter : _filters.values()) {
-					matches = ((OperatorFilter)filter).matches(operatorName, metricName, stopLevel);
-					if (matches) {
-						break;
-					}
+			for(OperatorFilter filter : _operatorFilters.values()) {
+				matches = filter.matchesOperatorName(operatorName);
+				if (matches) {
+					break;
 				}
 			}
-		}
-		if(isInfoEnabled) {
-			_trace.info(String.format("matches(jobName=%s, operatorName=%s, metricName=%s, stopLevel=%d): %s -> %s\n", jobName, operatorName, metricName, stopLevel, _regularExpression, Boolean.toString(matches)));
 		}
 		return matches;
 	}
 
+	public boolean matchesOperatorMetricName(String jobName, String operatorName, String metricName) {
+		boolean matches = matchesJobName(jobName);
+		if (matches) {
+			for(OperatorFilter filter : _operatorFilters.values()) {
+				matches = filter.matchesOperatorMetricName(operatorName, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorInputPortIndex(String jobName, String operatorName, Integer portIndex) {
+		boolean matches = matchesJobName(jobName);
+		if (matches) {
+			for(OperatorFilter filter : _operatorFilters.values()) {
+				matches = filter.matchesOperatorInputPortIndex(operatorName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorOutputPortIndex(String jobName, String operatorName, Integer portIndex) {
+		boolean matches = matchesJobName(jobName);
+		if (matches) {
+			for(OperatorFilter filter : _operatorFilters.values()) {
+				matches = filter.matchesOperatorOutputPortIndex(operatorName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
 }

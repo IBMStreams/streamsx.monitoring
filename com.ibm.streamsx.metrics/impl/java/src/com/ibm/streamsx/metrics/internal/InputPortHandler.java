@@ -72,7 +72,7 @@ public class InputPortHandler extends MetricOwningHandler {
 	@Override
 	protected boolean isRelevantMetric(String metricName) {
 		// TODO Enhance with port filter.
-		boolean isRelevant = _operatorConfiguration.get_filters().matches(_domainId, _instanceId, _jobName, _operatorName, metricName);
+		boolean isRelevant = _operatorConfiguration.get_filters().matchesOperatorMetricName(_domainId, _instanceId, _jobName, _operatorName, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
 				_trace.info("The following input port metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + _portIndex + ", metric=" + metricName);

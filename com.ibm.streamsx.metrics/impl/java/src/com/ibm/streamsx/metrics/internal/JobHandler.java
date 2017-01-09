@@ -122,7 +122,7 @@ public class JobHandler implements NotificationListener {
 	}
 
 	protected void addValidOperator(String operatorName) {
-		boolean matches = _operatorConfiguration.get_filters().matches(_domainId, _instanceId, _jobName, operatorName);
+		boolean matches = _operatorConfiguration.get_filters().matchesOperatorName(_domainId, _instanceId, _jobName, operatorName);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
 				_trace.info("The following operator meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + operatorName);
