@@ -1,6 +1,7 @@
 package com.ibm.streamsx.metrics.internal.filter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
@@ -22,13 +23,17 @@ final class JobFilter extends PatternMatcher implements Filter {
 	/**
 	 * A job has many PEs.
 	 */
-	protected Map<String /* regular expression */, PeFilter> _peFilters = new HashMap<>();
+	protected Set<PeFilter> _peFilters = new HashSet<>();
 
 	public JobFilter(String regularExpression, Set<Filter> operatorFilters, Set<Filter> peFilters) throws PatternSyntaxException {
 		super(regularExpression);
 		for(Filter filter : operatorFilters) {
 			OperatorFilter operatorFilter = (OperatorFilter)filter;
 			_operatorFilters.put(operatorFilter.getRegularExpression(), operatorFilter);
+		}
+		for(Filter filter : peFilters) {
+			PeFilter peFilter = (PeFilter)filter;
+			_peFilters.add(peFilter);
 		}
 	}
 
@@ -38,7 +43,7 @@ final class JobFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorName(String jobName, String operatorName) {
-		boolean matches = matchesJobName(jobName);
+		boolean matches = matchesJobName(jobName) && (_operatorFilters.size() > 0);
 		if (matches) {
 			for(OperatorFilter filter : _operatorFilters.values()) {
 				matches = filter.matchesOperatorName(operatorName);
@@ -51,7 +56,7 @@ final class JobFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorMetricName(String jobName, String operatorName, String metricName) {
-		boolean matches = matchesJobName(jobName);
+		boolean matches = matchesJobName(jobName) && (_operatorFilters.size() > 0);
 		if (matches) {
 			for(OperatorFilter filter : _operatorFilters.values()) {
 				matches = filter.matchesOperatorMetricName(operatorName, metricName);
@@ -64,7 +69,7 @@ final class JobFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorInputPortIndex(String jobName, String operatorName, Integer portIndex) {
-		boolean matches = matchesJobName(jobName);
+		boolean matches = matchesJobName(jobName) && (_operatorFilters.size() > 0);
 		if (matches) {
 			for(OperatorFilter filter : _operatorFilters.values()) {
 				matches = filter.matchesOperatorInputPortIndex(operatorName, portIndex);
@@ -77,7 +82,7 @@ final class JobFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorOutputPortIndex(String jobName, String operatorName, Integer portIndex) {
-		boolean matches = matchesJobName(jobName);
+		boolean matches = matchesJobName(jobName) && (_operatorFilters.size() > 0);
 		if (matches) {
 			for(OperatorFilter filter : _operatorFilters.values()) {
 				matches = filter.matchesOperatorOutputPortIndex(operatorName, portIndex);
@@ -90,22 +95,24 @@ final class JobFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesPeMetricName(String jobName, String metricName) {
-		boolean matches = matchesJobName(jobName);
+		_trace.error("matchesPeMetricName(j=" + jobName + ",m=" + metricName + "): size=" + _peFilters.size());
+		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
 		if (matches) {
-			for(PeFilter filter : _peFilters.values()) {
+			for(PeFilter filter : _peFilters) {
 				matches = filter.matchesPeMetricName(metricName);
 				if (matches) {
 					break;
 				}
 			}
 		}
+		_trace.error("matchesPeMetricName(j=" + jobName + ",m=" + metricName + "): " + Boolean.toString(matches));
 		return matches;
 	}
 
 	public boolean matchesPeInputPortIndex(String jobName, Integer portIndex) {
-		boolean matches = matchesJobName(jobName);
+		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
 		if (matches) {
-			for(PeFilter filter : _peFilters.values()) {
+			for(PeFilter filter : _peFilters) {
 				matches = filter.matchesPeInputPortIndex(portIndex);
 				if (matches) {
 					break;
@@ -116,9 +123,9 @@ final class JobFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesPeOutputPortIndex(String jobName, Integer portIndex) {
-		boolean matches = matchesJobName(jobName);
+		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
 		if (matches) {
-			for(PeFilter filter : _peFilters.values()) {
+			for(PeFilter filter : _peFilters) {
 				matches = filter.matchesPeOutputPortIndex(portIndex);
 				if (matches) {
 					break;

@@ -33,7 +33,7 @@ final class PortFilter extends NumberMatcher implements Filter {
 	}
 
 	public boolean matchesPortMetricName(Integer portIndex, String metricName) {
-		boolean matches = matchesPortIndex(portIndex);
+		boolean matches = matchesPortIndex(portIndex) && (_metricFilters.size() > 0);
 		if (matches) {
 			for(MetricFilter filter : _metricFilters.values()) {
 				matches = filter.matchesMetricName(metricName);

@@ -73,17 +73,17 @@ public class PeParser extends AbstractParser {
 
 	@Override
 	protected Set<Filter> buildFilters(JSONObject json) {
-		logger().error("PE.JSON=" + json);
+//		logger().error("PE.JSON=" + json);
 		Set<String> metrics = buildPatternList(json.get(METRIC_NAME_PATTERNS));
 		Set<Filter> inputPortFilters = _portParser.buildFilters((JSONArtifact)json.get(INPUT_PORTS));
 		Set<Filter> outputPortFilters = _portParser.buildFilters((JSONArtifact)json.get(OUTPUT_PORTS));
 		Set<Filter> metricFilters = new HashSet<>();
 		for (String pattern : metrics) {
-			logger().error("create metric filter, pattern=" + pattern);
+//			logger().error("create metric filter, pattern=" + pattern);
 			metricFilters.add(new MetricFilter(pattern));
 		}
 		Set<Filter> result = new HashSet<>();
-		logger().error("create PE filter");
+//		logger().error("create PE filter");
 		result.add(new PeFilter(metricFilters, inputPortFilters, outputPortFilters));
 		return result;
 	}

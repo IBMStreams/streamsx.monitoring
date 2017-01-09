@@ -57,12 +57,12 @@ public class InstanceParser extends AbstractParser {
 
 	@Override
 	protected Set<Filter> buildFilters(JSONObject json) {
-		logger().error("Instance.JSON=" + json);
+//		logger().error("Instance.JSON=" + json);
 		Set<String> patterns = buildPatternList(json.get(INSTANCE_ID_PATTERNS));
 		Set<Filter> filters = _jobParser.buildFilters((JSONArtifact)json.get(JOBS));
 		Set<Filter> result = new HashSet<>();
 		for (String pattern : patterns) {
-			logger().error("create instance filter, pattern=" + pattern);
+//			logger().error("create instance filter, pattern=" + pattern);
 			result.add(new InstanceFilter(pattern, filters));
 		}
 		return result;

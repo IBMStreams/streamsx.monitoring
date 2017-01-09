@@ -112,10 +112,10 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 		boolean isRelevant = _operatorConfiguration.get_filters().matchesPeMetricName(_domainId, _instanceId, _jobName, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
-				_trace.info("The following pe custom metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", metric=" + metricName);
+				_trace.info("The following pe metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", metric=" + metricName);
 			}
 			else {
-				_trace.info("The following pe custom metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", metric=" + metricName);
+				_trace.info("The following pe metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", metric=" + metricName);
 			}
 		}
 		return isRelevant;

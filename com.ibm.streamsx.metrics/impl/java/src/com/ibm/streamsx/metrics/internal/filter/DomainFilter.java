@@ -33,7 +33,7 @@ final class DomainFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesInstanceId(String domainId, String instanceId) {
-		boolean matches = matchesDomainId(domainId);
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
 				matches = filter.matchesInstanceId(instanceId);
@@ -46,7 +46,7 @@ final class DomainFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesJobName(String domainId, String instanceId, String jobName) {
-		boolean matches = matchesDomainId(domainId);
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
 				matches = filter.matchesJobName(instanceId, jobName);
@@ -59,7 +59,7 @@ final class DomainFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorName(String domainId, String instanceId, String jobName, String operatorName) {
-		boolean matches = matchesDomainId(domainId);
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
 				matches = filter.matchesOperatorName(instanceId, jobName, operatorName);
@@ -72,7 +72,7 @@ final class DomainFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorMetricName(String domainId, String instanceId, String jobName, String operatorName, String metricName) {
-		boolean matches = matchesDomainId(domainId);
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
 				matches = filter.matchesOperatorMetricName(instanceId, jobName, operatorName, metricName);
@@ -85,7 +85,7 @@ final class DomainFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorInputPortIndex(String domainId, String instanceId, String jobName, String operatorName, Integer portIndex) {
-		boolean matches = matchesDomainId(domainId);
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
 				matches = filter.matchesOperatorInputPortIndex(instanceId, jobName, operatorName, portIndex);
@@ -98,7 +98,7 @@ final class DomainFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorOutputPortIndex(String domainId, String instanceId, String jobName, String operatorName, Integer portIndex) {
-		boolean matches = matchesDomainId(domainId);
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
 				matches = filter.matchesOperatorOutputPortIndex(instanceId, jobName, operatorName, portIndex);
@@ -111,7 +111,7 @@ final class DomainFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesPeMetricName(String domainId, String instanceId, String jobName, String metricName) {
-		boolean matches = matchesDomainId(domainId);
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
 				matches = filter.matchesPeMetricName(instanceId, jobName, metricName);
@@ -124,7 +124,7 @@ final class DomainFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesPeInputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
-		boolean matches = matchesDomainId(domainId);
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
 				matches = filter.matchesPeInputPortIndex(instanceId, jobName, portIndex);
@@ -137,7 +137,7 @@ final class DomainFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesPeOutputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
-		boolean matches = matchesDomainId(domainId);
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
 				matches = filter.matchesPeOutputPortIndex(instanceId, jobName, portIndex);

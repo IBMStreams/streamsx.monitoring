@@ -191,7 +191,7 @@ abstract class AbstractParser {
 	}
 	
 	protected Set<Filter> buildFilters(JSONArtifact json) {
-		logger().error("JSON=" + json);
+//		logger().error("JSON=" + json);
 		Set<Filter> filters = new HashSet<>();
 		if (json instanceof JSONArray) {
 			for (Object obj : (JSONArray)json) {

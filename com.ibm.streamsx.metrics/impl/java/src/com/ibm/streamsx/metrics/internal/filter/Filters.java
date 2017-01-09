@@ -158,7 +158,6 @@ public class Filters {
 	 * </ul>
 	 */
 	static public Filters setupFilters(String filterDocument) throws IOException {
-		System.out.println("setupFilters(filterDocument=" + filterDocument + ")");
 		Filters filters = new Filters();
 		Path file = new File(filterDocument).toPath();
 		InputStream inputStream = Files.newInputStream(file);

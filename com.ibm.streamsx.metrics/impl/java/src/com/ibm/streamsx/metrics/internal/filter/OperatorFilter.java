@@ -51,7 +51,7 @@ final class OperatorFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorMetricName(String operatorName, String metricName) {
-		boolean matches = matchesOperatorName(operatorName);
+		boolean matches = matchesOperatorName(operatorName) && (_metricFilters.size() > 0);
 		if (matches) {
 			for(MetricFilter filter : _metricFilters.values()) {
 				matches = filter.matchesMetricName(metricName);
@@ -64,7 +64,7 @@ final class OperatorFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorInputPortIndex(String operatorName, Integer portIndex) {
-		boolean matches = matchesOperatorName(operatorName);
+		boolean matches = matchesOperatorName(operatorName) && (_inputPortFilters.size() > 0);
 		if (matches) {
 			for(PortFilter filter : _inputPortFilters.values()) {
 				matches = filter.matchesPortIndex(portIndex);
@@ -77,7 +77,7 @@ final class OperatorFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesOperatorOutputPortIndex(String operatorName, Integer portIndex) {
-		boolean matches = matchesOperatorName(operatorName);
+		boolean matches = matchesOperatorName(operatorName) && (_outputPortFilters.size() > 0);
 		if (matches) {
 			for(PortFilter filter : _outputPortFilters.values()) {
 				matches = filter.matchesPortIndex(portIndex);

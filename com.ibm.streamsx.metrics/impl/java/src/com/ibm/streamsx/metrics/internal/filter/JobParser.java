@@ -77,13 +77,13 @@ public class JobParser extends AbstractParser {
 
 	@Override
 	protected Set<Filter> buildFilters(JSONObject json) {
-		logger().error("Job.JSON=" + json);
+//		logger().error("Job.JSON=" + json);
 		Set<String> patterns = buildPatternList(json.get(JOB_NAME_PATTERNS));
 		Set<Filter> operatorFilters = _operatorParser.buildFilters((JSONArtifact)json.get(OPERATORS));
 		Set<Filter> peFilters = _peParser.buildFilters((JSONArtifact)json.get(PES));
 		Set<Filter> result = new HashSet<>();
 		for (String pattern : patterns) {
-			logger().error("create job filter, pattern=" + pattern);
+//			logger().error("create job filter, pattern=" + pattern);
 			result.add(new JobFilter(pattern, operatorFilters, peFilters));
 		}
 		return result;

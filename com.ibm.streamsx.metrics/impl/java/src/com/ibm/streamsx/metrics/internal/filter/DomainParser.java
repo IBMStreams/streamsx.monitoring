@@ -57,12 +57,12 @@ public class DomainParser extends AbstractParser {
 
 	@Override
 	protected Set<Filter> buildFilters(JSONObject json) {
-		logger().error("Domain.JSON=" + json);
+//		logger().error("Domain.JSON=" + json);
 		Set<String> patterns = buildPatternList(json.get(DOMAIN_ID_PATTERNS));
 		Set<Filter> filters = _instanceParser.buildFilters((JSONArtifact)json.get(INSTANCES));
 		Set<Filter> result = new HashSet<>();
 		for (String pattern : patterns) {
-			logger().error("create domain filter, pattern=" + pattern);
+//			logger().error("create domain filter, pattern=" + pattern);
 			result.add(new DomainFilter(pattern, filters));
 		}
 		return result;
