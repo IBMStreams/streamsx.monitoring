@@ -95,7 +95,6 @@ final class JobFilter extends PatternMatcher implements Filter {
 	}
 
 	public boolean matchesPeMetricName(String jobName, String metricName) {
-		_trace.error("matchesPeMetricName(j=" + jobName + ",m=" + metricName + "): size=" + _peFilters.size());
 		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
 		if (matches) {
 			for(PeFilter filter : _peFilters) {
@@ -105,7 +104,6 @@ final class JobFilter extends PatternMatcher implements Filter {
 				}
 			}
 		}
-		_trace.error("matchesPeMetricName(j=" + jobName + ",m=" + metricName + "): " + Boolean.toString(matches));
 		return matches;
 	}
 
