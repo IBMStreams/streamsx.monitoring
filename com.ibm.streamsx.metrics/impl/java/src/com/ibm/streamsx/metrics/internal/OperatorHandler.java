@@ -42,9 +42,9 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 	
 	private OperatorMXBean _operator = null;
 
-	private Map<Integer /* port index */, InputPortHandler> _inputPortHandlers = new HashMap<>();
+	private Map<Integer /* port index */, OperatorInputPortHandler> _inputPortHandlers = new HashMap<>();
 
-	private Map<Integer /* port index */, OutputPortHandler> _outputPortHandlers = new HashMap<>();
+	private Map<Integer /* port index */, OperatorOutputPortHandler> _outputPortHandlers = new HashMap<>();
 
 	public OperatorHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId, BigInteger jobId, String jobName, String operatorName) {
 
@@ -125,7 +125,7 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 
 	@Override
 	protected boolean isRelevantMetric(String metricName) {
-		boolean isRelevant = _operatorConfiguration.get_filters().matches(_domainId, _instanceId, _jobName, _operatorName, metricName);
+		boolean isRelevant = _operatorConfiguration.get_filters().matchesOperatorMetricName(_domainId, _instanceId, _jobName, _operatorName, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
 				_trace.info("The following operator custom metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", metric=" + metricName);
@@ -144,8 +144,7 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 	}
 
 	protected void addValidInputPort(Integer portIndex) {
-		// TODO Add port index to matches()
-		boolean matches = _operatorConfiguration.get_filters().matches(_domainId, _instanceId, _jobName, _operatorName);
+		boolean matches = _operatorConfiguration.get_filters().matchesOperatorInputPortIndex(_domainId, _instanceId, _jobName, _operatorName, portIndex);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
 				_trace.info("The following input port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
@@ -155,13 +154,12 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 			}
 		}
 		if (matches) {
-			_inputPortHandlers.put(portIndex, new InputPortHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _operatorName, portIndex));
+			_inputPortHandlers.put(portIndex, new OperatorInputPortHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _operatorName, portIndex));
 		}
 	}
 
 	protected void addValidOutputPort(Integer portIndex) {
-		// TODO Add port index to matches()
-		boolean matches = _operatorConfiguration.get_filters().matches(_domainId, _instanceId, _jobName, _operatorName);
+		boolean matches = _operatorConfiguration.get_filters().matchesOperatorOutputPortIndex(_domainId, _instanceId, _jobName, _operatorName, portIndex);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
 				_trace.info("The following output port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
@@ -171,7 +169,7 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 			}
 		}
 		if (matches) {
-			_outputPortHandlers.put(portIndex, new OutputPortHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _operatorName, portIndex));
+			_outputPortHandlers.put(portIndex, new OperatorOutputPortHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _operatorName, portIndex));
 		}
 	}
 
@@ -193,6 +191,8 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 		_operatorConfiguration.get_tupleContainer().setOperatorName(_operatorName);
 		_operatorConfiguration.get_tupleContainer().setOrigin("Operator");
 		_operatorConfiguration.get_tupleContainer().setPortIndex(0);
+		_operatorConfiguration.get_tupleContainer().setChannel(_operator.getChannel());
+		_operatorConfiguration.get_tupleContainer().setPeId(_operator.getPe());
 
 		captureAndSubmitChangedMetrics();
 

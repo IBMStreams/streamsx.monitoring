@@ -1,31 +1,88 @@
 package com.ibm.streamsx.metrics.internal.filter;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
-final class OperatorFilter extends Filter {
+import org.apache.log4j.Logger;
 
-	public OperatorFilter(String regularExpression) throws PatternSyntaxException {
+final class OperatorFilter extends PatternMatcher implements Filter {
+
+	/**
+	 * Logger for tracing.
+	 */
+	private static Logger _trace = Logger.getLogger(OperatorFilter.class.getName());
+
+	/**
+	 * An operator has many metrics.
+	 */
+	protected Map<String /* regular expression */, MetricFilter> _metricFilters = new HashMap<>();
+
+	/**
+	 * An operator has many input ports.
+	 */
+	protected Map<Long /* port index  */, PortFilter> _inputPortFilters = new HashMap<>();
+
+	/**
+	 * An operator has many output ports.
+	 */
+	protected Map<Long /* port index */, PortFilter> _outputPortFilters = new HashMap<>();
+
+	public OperatorFilter(String regularExpression, Set<Filter> metricFilters, Set<Filter> inputPortFilters, Set<Filter> outputPortFilters) throws PatternSyntaxException {
 		super(regularExpression);
-	}
-
-	public void add(String metricNameRegEx) {
-		if (metricNameRegEx != null) {
-			if (!_filters.containsKey(metricNameRegEx)) {
-				addFilter(new MetricFilter(metricNameRegEx));
-			}
+		for(Filter filter : metricFilters) {
+			MetricFilter metricFilter = (MetricFilter)filter;
+			_metricFilters.put(metricFilter.getRegularExpression(), metricFilter);
+		}
+		for(Filter filter : inputPortFilters) {
+			PortFilter portFilter = (PortFilter)filter;
+			_inputPortFilters.put(portFilter.getNumber(), portFilter);
+		}
+		for(Filter filter : outputPortFilters) {
+			PortFilter portFilter = (PortFilter)filter;
+			_outputPortFilters.put(portFilter.getNumber(), portFilter);
 		}
 	}
 
-	public boolean matches(String operatorName, String metricName, int stopLevel) {
-		boolean matches = (operatorName != null) && _matcher.reset(operatorName).matches();
+	public boolean matchesOperatorName(String operatorName) {
+		boolean matches = matches(operatorName);
+		return matches;
+	}
+
+	public boolean matchesOperatorMetricName(String operatorName, String metricName) {
+		boolean matches = matchesOperatorName(operatorName) && (_metricFilters.size() > 0);
 		if (matches) {
-			--stopLevel;
-			if (stopLevel > 0) {
-				for(Filter filter : _filters.values()) {
-					matches = ((MetricFilter)filter).matches(metricName, stopLevel);
-					if (matches) {
-						break;
-					}
+			for(MetricFilter filter : _metricFilters.values()) {
+				matches = filter.matchesMetricName(metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorInputPortIndex(String operatorName, Integer portIndex) {
+		boolean matches = matchesOperatorName(operatorName) && (_inputPortFilters.size() > 0);
+		if (matches) {
+			for(PortFilter filter : _inputPortFilters.values()) {
+				matches = filter.matchesPortIndex(portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorOutputPortIndex(String operatorName, Integer portIndex) {
+		boolean matches = matchesOperatorName(operatorName) && (_outputPortFilters.size() > 0);
+		if (matches) {
+			for(PortFilter filter : _outputPortFilters.values()) {
+				matches = filter.matchesPortIndex(portIndex);
+				if (matches) {
+					break;
 				}
 			}
 		}

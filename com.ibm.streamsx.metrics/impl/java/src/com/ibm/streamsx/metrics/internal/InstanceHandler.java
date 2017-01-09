@@ -150,7 +150,7 @@ public class InstanceHandler implements NotificationListener {
 		ObjectName jobObjName = ObjectNameBuilder.job(_domainId, _instanceId, jobId);
 		JobMXBean job = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), jobObjName, JobMXBean.class, true);
 		String jobName = job.getName();
-		boolean matches = _operatorConfiguration.get_filters().matches(_domainId, _instanceId, jobName);
+		boolean matches = _operatorConfiguration.get_filters().matchesJobName(_domainId, _instanceId, jobName);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
 				_trace.info("The following job meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=" + jobName + ", jobId=" + jobId);

@@ -293,7 +293,7 @@ public class MetricsSource extends AbstractOperator {
 		 */
 
 		_operatorConfiguration.set_filters(Filters.setupFilters(_operatorConfiguration.get_filterDocument()));
-		boolean isValidDomain = _operatorConfiguration.get_filters().matches(_operatorConfiguration.get_domainId());
+		boolean isValidDomain = _operatorConfiguration.get_filters().matchesDomainId(_operatorConfiguration.get_domainId());
 		if (!isValidDomain)
 		{
 			throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domainId() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
