@@ -10,17 +10,17 @@ import javax.management.ObjectName;
 
 import com.ibm.streams.management.Metric;
 import com.ibm.streams.management.ObjectNameBuilder;
-import com.ibm.streams.management.job.OperatorOutputPortMXBean;
+import com.ibm.streams.management.job.OperatorInputPortMXBean;
 
 /**
  * 
  */
-public class OutputPortHandler extends MetricOwningHandler {
+public class OperatorInputPortHandler extends MetricOwningHandler {
 
 	/**
 	 * Logger for tracing.
 	 */
-	private static Logger _trace = Logger.getLogger(OutputPortHandler.class.getName());
+	private static Logger _trace = Logger.getLogger(OperatorInputPortHandler.class.getName());
 
 	private String _domainId = null;
 
@@ -34,9 +34,9 @@ public class OutputPortHandler extends MetricOwningHandler {
 	
 	private Integer _portIndex = null;
 	
-	private OperatorOutputPortMXBean _port = null;
+	private OperatorInputPortMXBean _port = null;
 
-	public OutputPortHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId, BigInteger jobId, String jobName, String operatorName, Integer portIndex) {
+	public OperatorInputPortHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId, BigInteger jobId, String jobName, String operatorName, Integer portIndex) {
 
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 
@@ -53,19 +53,19 @@ public class OutputPortHandler extends MetricOwningHandler {
 		_portIndex = portIndex;
 
 		if (isDebugEnabled) {
-			_trace.debug("--> OutputPortHandler(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
+			_trace.debug("--> InputPortHandler(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
 		}
 		
-		ObjectName operatorObjName = ObjectNameBuilder.operatorOutputPort(_domainId, _instanceId, _jobId, _operatorName, _portIndex);
-		_port = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), operatorObjName, OperatorOutputPortMXBean.class, true);
+		ObjectName operatorObjName = ObjectNameBuilder.operatorInputPort(_domainId, _instanceId, _jobId, _operatorName, _portIndex);
+		_port = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), operatorObjName, OperatorInputPortMXBean.class, true);
 		
 		/*
-		 * Register output port metrics that match the specified filter criteria.
+		 * Register input port metrics that match the specified filter criteria.
 		 */
 		registerMetrics();
 		
 		if (isDebugEnabled) {
-			_trace.debug("<-- OutputPortHandler(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
+			_trace.debug("<-- InputPortHandler(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
 		}
 	}
 
@@ -75,10 +75,10 @@ public class OutputPortHandler extends MetricOwningHandler {
 		boolean isRelevant = _operatorConfiguration.get_filters().matchesOperatorMetricName(_domainId, _instanceId, _jobName, _operatorName, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
-				_trace.info("The following output port metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + _portIndex + ", metric=" + metricName);
+				_trace.info("The following input port metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + _portIndex + ", metric=" + metricName);
 			}
 			else { 
-				_trace.info("The following output port metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + _portIndex + ", metric=" + metricName);
+				_trace.info("The following input port metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + _portIndex + ", metric=" + metricName);
 			}
 		}
 		return isRelevant;
@@ -103,7 +103,7 @@ public class OutputPortHandler extends MetricOwningHandler {
 			_trace.debug("--> captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
 		}
 
-		_operatorConfiguration.get_tupleContainer().setOrigin("OperatorOutputPort");
+		_operatorConfiguration.get_tupleContainer().setOrigin("OperatorInputPort");
 		_operatorConfiguration.get_tupleContainer().setPortIndex(_portIndex);
 		captureAndSubmitChangedMetrics();
 

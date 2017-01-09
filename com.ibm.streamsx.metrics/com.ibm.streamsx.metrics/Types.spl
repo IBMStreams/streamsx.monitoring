@@ -37,7 +37,10 @@ public composite Origin {
 		static Type = enum {
 			Operator,
 			OperatorInputPort,
-			OperatorOutputPort
+			OperatorOutputPort,
+			Pe,
+			PeInputPort,
+			PeOutputPort
 		};
 }
 
@@ -60,8 +63,9 @@ type Notification = tuple<
 	rstring instanceId,
 	int64 jobId,
 	rstring jobName,
-	rstring operatorName,
+	int64 peId,
 	Origin.Type origin,
+	rstring operatorName,
 	int32 channel,
 	int32 portIndex,
 	rstring metricType,

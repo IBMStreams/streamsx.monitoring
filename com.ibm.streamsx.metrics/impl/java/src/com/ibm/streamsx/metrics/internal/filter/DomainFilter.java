@@ -110,4 +110,43 @@ final class DomainFilter extends PatternMatcher implements Filter {
 		return matches;
 	}
 
+	public boolean matchesPeMetricName(String domainId, String instanceId, String jobName, String metricName) {
+		boolean matches = matchesDomainId(domainId);
+		if (matches) {
+			for(InstanceFilter filter : _instanceFilters.values()) {
+				matches = filter.matchesPeMetricName(instanceId, jobName, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeInputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
+		boolean matches = matchesDomainId(domainId);
+		if (matches) {
+			for(InstanceFilter filter : _instanceFilters.values()) {
+				matches = filter.matchesPeInputPortIndex(instanceId, jobName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
+		boolean matches = matchesDomainId(domainId);
+		if (matches) {
+			for(InstanceFilter filter : _instanceFilters.values()) {
+				matches = filter.matchesPeOutputPortIndex(instanceId, jobName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
 }

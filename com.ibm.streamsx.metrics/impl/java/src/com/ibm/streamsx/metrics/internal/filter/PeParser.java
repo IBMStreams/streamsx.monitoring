@@ -8,9 +8,9 @@ import org.apache.log4j.Logger;
 import com.ibm.json.java.JSONArtifact;
 import com.ibm.json.java.JSONObject;
 
-public class PEParser extends AbstractParser {
+public class PeParser extends AbstractParser {
 	
-	private static Logger _logger = Logger.getLogger(PEParser.class.getName());
+	private static Logger _logger = Logger.getLogger(PeParser.class.getName());
 
 	private static final String METRIC_NAME_PATTERNS = "metricNamePatterns";
 
@@ -18,11 +18,9 @@ public class PEParser extends AbstractParser {
 
 	private static final String OUTPUT_PORTS = "outputPorts";
 
-	private PortParser _inputPortParser = new PortParser();
+	private PortParser _portParser = new PortParser();
 	
-	private PortParser _outputPortParser = new PortParser();
-	
-	protected PEParser() {
+	protected PeParser() {
 
 		setValidationRule(METRIC_NAME_PATTERNS, new IValidator() {
 
@@ -39,7 +37,7 @@ public class PEParser extends AbstractParser {
 			public boolean validate(String key, Object object) {
 				boolean result = true;
 				if (object instanceof JSONArtifact) {
-					result = _inputPortParser.validate((JSONArtifact)object);
+					result = _portParser.validate((JSONArtifact)object);
 				}
 				else {
 					result = false;
@@ -56,7 +54,7 @@ public class PEParser extends AbstractParser {
 			public boolean validate(String key, Object object) {
 				boolean result = true;
 				if (object instanceof JSONArtifact) {
-					result = _outputPortParser.validate((JSONArtifact)object);
+					result = _portParser.validate((JSONArtifact)object);
 				}
 				else {
 					result = false;
@@ -75,17 +73,18 @@ public class PEParser extends AbstractParser {
 
 	@Override
 	protected Set<Filter> buildFilters(JSONObject json) {
-		logger().error("Operator.JSON=" + json);
+		logger().error("PE.JSON=" + json);
 		Set<String> metrics = buildPatternList(json.get(METRIC_NAME_PATTERNS));
-		Set<Filter> inputPortFilters = _inputPortParser.buildFilters((JSONArtifact)json.get(INPUT_PORTS));
-		Set<Filter> outputPortFilters = _inputPortParser.buildFilters((JSONArtifact)json.get(OUTPUT_PORTS));
+		Set<Filter> inputPortFilters = _portParser.buildFilters((JSONArtifact)json.get(INPUT_PORTS));
+		Set<Filter> outputPortFilters = _portParser.buildFilters((JSONArtifact)json.get(OUTPUT_PORTS));
 		Set<Filter> metricFilters = new HashSet<>();
 		for (String pattern : metrics) {
 			logger().error("create metric filter, pattern=" + pattern);
 			metricFilters.add(new MetricFilter(pattern));
 		}
 		Set<Filter> result = new HashSet<>();
-		result.add(new PEFilter(metricFilters));
+		logger().error("create PE filter");
+		result.add(new PeFilter(metricFilters, inputPortFilters, outputPortFilters));
 		return result;
 	}
 

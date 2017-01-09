@@ -97,4 +97,43 @@ final class InstanceFilter extends PatternMatcher implements Filter {
 		return matches;
 	}
 
+	public boolean matchesPeMetricName(String instanceId, String jobName, String metricName) {
+		boolean matches = matchesInstanceId(instanceId);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesPeMetricName(jobName, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeInputPortIndex(String instanceId, String jobName, Integer portIndex) {
+		boolean matches = matchesInstanceId(instanceId);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesPeInputPortIndex(jobName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortIndex(String instanceId, String jobName, Integer portIndex) {
+		boolean matches = matchesInstanceId(instanceId);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesPeOutputPortIndex(jobName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
 }

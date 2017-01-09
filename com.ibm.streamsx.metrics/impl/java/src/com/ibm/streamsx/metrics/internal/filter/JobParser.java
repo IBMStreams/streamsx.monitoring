@@ -20,7 +20,7 @@ public class JobParser extends AbstractParser {
 
 	private OperatorParser _operatorParser = new OperatorParser();
 	
-	private PEParser _peParser = new PEParser();
+	private PeParser _peParser = new PeParser();
 	
 	protected JobParser() {
 

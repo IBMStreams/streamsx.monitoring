@@ -22,7 +22,7 @@ final class JobFilter extends PatternMatcher implements Filter {
 	/**
 	 * A job has many PEs.
 	 */
-	protected Map<String /* regular expression */, PEFilter> _peFilters = new HashMap<>();
+	protected Map<String /* regular expression */, PeFilter> _peFilters = new HashMap<>();
 
 	public JobFilter(String regularExpression, Set<Filter> operatorFilters, Set<Filter> peFilters) throws PatternSyntaxException {
 		super(regularExpression);
@@ -88,4 +88,44 @@ final class JobFilter extends PatternMatcher implements Filter {
 		}
 		return matches;
 	}
+
+	public boolean matchesPeMetricName(String jobName, String metricName) {
+		boolean matches = matchesJobName(jobName);
+		if (matches) {
+			for(PeFilter filter : _peFilters.values()) {
+				matches = filter.matchesPeMetricName(metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeInputPortIndex(String jobName, Integer portIndex) {
+		boolean matches = matchesJobName(jobName);
+		if (matches) {
+			for(PeFilter filter : _peFilters.values()) {
+				matches = filter.matchesPeInputPortIndex(portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortIndex(String jobName, Integer portIndex) {
+		boolean matches = matchesJobName(jobName);
+		if (matches) {
+			for(PeFilter filter : _peFilters.values()) {
+				matches = filter.matchesPeOutputPortIndex(portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
 }

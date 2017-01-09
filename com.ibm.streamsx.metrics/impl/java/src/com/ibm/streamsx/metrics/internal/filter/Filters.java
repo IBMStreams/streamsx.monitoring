@@ -102,6 +102,39 @@ public class Filters {
 		return matches;
 	}
 
+	public boolean matchesPeMetricName(String domainId, String instanceId, String jobName, String metricName) {
+		boolean matches = false;
+		for(DomainFilter filter : _domainFilters.values()) {
+			matches = filter.matchesPeMetricName(domainId, instanceId, jobName, metricName);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeInputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
+		boolean matches = false;
+		for(DomainFilter filter : _domainFilters.values()) {
+			matches = filter.matchesPeInputPortIndex(domainId, instanceId, jobName, portIndex);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
+		boolean matches = false;
+		for(DomainFilter filter : _domainFilters.values()) {
+			matches = filter.matchesPeOutputPortIndex(domainId, instanceId, jobName, portIndex);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
+
 	/**
 	 * Read the filterDocument file, parse its JSON-formatted content, and
 	 * build a filter tree.

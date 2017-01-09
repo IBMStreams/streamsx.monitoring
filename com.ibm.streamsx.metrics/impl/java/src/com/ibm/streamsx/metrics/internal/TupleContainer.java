@@ -53,6 +53,11 @@ public class TupleContainer {
 	private Integer _channelAttributeIndex = null;
 	
 	/**
+	 * Index of the peId attribute.
+	 */
+	private Integer _peIdAttributeIndex = null;
+
+	/**
 	 * Index of the metricType attribute.
 	 */
 	private Integer _metricTypeAttributeIndex = null;
@@ -103,56 +108,61 @@ public class TupleContainer {
 			_domainIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Instance-related attributes.
-		if (_instanceIdAttributeIndex  == null) {
+		if (_instanceIdAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("instanceId");
 			_instanceIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Job-related attributes.
-		if (_jobIdAttributeIndex  == null) {
+		if (_jobIdAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("jobId");
 			_jobIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
 			
 		}
-		if (_jobNameAttributeIndex  == null) {
+		if (_jobNameAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("jobName");
 			_jobNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Operator-related attributes.
-		if (_operatorNameAttributeIndex  == null) {
+		if (_operatorNameAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("operatorName");
 			_operatorNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
-		if (_channelAttributeIndex  == null) {
+		// Operator- and PE-related attributes.
+		if (_channelAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("channel");
 			_channelAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT32 ? attribute.getIndex() : -1) ;
 		}
+		if (_peIdAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("peId");
+			_peIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
+		}
 		// Port-related attributes.
-		if (_portIndexAttributeIndex  == null) {
+		if (_portIndexAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("portIndex");
 			_portIndexAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT32 ? attribute.getIndex() : -1) ;
 		}
 		// Metric-related attributes.
-		if (_originAttributeIndex  == null) {
+		if (_originAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("origin");
 			_originAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.ENUM ? attribute.getIndex() : -1) ;
 		}
-		if (_metricTypeAttributeIndex  == null) {
+		if (_metricTypeAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("metricType");
 			_metricTypeAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
-		if (_metricKindAttributeIndex  == null) {
+		if (_metricKindAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("metricKind");
 			_metricKindAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
-		if (_metricNameAttributeIndex  == null) {
+		if (_metricNameAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("metricName");
 			_metricNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
-		if (_metricValueAttributeIndex  == null) {
+		if (_metricValueAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("metricValue");
 			_metricValueAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
 		}
-		if (_lastTimeRetrievedAttributeIndex  == null) {
+		if (_lastTimeRetrievedAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("lastTimeRetrieved");
 			_lastTimeRetrievedAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
 		}
@@ -244,6 +254,17 @@ public class TupleContainer {
 	public void setChannel(Integer channel) {
 		if (_channelAttributeIndex != -1) {
 			_tuple.setInt(_channelAttributeIndex, (channel == null ? -1 : channel));
+		}
+	}
+
+	/**
+	 * Optionally set the PE id in the output tuple.
+	 * 
+	 * @param peId
+	 */
+	public void setPeId(BigInteger peId) {
+		if (_peIdAttributeIndex != -1) {
+			_tuple.setLong(_peIdAttributeIndex, peId.longValue());
 		}
 	}
 

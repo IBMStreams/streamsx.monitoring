@@ -65,6 +65,8 @@ public class JobHandler implements NotificationListener {
 
 	private Map<String /* operatorName */, OperatorHandler> _operatorHandlers = new HashMap<>();
 
+	private Map<BigInteger /* peId */, PeHandler> _peHandlers = new HashMap<>();
+
 	public JobHandler(OperatorConfiguration applicationConfiguration, String domainId, String instanceId, BigInteger jobId) {
 
 		boolean isDebugEnabled = _trace.isDebugEnabled();
@@ -103,6 +105,13 @@ public class JobHandler implements NotificationListener {
 			addValidOperator(operatorName);
 		}
 
+		/*
+		 * Create handlers for operators that match the filter criteria.
+		 */
+		for(BigInteger peId : _job.getPes()) {
+			addPE(peId);
+		}
+
 	}
 
 	/**
@@ -136,6 +145,10 @@ public class JobHandler implements NotificationListener {
 		}
 	}
 	
+	protected void addPE(BigInteger peId) {
+		_peHandlers.put(peId, new PeHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, peId));
+	}
+	
 	/**
 	 * Capture the job metrics.
 	 * 
@@ -153,6 +166,9 @@ public class JobHandler implements NotificationListener {
 		schema.setJobName(_jobName);
 		for(String operatorName : _operatorHandlers.keySet()) {
 			_operatorHandlers.get(operatorName).captureMetrics();
+		}
+		for(BigInteger peId : _peHandlers.keySet()) {
+			_peHandlers.get(peId).captureMetrics();
 		}
 		if (isDebugEnabled) {
 			_trace.debug("<-- captureMetrics(domain=" + _domainId + ",instance=" + _instanceId + ",jobId=" + _jobId + ")");
