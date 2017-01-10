@@ -1,3 +1,10 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
 package com.ibm.streamsx.metrics;
 
 import java.util.HashMap;
@@ -270,7 +277,7 @@ public class MetricsInfluxDBSink extends AbstractOperator {
     }
     
 	/**
-     * Process an incoming punctuation that arrived on the sp.cified port.
+     * Process an incoming punctuation that arrived on the specified port.
      * @param stream Port the punctuation is arriving on.
      * @param mark The punctuation mark
      * @throws Exception Operator failure, will cause the enclosing PE to terminate.

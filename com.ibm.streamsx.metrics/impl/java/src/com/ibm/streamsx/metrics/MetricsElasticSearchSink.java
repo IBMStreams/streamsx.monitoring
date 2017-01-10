@@ -1,5 +1,11 @@
-package com.ibm.streamsx.metrics;
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
 
+package com.ibm.streamsx.metrics;
 
 import java.net.InetAddress;
 import java.text.DateFormat;
