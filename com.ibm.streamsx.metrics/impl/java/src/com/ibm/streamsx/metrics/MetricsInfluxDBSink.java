@@ -1,3 +1,10 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
 package com.ibm.streamsx.metrics;
 
 import java.util.concurrent.TimeUnit;
@@ -65,24 +72,11 @@ public class MetricsInfluxDBSink extends AbstractOperator {
 	// ------------------------------------------------------------------------
 
 	static final String DESC_OPERATOR = 
-			"The MetricsSink operator received metrics as tuples from the "
-			+ "MetricsSource operator and outputs these metrics to "
-			+ "ElasticSearch and, optionally, InfluxDB.\\n"
+			"The MetricsInfluxDBSink operator receives metrics as tuples 
+			+ "from the MetricsSource operator and outputs these metrics to "
+			+ "an InfluxDB database.\\n"
 			+ "\\n"
-			+ "By default, the MetricsSink does not output to InfluxDB. In "
-			+ "order to enable this feature, set the optional parameter, "
-			+ "outputToInfluxDB to true.\\n"
-			+ "\\n"
-			+ "The MetricsSink uses the default hostname and hostport that "
-			+ "comes configured with ElasticSearch and InfluxDB. If you have "
-			+ "custom settings, this can be configured by editing the optional "
-			+ "hostname, hostport, username, and password parameters.\\n"
-			+ "\\n"
-			+ "Per default, the name of the database to output to is "
-			+ "\"streamsdb\". This can be changed by editing to optional "
-			+ "parameter, databaseName.\\n"
-			+ "\\n"
-			+ "Once the data is outputted to either ElasticSearch or InfluxDB, "
+			+ "Once the data is outputted to the InfluxDB database, "
 			+ "you can query the database and create custom graphs to display "
 			+ "this data with graphing tools such as Grafana and Kibana.\\n"
 			;

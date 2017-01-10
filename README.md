@@ -59,21 +59,16 @@ command:
 firefox com.ibm.streamsx.metrics/doc/spldoc/html/index.html &
 ```
 
-### Building Project
-The MetricsSink operator requires you to build jars and include them in your project. You will also need to have an ElasticSearch server running.
+### Using the MetricsElasticSearchSink and MetricsInfluxDBSink
+The MetricsElasticSearchSink operator requires you to have an ElasticSearch server
+running. Download and install ElasticSearch [here](https://www.elastic.co/downloads/elasticsearch).
 
-To get started:
+To start the ElasticSearch server on Linux, perform the following command:
+`sudo service elasticsearch start`
 
-1.  Clone the repository
-2.  cd com.ibm.streamsx.metrics
-3.  Run `ant all` to build toolkit.
+The MetricsInfluxDBSink requires you to have an InfluxDB server running. Download and install
+InfluxDB [here](https://www.influxdata.com/downloads/).
 
-To develop in Studio:
-
-1.  Clone the repository
-2.  Go to com.ibm.streamsx.metrics
-3.  Run `ant maven-deps` to download the dependencies required by the project
-3.  In Streams Studio, Import...
-5.  In the dialog, select InfoSphere Streams -> SPL Project
-6.  Select com.ibm.streamsx.metrics to import the project into studio.
+To start the InfluxDB server on Linux, perform the following command:
+`sudo service influxdb start`
 
