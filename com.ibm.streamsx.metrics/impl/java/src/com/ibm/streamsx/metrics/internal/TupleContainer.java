@@ -1,3 +1,10 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
 package com.ibm.streamsx.metrics.internal;
 
 import java.math.BigInteger;
@@ -13,14 +20,14 @@ import com.ibm.streams.operator.Type;
 public class TupleContainer {
 
 	/**
-	 * Index of the domainName attribute.
+	 * Index of the domainId attribute.
 	 */
-	private Integer _domainNameAttributeIndex = null;
+	private Integer _domainIdAttributeIndex = null;
 	
 	/**
-	 * Index of the instanceName attribute.
+	 * Index of the instanceId attribute.
 	 */
-	private Integer _instanceNameAttributeIndex = null;
+	private Integer _instanceIdAttributeIndex = null;
 
 	/**
 	 * Index of the jobId attribute.
@@ -33,9 +40,9 @@ public class TupleContainer {
 	private Integer _jobNameAttributeIndex = null;
 
 	/**
-	 * Index of the peId attribute.
+   * Index of the resource attribute.
 	 */
-	private Integer _peIdAttributeIndex = null;
+	private Integer _resourceAttributeIndex = null;
 
 	/**
 	 * Index of the operatorName attribute.
@@ -52,6 +59,16 @@ public class TupleContainer {
 	 */
 	private Integer _portIndexAttributeIndex = null;
 	
+	/**
+	 * Index of the channel attribute.
+	 */
+	private Integer _channelAttributeIndex = null;
+	
+	/**
+	 * Index of the peId attribute.
+	 */
+	private Integer _peIdAttributeIndex = null;
+
 	/**
 	 * Index of the metricType attribute.
 	 */
@@ -86,7 +103,7 @@ public class TupleContainer {
 	 * The output tuple.
 	 */
 	private OutputTuple _tuple = null;
-	
+
 	/**
 	 * Determine the indexes of output attributes and verify their types.
 	 * 
@@ -98,22 +115,22 @@ public class TupleContainer {
 		_tuple = port.newTuple();
 		StreamSchema schema = port.getStreamSchema();
 		// Domain-related attributes.
-		if (_domainNameAttributeIndex == null) {
-			Attribute attribute = schema.getAttribute("domainName");
-			_domainNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+		if (_domainIdAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("domainId");
+			_domainIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Instance-related attributes.
-		if (_instanceNameAttributeIndex  == null) {
-			Attribute attribute = schema.getAttribute("instanceName");
-			_instanceNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+		if (_instanceIdAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("instanceId");
+			_instanceIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Job-related attributes.
-		if (_jobIdAttributeIndex  == null) {
+		if (_jobIdAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("jobId");
 			_jobIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
 			
 		}
-		if (_jobNameAttributeIndex  == null) {
+		if (_jobNameAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("jobName");
 			_jobNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
@@ -123,61 +140,74 @@ public class TupleContainer {
 			_peIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
 		}
 		// Operator-related attributes.
-		if (_operatorNameAttributeIndex  == null) {
+		if (_operatorNameAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("operatorName");
 			_operatorNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
+		// Operator- and PE-related attributes.
+		if (_resourceAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("resource");
+			_resourceAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+		}
+		if (_channelAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("channel");
+			_channelAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT32 ? attribute.getIndex() : -1) ;
+		}
+		if (_peIdAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("peId");
+			_peIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
+		}
 		// Port-related attributes.
-		if (_portIndexAttributeIndex  == null) {
+		if (_portIndexAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("portIndex");
 			_portIndexAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT32 ? attribute.getIndex() : -1) ;
 		}
 		// Metric-related attributes.
-		if (_originAttributeIndex  == null) {
+		if (_originAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("origin");
 			_originAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.ENUM ? attribute.getIndex() : -1) ;
 		}
-		if (_metricTypeAttributeIndex  == null) {
+		if (_metricTypeAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("metricType");
 			_metricTypeAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
-		if (_metricKindAttributeIndex  == null) {
+		if (_metricKindAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("metricKind");
 			_metricKindAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
-		if (_metricNameAttributeIndex  == null) {
+		if (_metricNameAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("metricName");
 			_metricNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
-		if (_metricValueAttributeIndex  == null) {
+		if (_metricValueAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("metricValue");
 			_metricValueAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
 		}
-		if (_lastTimeRetrievedAttributeIndex  == null) {
+		if (_lastTimeRetrievedAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("lastTimeRetrieved");
 			_lastTimeRetrievedAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
 		}
 	}
 		
 	/**
-	 * Optionally set the domain name in the output tuple.
+	 * Optionally set the domain id in the output tuple.
 	 * 
-	 * @param domainName
+	 * @param domainId
 	 */
-	public void setDomainName(String domainName) {
-		if (_domainNameAttributeIndex != -1) {
-			_tuple.setString(_domainNameAttributeIndex, domainName);
+	public void setDomainId(String domainId) {
+		if (_domainIdAttributeIndex != -1) {
+			_tuple.setString(_domainIdAttributeIndex, domainId);
 		}
 	}
 
 	/**
-	 * Optionally set the instance name in the output tuple.
+	 * Optionally set the instance id in the output tuple.
 	 * 
-	 * @param domainName
+	 * @param instanceId
 	 */
-	public void setInstanceName(String instanceName) {
-		if (_instanceNameAttributeIndex != -1) {
-			_tuple.setString(_instanceNameAttributeIndex, instanceName);
+	public void setInstanceId(String instanceId) {
+		if (_instanceIdAttributeIndex != -1) {
+			_tuple.setString(_instanceIdAttributeIndex, instanceId);
 		}
 	}
 	
@@ -215,6 +245,17 @@ public class TupleContainer {
 	}
 
 	/**
+	 * Optionally set the resource, which is the host, in the output tuple.
+	 * 
+	 * @param resource
+	 */
+	public void setResource(String resource) {
+		if (_resourceAttributeIndex != -1) {
+			_tuple.setString(_resourceAttributeIndex, resource);
+		}
+	}
+
+	/**
 	 * Optionally set the operator name in the output tuple.
 	 * 
 	 * @param operatorName
@@ -244,6 +285,29 @@ public class TupleContainer {
 	public void setOrigin(String origin) {
 		if (_originAttributeIndex != -1) {
 			_tuple.setString(_originAttributeIndex, origin);
+		}
+	}
+
+	/**
+	 * Optionally set the channel in the output tuple. If the channel information
+	 * is not available, set -1.
+	 * 
+	 * @param channel
+	 */
+	public void setChannel(Integer channel) {
+		if (_channelAttributeIndex != -1) {
+			_tuple.setInt(_channelAttributeIndex, (channel == null ? -1 : channel));
+		}
+	}
+
+	/**
+	 * Optionally set the PE id in the output tuple.
+	 * 
+	 * @param peId
+	 */
+	public void setPeId(BigInteger peId) {
+		if (_peIdAttributeIndex != -1) {
+			_tuple.setLong(_peIdAttributeIndex, peId.longValue());
 		}
 	}
 

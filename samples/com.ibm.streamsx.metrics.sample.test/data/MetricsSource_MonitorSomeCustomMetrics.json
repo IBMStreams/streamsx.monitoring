@@ -1,0 +1,29 @@
+[
+	{
+		"domainIdPatterns":".*",
+		"instances":
+		[
+			{
+				"instanceIdPatterns":".*",
+				"jobs":
+				[
+					{
+						"jobNamePatterns":".*",
+						"operators":
+						[
+							{
+								"operatorNamePatterns":"Storage",
+								"metricNamePatterns":
+								[
+									"rnd",
+									"inc",
+									"const",
+								]
+							},
+						],
+					},
+				],
+			},
+		],
+	},
+]

@@ -1,0 +1,80 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+/**
+ * This sample application monitors all jobs of all instances of the configured
+ * domain and emits submit metrics as tuple stream for \@parallel-annotated
+ * operators. The application uses a subset of the output attributes only.
+ * 
+ * You can run this application in standalone mode to see the metric values as
+ * they are printed to the console.
+ */
+
+namespace com.ibm.streamsx.metrics.sample.MetricsSource.UPD;
+
+use com.ibm.streamsx.metrics::MetricsSource;
+use com.ibm.streamsx.metrics::Notification;
+
+composite Main {
+	type
+		MemoryMetric = tuple<
+			rstring resource,
+			rstring operatorName,
+			int32 channel,
+			rstring metricName,
+			int64 metricValue,
+			rstring domainId,
+			rstring instanceId,
+			int64 jobId,
+			rstring jobName,
+			int64 peId,
+			int64 lastTimeRetrieved
+		>;
+	graph
+		/*
+		 * The MetricsSource generates tuple for the specified metrics.
+		 */
+		stream<MemoryMetric> Notifications as O = MetricsSource() {
+			param
+				connectionURL: getSubmissionTimeValue("connectionURL");
+				user: getSubmissionTimeValue("user");
+				password: getSubmissionTimeValue("password");
+				domainId: getSubmissionTimeValue("domainId");
+				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
+				filterDocument: dataDirectory() + "/MetricsSource_MonitorOperatorMetrics.json";
+				emitMetricTuple: onChangedValue;
+		}
+		
+		/*
+		 * Drop metric tuples that do not belong to @parallel-annotated
+		 * operators.
+		 */
+		(stream<I> ParallelizedOperatorMetrics) as UDPDetector = Filter(Notifications as I) {
+			param filter: channel != -1;
+		}
+		
+		/*
+		 * The Custom traces the received metric value notifications.
+		 */
+		() as NotificationTracer = Custom(ParallelizedOperatorMetrics as I) {
+			logic
+			onTuple I: {
+				appTrc(Trace.error, "Notification: " + (rstring)I);
+			}
+			onPunct I: {
+				appTrc(Trace.error, "Notification: " + (rstring)currentPunct());
+			}
+		}
+		
+		/*
+		 * A @parallel-annotated source.
+		 */
+		@parallel(width=3)
+		(stream<rstring dummy> Data) as AnnotatedSource = Beacon() {
+			param period: 3.0; 
+		}
+}

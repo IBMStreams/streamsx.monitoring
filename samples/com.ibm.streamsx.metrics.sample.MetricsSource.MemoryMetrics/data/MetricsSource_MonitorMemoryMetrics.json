@@ -1,0 +1,26 @@
+[
+	{
+		"domainIdPatterns":".*",
+		"instances":
+		[
+			{
+				"instanceIdPatterns":".*",
+				"jobs":
+				[
+					{
+						"jobNamePatterns":".*",
+						"pes":
+						[
+							{
+								"metricNamePatterns":
+								[
+									"n(Resident)?MemoryConsumption",
+								]
+							}
+						],
+					},
+				],
+			},
+		],
+	},
+]

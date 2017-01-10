@@ -5,11 +5,9 @@
 // ****************************************************************************
 //
 
-package com.ibm.streamsx.metrics.internal.filter;
+package com.ibm.streamsx.metrics.internal;
 
-/**
- * The 
- */
-interface Filter {
-
-}
+public enum EmitMetricTupleMode {
+	periodic,
+	onChangedValue,
+};

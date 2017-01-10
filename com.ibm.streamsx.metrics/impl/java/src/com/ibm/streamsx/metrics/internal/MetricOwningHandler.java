@@ -1,3 +1,10 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
 package com.ibm.streamsx.metrics.internal;
 
 import java.util.HashMap;
@@ -56,15 +63,15 @@ abstract class MetricOwningHandler {
 	/**
 	 * This map holds all metrics that are captured.
 	 */
-	private Map<String /* metric name */, Metric> _capturedMetrics = new HashMap<String, Metric>();
+	private Map<String /* metric name */, IMetricEvaluator> _capturedMetrics = new HashMap<>();
 	
 	/**
 	 * This set holds, in DynamicMetricsRegistration mode, all metric names 
-	 * from metrics that are not captured. Using this set improved performance
+	 * from metrics that are ignored. Using this set improves performance
 	 * because we do not need to match the name against the configured filters
 	 * each time. 
 	 */
-	private Set<String /* metric name */> _uncapturedMetrics = new HashSet<String>();
+	private Set<String /* metric name */> _ignoredMetrics = new HashSet<>();
 
 	/**
 	 * 
@@ -98,7 +105,8 @@ abstract class MetricOwningHandler {
 
 	/**
 	 * Determine whether a given metric name is relevant, which means, the
-	 * corresponding metric shall be captured.
+	 * corresponding metric name matches the specified filters and shall be
+	 * captured.
 	 * 
 	 * @param metricName
 	 * Specifies the metric name that is evaluated.
@@ -127,9 +135,7 @@ abstract class MetricOwningHandler {
 			for(Metric metric: metrics) {
 				String metricName = metric.getName();
 				if (isRelevantMetric(metricName)) {
-					// Save null as value, so the next capturing cycle detects
-					// all metrics as changed.
-					_capturedMetrics.put(metricName, null);
+					_capturedMetrics.put(metricName, _operatorConfiguration.newDefaultMetricEvaluator());
 				}
 			}
 		}
@@ -153,9 +159,9 @@ abstract class MetricOwningHandler {
 				for (Metric metric : metrics) {
 					String metricName = metric.getName();
 					if (_capturedMetrics.containsKey(metricName)) {
-						Metric lastCapturedState = _capturedMetrics.get(metricName);
-						if (lastCapturedState.getValue() != metric.getValue()) {
-							_capturedMetrics.put(metricName, metric);
+						IMetricEvaluator evaluator = _capturedMetrics.get(metricName);
+						if (evaluator.isSubmittable(metric)) {
+							evaluator.updateStatus(metric);
 							submitMetric(metric);
 						}
 					}
@@ -197,27 +203,31 @@ abstract class MetricOwningHandler {
 				 * Metric shall be captured.
 				 */
 				if (_capturedMetrics.containsKey(metricName)) {
-					Metric lastCapturedState = _capturedMetrics.get(metricName);
-					if (lastCapturedState.getValue() != metric.getValue()) {
-						_capturedMetrics.put(metricName, metric);
+					IMetricEvaluator evaluator = _capturedMetrics.get(metricName);
+					if (evaluator.isSubmittable(metric)) {
+						evaluator.updateStatus(metric);
 						submitMetric(metric);
 					}
 				}
 				/*
 				 * Metric shall be ignored.
 				 */
-				else if (_uncapturedMetrics.contains(metricName)) {
+				else if (_ignoredMetrics.contains(metricName)) {
 					// Ignore this metric because it does not match the filters.
 				}
 				/*
 				 * Decide whether the metric shall be captured or ignored.
 				 */
 				else if(isRelevantMetric(metricName)) {
-					_capturedMetrics.put(metricName, metric);
-					submitMetric(metric);
+					IMetricEvaluator evaluator = _operatorConfiguration.newDefaultMetricEvaluator();
+					_capturedMetrics.put(metricName, evaluator);
+					if (evaluator.isSubmittable(metric)) {
+						evaluator.updateStatus(metric);
+						submitMetric(metric);
+					}
 				}
 				else {
-					_uncapturedMetrics.add(metricName);
+					_ignoredMetrics.add(metricName);
 				}
 			}
 		}

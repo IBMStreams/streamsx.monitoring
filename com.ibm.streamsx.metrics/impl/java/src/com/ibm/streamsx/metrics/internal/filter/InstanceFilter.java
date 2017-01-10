@@ -1,48 +1,196 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
 package com.ibm.streamsx.metrics.internal.filter;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
-final class InstanceFilter extends Filter {
+final class InstanceFilter extends PatternMatcher implements Filter {
 
 	/**
 	 * Logger for tracing.
 	 */
 	private static Logger _trace = Logger.getLogger(InstanceFilter.class.getName());
 
-	public InstanceFilter(String regularExpression) throws PatternSyntaxException {
+	/**
+	 * An instance has many jobs.
+	 */
+	protected Map<String /* regular expression */, JobFilter> _jobFilters = new HashMap<>();
+
+	public InstanceFilter(String regularExpression, Set<Filter> filters) throws PatternSyntaxException {
 		super(regularExpression);
-	}
-
-	public void add(String jobNameRegEx, String operatorNameRegEx, String metricNameRegEx) {
-		if (jobNameRegEx != null) {
-			if (!_filters.containsKey(jobNameRegEx)) {
-				addFilter(new JobFilter(jobNameRegEx));
-			}
-			((JobFilter)_filters.get(jobNameRegEx)).add(operatorNameRegEx, metricNameRegEx);
+		for(Filter filter : filters) {
+			JobFilter jobFilter = (JobFilter)filter;
+			_jobFilters.put(jobFilter.getRegularExpression(), jobFilter);
 		}
 	}
 
-	public boolean matches(String instanceName, String jobName, String operatorName, String metricName, int stopLevel) {
-		final boolean isInfoEnabled = _trace.isInfoEnabled();
-		if(isInfoEnabled) {
-			_trace.info(String.format("matches(instanceName=%s, jobName=%s, operatorName=%s, metricName=%s, stopLevel=%d): %s\n", instanceName, jobName, operatorName, metricName, stopLevel, _regularExpression));
-		}
-		boolean matches = (instanceName != null) && _matcher.reset(instanceName).matches();
+	public boolean matchesInstanceId(String instanceId) {
+		boolean matches = matches(instanceId);
+		return matches;
+	}
+
+	public boolean matchesJobName(String instanceId, String jobName) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
 		if (matches) {
-			--stopLevel;
-			if (stopLevel > 0) {
-			for(Filter filter : _filters.values()) {
-					matches = ((JobFilter)filter).matches(jobName, operatorName, metricName, stopLevel);
-					if (matches) {
-						break;
-					}
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesJobName(jobName);
+				if (matches) {
+					break;
 				}
 			}
 		}
-		if(isInfoEnabled) {
-			_trace.info(String.format("matches(instanceName=%s, jobName=%s, operatorName=%s, metricName=%s, stopLevel=%d): %s -> %s\n", instanceName, jobName, operatorName, metricName, stopLevel, _regularExpression, Boolean.toString(matches)));
+		return matches;
+	}
+
+	public boolean matchesOperatorName(String instanceId, String jobName, String operatorName) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesOperatorName(jobName, operatorName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorMetricName(String instanceId, String jobName, String operatorName, String metricName) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesOperatorMetricName(jobName, operatorName, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorInputPortIndex(String instanceId, String jobName, String operatorName, Integer portIndex) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesOperatorInputPortIndex(jobName, operatorName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorInputPortMetricName(String instanceId, String jobName, String operatorName, Integer portIndex, String metricName) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesOperatorInputPortMetricName(jobName, operatorName, portIndex, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorOutputPortIndex(String instanceId, String jobName, String operatorName, Integer portIndex) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesOperatorOutputPortIndex(jobName, operatorName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorOutputPortMetricName(String instanceId, String jobName, String operatorName, Integer portIndex, String metricName) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesOperatorOutputPortMetricName(jobName, operatorName, portIndex, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeMetricName(String instanceId, String jobName, String metricName) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesPeMetricName(jobName, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeInputPortIndex(String instanceId, String jobName, Integer portIndex) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesPeInputPortIndex(jobName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeInputPortMetricName(String instanceId, String jobName, Integer portIndex, String metricName) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesPeInputPortMetricName(jobName, portIndex, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortIndex(String instanceId, String jobName, Integer portIndex) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesPeOutputPortIndex(jobName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortMetricName(String instanceId, String jobName, Integer portIndex, String metricName) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesPeOutputPortMetricName(jobName, portIndex, metricName);
+				if (matches) {
+					break;
+				}
+			}
 		}
 		return matches;
 	}

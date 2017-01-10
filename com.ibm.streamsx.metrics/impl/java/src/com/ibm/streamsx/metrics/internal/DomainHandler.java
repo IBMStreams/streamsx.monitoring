@@ -1,3 +1,10 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
 package com.ibm.streamsx.metrics.internal;
 
 import javax.management.Notification;
@@ -42,23 +49,24 @@ public class DomainHandler implements NotificationListener {
 
 	private OperatorConfiguration _operatorConfiguration = null;
 
-	private String _domainName = null;
+	private String _domainId = null;
 	
 	private DomainMXBean _domain = null;
 	
-	private Map<String /* instanceName */, InstanceHandler> _instanceHandlers = new HashMap<String, InstanceHandler>();
+	private Map<String /* instanceId */, InstanceHandler> _instanceHandlers = new HashMap<>();
 
-	public DomainHandler(OperatorConfiguration operatorConfiguration, String domainName) {
+	public DomainHandler(OperatorConfiguration operatorConfiguration, String domainId) {
 
-		if (_trace.isDebugEnabled()) {
-			_trace.debug("DomainHandler(" + domainName + ")");
+		boolean isDebugEnabled = _trace.isDebugEnabled();
+		if (isDebugEnabled) {
+			_trace.debug("DomainHandler(" + domainId + ")");
 		}
 		
 		// Store parameters for later use.
 		_operatorConfiguration = operatorConfiguration;
-		_domainName = domainName;
+		_domainId = domainId;
 
-		ObjectName domainObjName = ObjectNameBuilder.domain(_domainName);
+		ObjectName domainObjName = ObjectNameBuilder.domain(_domainId);
 		_domain = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), domainObjName, DomainMXBean.class, true);
 
 		/*
@@ -79,8 +87,8 @@ public class DomainHandler implements NotificationListener {
 		/*
 		 * Register existing instances.
 		 */
-		for(String instanceName : _domain.getInstances()) {
-			addValidInstance(instanceName);
+		for(String instanceId : _domain.getInstances()) {
+			addValidInstance(instanceId);
 		}
 		
 	}
@@ -98,8 +106,8 @@ public class DomainHandler implements NotificationListener {
 				/*
 				 * Register instance.
 				 */
-				String instanceName = (String)notification.getUserData();
-				addValidInstance(instanceName);
+				String instanceId = (String)notification.getUserData();
+				addValidInstance(instanceId);
 			}
 			else {
 				_trace.error("received INSTANCE_CREATED notification: user data is not an instance of String");
@@ -110,9 +118,9 @@ public class DomainHandler implements NotificationListener {
 				/*
 				 * Unregister existing instance.
 				 */
-				String instanceName = (String)notification.getUserData();
-				if(_instanceHandlers.containsKey(instanceName)) {
-					_instanceHandlers.remove(instanceName);
+				String instanceId = (String)notification.getUserData();
+				if(_instanceHandlers.containsKey(instanceId)) {
+					_instanceHandlers.remove(instanceId);
 				}
 			}
 			else {
@@ -124,13 +132,18 @@ public class DomainHandler implements NotificationListener {
 		}
 	}
 
-	protected void addValidInstance(String instanceName) {
-		if(_operatorConfiguration.get_filters().matches(_domainName, instanceName)) {
-			_trace.error("The following instance meets the filter criteria and is therefore, monitored: domain=" + _domainName + ", instance=" + instanceName);
-			_instanceHandlers.put(instanceName, new InstanceHandler(_operatorConfiguration, _domainName, instanceName));
+	protected void addValidInstance(String instanceId) {
+		boolean matches = _operatorConfiguration.get_filters().matchesInstanceId(_domainId, instanceId);
+		if (_trace.isInfoEnabled()) {
+			if (matches) {
+				_trace.info("The following instance meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + instanceId);
+			}
+			else {
+				_trace.info("The following instance does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + instanceId);
+			}
 		}
-		else { // TODO if (_trace.isInfoEnabled()) {
-			_trace.error("The following instance does not meet the filter criteria and is therefore, not monitored: domain=" + _domainName + ", instance=" + instanceName);
+		if(matches) {
+			_instanceHandlers.put(instanceId, new InstanceHandler(_operatorConfiguration, _domainId, instanceId));
 		}
 	}
 	
@@ -139,15 +152,16 @@ public class DomainHandler implements NotificationListener {
 	 * @throws Exception 
 	 */
 	public void captureMetrics() throws Exception {
-		if (_trace.isDebugEnabled()) {
-			_trace.debug("--> captureMetrics(domain=" + _domainName + ")");
+		boolean isDebugEnabled = _trace.isDebugEnabled();
+		if (isDebugEnabled) {
+			_trace.debug("--> captureMetrics(domain=" + _domainId + ")");
 		}
-		_operatorConfiguration.get_tupleContainer().setDomainName(_domainName);
-		for(String instanceName : _instanceHandlers.keySet()) {
-			_instanceHandlers.get(instanceName).captureMetrics();
+		_operatorConfiguration.get_tupleContainer().setDomainId(_domainId);
+		for(String instanceId : _instanceHandlers.keySet()) {
+			_instanceHandlers.get(instanceId).captureMetrics();
 		}
-		if (_trace.isDebugEnabled()) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainName + ")");
+		if (isDebugEnabled) {
+			_trace.debug("<-- captureMetrics(domain=" + _domainId + ")");
 		}
 	}
 
