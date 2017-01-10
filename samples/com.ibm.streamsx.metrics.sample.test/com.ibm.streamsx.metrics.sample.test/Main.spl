@@ -1,3 +1,10 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
 namespace com.ibm.streamsx.metrics.sample.test;
 
 use com.ibm.streamsx.metrics::MetricsSource;
