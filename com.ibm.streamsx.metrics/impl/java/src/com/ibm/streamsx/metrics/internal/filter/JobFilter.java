@@ -88,11 +88,37 @@ final class JobFilter extends PatternMatcher implements Filter {
 		return matches;
 	}
 
+	public boolean matchesOperatorInputPortMetricName(String jobName, String operatorName, Integer portIndex, String metricName) {
+		boolean matches = matchesJobName(jobName) && (_operatorFilters.size() > 0);
+		if (matches) {
+			for(OperatorFilter filter : _operatorFilters.values()) {
+				matches = filter.matchesOperatorInputPortMetricName(operatorName, portIndex, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
 	public boolean matchesOperatorOutputPortIndex(String jobName, String operatorName, Integer portIndex) {
 		boolean matches = matchesJobName(jobName) && (_operatorFilters.size() > 0);
 		if (matches) {
 			for(OperatorFilter filter : _operatorFilters.values()) {
 				matches = filter.matchesOperatorOutputPortIndex(operatorName, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorOutputPortMetricName(String jobName, String operatorName, Integer portIndex, String metricName) {
+		boolean matches = matchesJobName(jobName) && (_operatorFilters.size() > 0);
+		if (matches) {
+			for(OperatorFilter filter : _operatorFilters.values()) {
+				matches = filter.matchesOperatorOutputPortMetricName(operatorName, portIndex, metricName);
 				if (matches) {
 					break;
 				}
@@ -127,11 +153,37 @@ final class JobFilter extends PatternMatcher implements Filter {
 		return matches;
 	}
 
+	public boolean matchesPeInputPortMetricName(String jobName, Integer portIndex, String metricName) {
+		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
+		if (matches) {
+			for(PeFilter filter : _peFilters) {
+				matches = filter.matchesPeInputPortMetricName(portIndex, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
 	public boolean matchesPeOutputPortIndex(String jobName, Integer portIndex) {
 		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
 		if (matches) {
 			for(PeFilter filter : _peFilters) {
 				matches = filter.matchesPeOutputPortIndex(portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortMetricName(String jobName, Integer portIndex, String metricName) {
+		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
+		if (matches) {
+			for(PeFilter filter : _peFilters) {
+				matches = filter.matchesPeOutputPortMetricName(portIndex, metricName);
 				if (matches) {
 					break;
 				}

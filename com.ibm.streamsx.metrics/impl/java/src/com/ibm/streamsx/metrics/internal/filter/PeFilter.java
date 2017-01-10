@@ -73,10 +73,32 @@ final class PeFilter implements Filter {
 		return matches;
 	}
 
+	public boolean matchesPeInputPortMetricName(Integer portIndex, String metricName) {
+		boolean matches = false;
+		for(PortFilter filter : _inputPortFilters.values()) {
+			matches = filter.matchesPortMetricName(portIndex, metricName);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
+
 	public boolean matchesPeOutputPortIndex(Integer portIndex) {
 		boolean matches = false;
 		for(PortFilter filter : _outputPortFilters.values()) {
 			matches = filter.matchesPortIndex(portIndex);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortMetricName(Integer portIndex, String metricName) {
+		boolean matches = false;
+		for(PortFilter filter : _outputPortFilters.values()) {
+			matches = filter.matchesPortMetricName(portIndex, metricName);
 			if (matches) {
 				break;
 			}

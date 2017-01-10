@@ -83,11 +83,37 @@ final class OperatorFilter extends PatternMatcher implements Filter {
 		return matches;
 	}
 
+	public boolean matchesOperatorInputPortMetricName(String operatorName, Integer portIndex, String metricName) {
+		boolean matches = matchesOperatorName(operatorName) && (_inputPortFilters.size() > 0);
+		if (matches) {
+			for(PortFilter filter : _inputPortFilters.values()) {
+				matches = filter.matchesPortMetricName(portIndex, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
 	public boolean matchesOperatorOutputPortIndex(String operatorName, Integer portIndex) {
 		boolean matches = matchesOperatorName(operatorName) && (_outputPortFilters.size() > 0);
 		if (matches) {
 			for(PortFilter filter : _outputPortFilters.values()) {
 				matches = filter.matchesPortIndex(portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesOperatorOutputPortMetricName(String operatorName, Integer portIndex, String metricName) {
+		boolean matches = matchesOperatorName(operatorName) && (_outputPortFilters.size() > 0);
+		if (matches) {
+			for(PortFilter filter : _outputPortFilters.values()) {
+				matches = filter.matchesPortMetricName(portIndex, metricName);
 				if (matches) {
 					break;
 				}
