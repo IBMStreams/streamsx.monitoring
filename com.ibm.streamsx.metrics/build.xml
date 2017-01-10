@@ -64,6 +64,11 @@
 		</javac>
 	</target>
 
+	<target name="jar" depends="compile">
+
+		<delete dir="${build.dir}" />
+	</target>
+
 
 	<!-- Downloads libraries using maven -->
 	<target name="maven-deps" depends="init,nomaven" if="env.M2_HOME">

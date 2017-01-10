@@ -5,16 +5,8 @@ import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import com.ibm.streams.operator.AbstractOperator;
 import com.ibm.streams.operator.OperatorContext;
@@ -26,13 +18,17 @@ import com.ibm.streams.operator.model.InputPortSet.WindowMode;
 import com.ibm.streams.operator.model.InputPortSet.WindowPunctuationInputMode;
 import com.ibm.streams.operator.model.InputPorts;
 import com.ibm.streams.operator.model.Libraries;
+import com.ibm.streams.operator.model.Parameter;
 import com.ibm.streams.operator.model.PrimitiveOperator;
 
-import org.influxdb.InfluxDB;
-import org.influxdb.InfluxDB.ConsistencyLevel;
-import org.influxdb.InfluxDBFactory;
-import org.influxdb.dto.BatchPoints;
-import org.influxdb.dto.Point;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.Requests;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 /**
  * Class for an operator that consumes tuples. 
@@ -52,9 +48,9 @@ import org.influxdb.dto.Point;
  * which lead to these methods being called concurrently by different threads.</p> 
  */
 @PrimitiveOperator(
-		name="MetricsSink",
+		name="MetricsElasticSearchSink",
 		namespace="com.ibm.streamsx.metrics",
-		description=MetricsSource.DESC_OPERATOR
+		description=MetricsElasticSearchSink.DESC_OPERATOR
 		)
 @InputPorts({
 	@InputPortSet(
@@ -63,18 +59,12 @@ import org.influxdb.dto.Point;
 			optional=false,
 			windowingMode=WindowMode.NonWindowed,
 			windowPunctuationInputMode=WindowPunctuationInputMode.Oblivious
-			),
-	@InputPortSet(
-			description="Optional input ports",
-			optional=true,
-			windowingMode=WindowMode.NonWindowed,
-			windowPunctuationInputMode=WindowPunctuationInputMode.Oblivious
 			)
 })
 @Libraries({
 	"opt/downloaded/*"
 	})
-public class MetricsSink extends AbstractOperator {
+public class MetricsElasticSearchSink extends AbstractOperator {
 
 	// ------------------------------------------------------------------------
 	// Documentation.
@@ -104,21 +94,6 @@ public class MetricsSink extends AbstractOperator {
 			+ "this data with graphing tools such as Grafana and Kibana.\\n"
 			;
 
-	private static final String DESC_OUTPUT_TO_INFLUXDB = 
-			"Specifies whether to output metrics to InfluxDB.";
-
-	private static final String DESC_INFLUXDB_USERNAME = 
-			"Specifies the username of the InfluxDB server.";
-
-	private static final String DESC_INFLUXDB_PASSWORD = 
-			"Specifies the password of the InfluxDB server.";
-
-	private static final String DESC_INFLUXDB_HOSTNAME = 
-			"Specifies the hostname of the InfluxDB server.";
-
-	private static final String DESC_INFLUXDB_HOSTPORT = 
-			"Specifies the hostport of the InfluxDB server.";
-
 	private static final String DESC_ELASTICSEARCH_HOSTNAME = 
 			"Specifies the hostname of the ElasticSearch server.";
 
@@ -127,68 +102,28 @@ public class MetricsSink extends AbstractOperator {
 	
 	private static final String DESC_DATABASE_NAME = 
 			"Specifies the name for the databases.";
-
-	@Parameter(
-			optional=true,
-			description=MemoryMetricsSink.DESC_OUTPUT_TO_INFLUXDB
-			)
-	public void set_output_to_influxdb(Boolean output) throws IOException {
-		outputToInfluxDB = output;
-	}
-
-	@Parameter(
-			optional=true,
-			description=MemoryMetricsSink.DESC_INFLUXDB_USERNAME
-			)
-	public void set_influxdb_username(String username) throws IOException {
-		influxUsername = username;
-	}
-
-	@Parameter(
-			optional=true,
-			description=MemoryMetricsSink.DESC_INFLUXDB_PASSWORD
-			)
-	public void set_influxdb_password(String password) throws IOException {
-		influxPassword = password;
-	}
-
-	@Parameter(
-			optional=true,
-			description=MemoryMetricsSink.DESC_INFLUXDB_HOSTNAME
-			)
-	public void set_influxdb_hostname(String hostname) throws IOException {
-		influxHostName = hostname;
-	}
-
-	@Parameter(
-			optional=true,
-			description=MemoryMetricsSink.DESC_INFLUXDB_HOSTPORT
-			)
-	public void set_influxdb_hostport(int hostport) throws IOException {
-		influxHostPort = String.valueOf(hostport);
-	}
 	
 	@Parameter(
 			optional=false,
-			description=MemoryMetricsSink.DESC_ELASTICSEARCH_HOSTNAME
+			description=MetricsElasticSearchSink.DESC_ELASTICSEARCH_HOSTNAME
 			)
-	public void set_elasticsearch_hostname(String hostname) throws IOException {
+	public void set_elasticsearch_hostname(String hostname) {
 		elasticSearchHostName = hostname;
 	}
 
 	@Parameter(
 			optional=false,
-			description=MemoryMetricsSink.DESC_ELASTICSEARCH_HOSTPORT
+			description=MetricsElasticSearchSink.DESC_ELASTICSEARCH_HOSTPORT
 			)
-	public void set_elasticsearch_hostport(int hostport) throws IOException {
+	public void set_elasticsearch_hostport(int hostport) {
 		elasticSearchHostPort = hostport;
 	}
 	
 	@Parameter(
-			optional=true,
-			description=MemoryMetricsSink.DESC_DATABASE_NAME
+			optional=false,
+			description=MetricsElasticSearchSink.DESC_DATABASE_NAME
 			)
-	public void set_database_name(String name) throws IOException {
+	public void set_database_name(String name) {
 		databaseName = name;
 	}
 
@@ -196,17 +131,6 @@ public class MetricsSink extends AbstractOperator {
 	// ------------------------------------------------------------------------
 	// Implementation.
 	// ------------------------------------------------------------------------
-	
-	/**
-	 * InfluxDB configuration.
-	 */
-	private Boolean outputToInfluxDB = false;
-	private InfluxDB influxDB = null;
-	private String influxUsername = "admin";
-	private String influxPassword = "admin";
-	private String influxHostName = "http://localhost";
-	private String influxHostPort = "8086";
-	private BatchPoints batchPoints = null;
 
 	/**
 	 * ElasticSearch configuration.
@@ -224,7 +148,8 @@ public class MetricsSink extends AbstractOperator {
 	/**
 	 * Logger for tracing.
 	 */
-	private static Logger _trace = Logger.getLogger(MetricsSink.class.getName());
+	@SuppressWarnings("unused")
+	private static Logger _trace = Logger.getLogger(MetricsElasticSearchSink.class.getName());
 	
 	/**
      * Initialize this operator. Called once before any tuples are processed.
@@ -237,20 +162,6 @@ public class MetricsSink extends AbstractOperator {
 			throws Exception {
 		super.initialize(context);
         Logger.getLogger(this.getClass()).trace("Operator " + context.getName() + " initializing in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
-        
-        // Connect to InfluxDB server.
-        if(outputToInfluxDB) {
-            influxDB = InfluxDBFactory.connect(influxHostName + ":" + influxHostPort, influxUsername, influxPassword);
-        	influxDB.createDatabase(databaseName);
-
-	    	// Initialize object to contain batch of points.
-	    	batchPoints = BatchPoints
-		    	.database(databaseName)
-	    		.tag("async", "true")
-	            .retentionPolicy("autogen")
-	            .consistency(ConsistencyLevel.ALL)
-	            .build();
-        }
 
     	// Connect to ElasticSearch server.
         Settings settings = Settings.builder().put("cluster.name","elasticsearch").build();
@@ -282,24 +193,6 @@ public class MetricsSink extends AbstractOperator {
     @Override
     public void process(StreamingInput<Tuple> stream, Tuple tuple)
             throws Exception {
-
-    	// Create InfluxDB point to output.
-		if(outputToInfluxDB) {
-    		// Create InfluxDB point to output.
-			Point point = Point.measurement("metrics")
-				.time(tuple.getLong("lastTimeRetrieved"), TimeUnit.MILLISECONDS)
-				.addField("domainName", tuple.getString("domainName"))
-				.addField("instanceName", tuple.getString("instanceName"))
-				.addField("jobId", tuple.getString("jobId"))
-				.addField("jobName", tuple.getString("jobName"))
-				.addField("operatorName", tuple.getString("operatorName"))
-				.addField("portIndex", tuple.getInt("portIndex"))
-				.addField(tuple.getString("metricName"), tuple.getLong("metricValue"))
-				.build();
-        
-			// Store in batch until window marker is received.
-			batchPoints.point(point);
-		}
         
         // Create ElasticSearch JSON to output.
         DateFormat df = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSSZZ");
@@ -327,13 +220,6 @@ public class MetricsSink extends AbstractOperator {
     @Override
     public void processPunctuation(StreamingInput<Tuple> stream,
     		Punctuation mark) throws Exception {
-
-    	if(outputToInfluxDB) {
-	    	// Output metrics to InfluxDB.
-	    	if(batchPoints != null) {
-	    		influxDB.write(batchPoints);
-	    	}
-		}
 
         // Output metrics to ElasticSearch.
         if(builder != null) {
