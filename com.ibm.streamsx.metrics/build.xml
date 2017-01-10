@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 # Licensed Materials - Property of IBM
-# Copyright IBM Corp. 2011, 2013
-# US Government Users Restricted Rights - Use, duplication or
-# disclosure restricted by GSA ADP Schedule Contract with
-# IBM Corp.
+# Copyright IBM Corp. 2016, 2016
 -->
 <project name="com.ibm.streamsx.metrics" basedir="." default="all">
 
@@ -67,13 +64,6 @@
 		</javac>
 	</target>
 
-	<target name="jar" depends="compile">
-		
-		<jar destfile="${impl.lib.dir}/com.ibm.streamsx.hbase.jar" basedir="${build.dir}" includes="com/ibm/streamsx/hbase/**" filesonly="true">
-	
-		</jar>
-		<delete dir="${build.dir}" />
-	</target>
 
 	<!-- Downloads libraries using maven -->
 	<target name="maven-deps" depends="init,nomaven" if="env.M2_HOME">
