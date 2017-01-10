@@ -1,18 +1,15 @@
-//
-// ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
-// * All rights reserved.                                                     *
-// ****************************************************************************
-//
-
 package com.ibm.streamsx.metrics;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
 import com.ibm.streams.operator.AbstractOperator;
 import com.ibm.streams.operator.OperatorContext;
+import com.ibm.streams.operator.StreamSchema;
 import com.ibm.streams.operator.StreamingData.Punctuation;
 import com.ibm.streams.operator.StreamingInput;
 import com.ibm.streams.operator.Tuple;
@@ -72,13 +69,28 @@ public class MetricsInfluxDBSink extends AbstractOperator {
 	// ------------------------------------------------------------------------
 
 	static final String DESC_OPERATOR = 
-			"The MetricsInfluxDBSink operator receives metrics as tuples 
-			+ "from the MetricsSource operator and outputs these metrics to "
-			+ "an InfluxDB database.\\n"
+			"The MetricsInfluxDBSink operator receives metrics as tuples from the "
+			+ "MetricsSource operator and outputs these metrics to an InfluxDB "
+			+ "database.\\n"
 			+ "\\n"
-			+ "Once the data is outputted to the InfluxDB database, "
-			+ "you can query the database and create custom graphs to display "
-			+ "this data with graphing tools such as Grafana and Kibana.\\n"
+			+ "The MetricsInfluxDBSink requires a hostname, hostport, username,"
+			+ "and password to be specified in its parameters.\\n"
+			+ "\\n"
+			+ "By default, the username and password are 'admin', the hostname "
+			+ "is 'http:/" + "/localhost', and the hostport is 8086.\\n"
+			+ "\\n"
+			+ "A databaseName and measurement must also be specified. The "
+			+ "database is the highest level element. The database can hold "
+			+ "various measurements. Measurements can be thought of as "
+			+ "tables.\\n"
+			+ "\\n"
+			+ "Once the data is outputted to InfluxDB, the user can query the "
+			+ "database and create custom graphs to display this data with "
+			+ "graphing tools such as Grafana and Kibana. An example query "
+			+ "would be:\\n"
+			+ "`SELECT 'attributeName' FROM '<measurementName>' WHERE "
+			+ "'anotherAttributeName'='<value>'`"
+			+ "\\n"
 			;
 
 	private static final String DESC_INFLUXDB_USERNAME = 
@@ -95,6 +107,9 @@ public class MetricsInfluxDBSink extends AbstractOperator {
 	
 	private static final String DESC_DATABASE_NAME = 
 			"Specifies the name for the databases.";
+	
+	private static final String DESC_MEASUREMENT_NAME = 
+			"Specifies the name for the measurement in the database.";
 
 	@Parameter(
 			optional=false,
@@ -135,7 +150,14 @@ public class MetricsInfluxDBSink extends AbstractOperator {
 	public void set_database_name(String name) {
 		databaseName = name;
 	}
-
+	
+	@Parameter(
+			optional=false,
+			description=MetricsInfluxDBSink.DESC_MEASUREMENT_NAME
+			)
+	public void set_measurement_name(String name) {
+		measurementName = name;
+	}
 	
 	// ------------------------------------------------------------------------
 	// Implementation.
@@ -154,12 +176,16 @@ public class MetricsInfluxDBSink extends AbstractOperator {
 	/**
 	 * Database name.
 	 */
-	private String databaseName = "streamsdb";
+	private String databaseName = null;
+	
+	/**
+	 * Measurement name.
+	 */
+	private String measurementName = null;
 	
 	/**
 	 * Logger for tracing.
 	 */
-	@SuppressWarnings("unused")
 	private static Logger _trace = Logger.getLogger(MetricsInfluxDBSink.class.getName());
 	
 	/**
@@ -207,24 +233,44 @@ public class MetricsInfluxDBSink extends AbstractOperator {
     public void process(StreamingInput<Tuple> stream, Tuple tuple)
             throws Exception {
 
+		// Collect fields to add to point.
+		StreamSchema schema = tuple.getStreamSchema();
+    	Set<String> attributeNames = schema.getAttributeNames();
+    	Map<String, Object> fieldsToAdd = new HashMap<String, Object>();
+    	
+    	for(String attributeName : attributeNames) {
+    		String attributeType = schema.getAttribute(attributeName).getType().toString();
+    		
+        	if(attributeType.equals("INT32:int32")) {
+            	fieldsToAdd.put(attributeName, tuple.getInt(attributeName));
+    		}
+        	else if(attributeType.equals("INT64:int64")) {
+            	fieldsToAdd.put(attributeName, tuple.getLong(attributeName));
+        	}
+        	else if(attributeType.equals("RSTRING:rstring")) {
+            	fieldsToAdd.put(attributeName, tuple.getString(attributeName));
+        	}
+//    		else {
+//    			_trace.error("Unrecognized type found: " + attributeType);
+//    		}
+    	}
+
 		// Create InfluxDB point to output.
-		Point point = Point.measurement("metrics")
-			.time(tuple.getLong("lastTimeRetrieved"), TimeUnit.MILLISECONDS)
-			.addField("domainName", tuple.getString("domainName"))
-			.addField("instanceName", tuple.getString("instanceName"))
-			.addField("jobId", tuple.getString("jobId"))
-			.addField("jobName", tuple.getString("jobName"))
-			.addField("operatorName", tuple.getString("operatorName"))
-			.addField("portIndex", tuple.getInt("portIndex"))
-			.addField(tuple.getString("metricName"), tuple.getLong("metricValue"))
-			.build();
-    
-		// Store in batch until window marker is received.
-		batchPoints.point(point);
+    	if(!fieldsToAdd.isEmpty()) {
+    		Point point = Point.measurement(measurementName)
+    				.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+    				.fields(fieldsToAdd)
+    				.build();
+        
+    		// Store in batch until window marker is received.
+    		batchPoints.point(point);
+
+    		influxDB.write(batchPoints);
+    	}
     }
     
 	/**
-     * Process an incoming punctuation that arrived on the specified port.
+     * Process an incoming punctuation that arrived on the sp.cified port.
      * @param stream Port the punctuation is arriving on.
      * @param mark The punctuation mark
      * @throws Exception Operator failure, will cause the enclosing PE to terminate.
@@ -232,11 +278,6 @@ public class MetricsInfluxDBSink extends AbstractOperator {
     @Override
     public void processPunctuation(StreamingInput<Tuple> stream,
     		Punctuation mark) throws Exception {
-
-    	// Output metrics to InfluxDB.
-    	if(batchPoints != null) {
-    		influxDB.write(batchPoints);
-    	}
     }
 
     /**

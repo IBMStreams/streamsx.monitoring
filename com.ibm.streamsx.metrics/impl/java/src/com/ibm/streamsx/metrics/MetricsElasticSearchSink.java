@@ -1,10 +1,3 @@
-//
-// ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
-// * All rights reserved.                                                     *
-// ****************************************************************************
-//
-
 package com.ibm.streamsx.metrics;
 
 
@@ -12,11 +5,15 @@ import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.ibm.streams.operator.AbstractOperator;
 import com.ibm.streams.operator.OperatorContext;
+import com.ibm.streams.operator.StreamSchema;
 import com.ibm.streams.operator.StreamingData.Punctuation;
 import com.ibm.streams.operator.StreamingInput;
 import com.ibm.streams.operator.Tuple;
@@ -28,7 +25,6 @@ import com.ibm.streams.operator.model.Libraries;
 import com.ibm.streams.operator.model.Parameter;
 import com.ibm.streams.operator.model.PrimitiveOperator;
 
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -79,13 +75,29 @@ public class MetricsElasticSearchSink extends AbstractOperator {
 	// ------------------------------------------------------------------------
 
 	static final String DESC_OPERATOR = 
-			"The MetricsElasticSearchSink operator receives metrics as tuples 
-			+ "from the MetricsSource operator and outputs these metrics to "
-			+ "an ElasticSearch database.\\n"
+			"The MetricsElasticSearchDBSink operator receives metrics as tuples from "
+			+ "the MetricsSource operator and outputs these metrics to an ElasticSearch "
+			+ "database.\\n"
 			+ "\\n"
-			+ "Once the data is outputted to the ElasticSearch database, "
-			+ "you can query the database and create custom graphs to display "
-			+ "this data with graphing tools such as Grafana and Kibana.\\n"
+			+ "The MetricsElasticSearchSink requires a hostname, and hostport to be "
+			+ "specified in its parameters.\\n"
+			+ "\\n"
+			+ "By default, the hostname is 'localhost', and the hostport "
+			+ "is 9300.\\n"
+			+ "\\n"
+			+ "An indexName and type must also be specified. The index is the "
+			+ "highest level element. It can be thought of as the database. The "
+			+ "index can hold various types. Types can be thought of as tables.\\n"
+			+ "\\n"
+			+ "A timestampName must be specified for time-based queries like monitoring "
+			+ "how a tuple attribute's value changes over time.\\n"
+			+ "\\n"
+			+ "Once the data is outputted to ElasticSearch, the user can query the "
+			+ "database and create custom graphs to display this data with graphing "
+			+ "tools such as Grafana and Kibana. An example query would be:\\n"
+			+ "`SELECT 'metricValue' FROM '<databaseName>' WHERE 'metricName'="
+			+ "'<metricName>'`"
+			+ "\\n"
 			;
 
 	private static final String DESC_ELASTICSEARCH_HOSTNAME = 
@@ -94,8 +106,14 @@ public class MetricsElasticSearchSink extends AbstractOperator {
 	private static final String DESC_ELASTICSEARCH_HOSTPORT = 
 			"Specifies the hostport of the ElasticSearch server.";
 	
-	private static final String DESC_DATABASE_NAME = 
-			"Specifies the name for the databases.";
+	private static final String DESC_INDEX_NAME = 
+			"Specifies the name for the index.";
+	
+	private static final String DESC_TYPE_NAME = 
+			"Specifies the name for the type.";
+	
+	private static final String DESC_TIMESTAMP_NAME = 
+			"Specifies the name for the timestamp attribute.";
 	
 	@Parameter(
 			optional=false,
@@ -115,10 +133,26 @@ public class MetricsElasticSearchSink extends AbstractOperator {
 	
 	@Parameter(
 			optional=false,
-			description=MetricsElasticSearchSink.DESC_DATABASE_NAME
+			description=MetricsElasticSearchSink.DESC_INDEX_NAME
 			)
-	public void set_database_name(String name) {
-		databaseName = name;
+	public void set_index_name(String name) {
+		indexName = name;
+	}
+	
+	@Parameter(
+			optional=false,
+			description=MetricsElasticSearchSink.DESC_TYPE_NAME
+			)
+	public void set_type_name(String name) {
+		typeName = name;
+	}
+	
+	@Parameter(
+			optional=false,
+			description=MetricsElasticSearchSink.DESC_TIMESTAMP_NAME
+			)
+	public void set_timestamp_name(String name) {
+		timestampName = name;
 	}
 
 	
@@ -135,9 +169,19 @@ public class MetricsElasticSearchSink extends AbstractOperator {
 	private int elasticSearchHostPort = 9300;
 
 	/**
-	 * Database name.
+	 * Index name.
 	 */
-	private String databaseName = "streamsdb";
+	private String indexName = null;
+	
+	/**
+	 * Type name.
+	 */
+	private String typeName = null;
+	
+	/**
+	 * Timestamp name.
+	 */
+	private String timestampName = null;
 	
 	/**
 	 * Logger for tracing.
@@ -162,8 +206,8 @@ public class MetricsElasticSearchSink extends AbstractOperator {
 		client = new PreBuiltTransportClient(settings).addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticSearchHostName), elasticSearchHostPort));
 		
 		// Create index if it doesn't exist.
-		if(!client.admin().indices().prepareExists(databaseName).execute().actionGet().isExists()) {
-			client.admin().indices().create(Requests.createIndexRequest(databaseName)).actionGet();
+		if(!client.admin().indices().prepareExists(indexName).execute().actionGet().isExists()) {
+			client.admin().indices().create(Requests.createIndexRequest(indexName)).actionGet();
 		}
 	}
 
@@ -188,21 +232,29 @@ public class MetricsElasticSearchSink extends AbstractOperator {
     public void process(StreamingInput<Tuple> stream, Tuple tuple)
             throws Exception {
         
-        // Create ElasticSearch JSON to output.
-        DateFormat df = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSSZZ");
+    	// Collect fields to add to JSON output.
+		StreamSchema schema = tuple.getStreamSchema();
+    	Set<String> attributeNames = schema.getAttributeNames();
+    	Map<String, Object> fieldsToAdd = new HashMap<String, Object>();
+    	
+    	for(String attributeName : attributeNames) {
+    		fieldsToAdd.put(attributeName, tuple.getObject(attributeName));
+//        	_trace.error("Attribute Name:" + attributeName + "; Attribute Value:" + tuple.getObject(attributeName));
+    	}
         
-        builder = XContentFactory.jsonBuilder()
-        		.startObject()
-	        		.field("lastTimeRetrieved", df.format(new Date((tuple.getLong("lastTimeRetrieved")))))
-        			.field("domainName", tuple.getString("domainName"))
-        			.field("instanceName", tuple.getString("instanceName"))
-        			.field("jobId", tuple.getString("jobId"))
-        			.field("jobName", tuple.getString("jobName"))
-        			.field("operatorName", tuple.getString("operatorName"))
-        			.field("portIndex", tuple.getString("portIndex"))
-    				.field(tuple.getString("metricName"), 
-    						Integer.parseInt(tuple.getString("metricValue")))
-        		.endObject();
+    	// Add timestamp for time-based queries.
+        DateFormat df = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSSZZ");
+    	fieldsToAdd.put(timestampName, df.format(new Date(System.currentTimeMillis())));
+
+        // Create ElasticSearch JSON to output.
+        builder = XContentFactory.jsonBuilder().map(fieldsToAdd);
+        
+        // Output metrics to ElasticSearch.
+        if(builder != null) {
+	        client.prepareIndex(indexName, typeName)
+	            	.setSource(builder)
+	            	.get();
+        }
     }
     
 	/**
@@ -214,14 +266,6 @@ public class MetricsElasticSearchSink extends AbstractOperator {
     @Override
     public void processPunctuation(StreamingInput<Tuple> stream,
     		Punctuation mark) throws Exception {
-
-        // Output metrics to ElasticSearch.
-        if(builder != null) {
-	        @SuppressWarnings("unused")
-			IndexResponse response = client.prepareIndex(databaseName, "metrics")
-	            	.setSource(builder)
-	            	.get();
-        }
     }
 
 	/**
