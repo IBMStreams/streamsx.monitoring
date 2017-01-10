@@ -7,9 +7,8 @@
 
 package com.ibm.streamsx.metrics.internal.filter;
 
-/**
- * The 
- */
-interface Filter {
+interface IValidator {
+
+	boolean validate(String key, Object object);
 
 }

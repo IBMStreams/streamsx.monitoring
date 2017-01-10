@@ -1,3 +1,10 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
 package com.ibm.streamsx.metrics.internal;
 
 import javax.management.MBeanServerConnection;
@@ -29,7 +36,7 @@ public class OperatorConfiguration {
 	/**
 	 * Specifies the domain that is monitored.
 	 */
-	private String _domain = null;
+	private String _domainId = null;
 
 	/**
 	 * Specifies the period after which a failed JMX connect is repeated. The
@@ -64,6 +71,8 @@ public class OperatorConfiguration {
 	private Filters _filters = new Filters();
 
 	private TupleContainer _tupleContainer = null;
+
+	private EmitMetricTupleMode _emitMetricTuple = EmitMetricTupleMode.onChangedValue;
 	
 	public String get_connectionURL() {
 		return _connectionURL;
@@ -89,12 +98,12 @@ public class OperatorConfiguration {
 		this._password = password;
 	}
 
-	public String get_domain() {
-		return _domain;
+	public String get_domainId() {
+		return _domainId;
 	}
 
-	public void set_domain(String domain) {
-		this._domain = domain;
+	public void set_domainId(String domainId) {
+		this._domainId = domainId;
 	}
 
 	public Double get_retryPeriod() {
@@ -161,4 +170,20 @@ public class OperatorConfiguration {
 		_tupleContainer = tupleContainer;
 		
 	}
+
+	public void set_emitMetricTuple(EmitMetricTupleMode mode) {
+		_emitMetricTuple = mode;
+	}
+
+	public IMetricEvaluator newDefaultMetricEvaluator() {
+		switch(_emitMetricTuple) {
+		case onChangedValue:
+			return new DeltaMetricEvaluator();
+		case periodic:
+			return PeriodicMetricEvaluator.getSingleton();
+		default:
+			return null;
+		}
+	}
+
 }
