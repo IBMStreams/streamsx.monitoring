@@ -1,6 +1,6 @@
 //
 // ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
+// * Copyright (C) 2016, 2017, International Business Machines Corporation    *
 // * All rights reserved.                                                     *
 // ****************************************************************************
 //
@@ -14,7 +14,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
-final class InstanceFilter extends PatternMatcher implements Filter {
+final class InstanceFilter extends PatternMatcher {
 
 	/**
 	 * Logger for tracing.
@@ -26,10 +26,9 @@ final class InstanceFilter extends PatternMatcher implements Filter {
 	 */
 	protected Map<String /* regular expression */, JobFilter> _jobFilters = new HashMap<>();
 
-	public InstanceFilter(String regularExpression, Set<Filter> filters) throws PatternSyntaxException {
+	public InstanceFilter(String regularExpression, Set<JobFilter> filters) throws PatternSyntaxException {
 		super(regularExpression);
-		for(Filter filter : filters) {
-			JobFilter jobFilter = (JobFilter)filter;
+		for(JobFilter jobFilter : filters) {
 			_jobFilters.put(jobFilter.getRegularExpression(), jobFilter);
 		}
 	}

@@ -1,6 +1,6 @@
 //
 // ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
+// * Copyright (C) 2016, 2017, International Business Machines Corporation    *
 // * All rights reserved.                                                     *
 // ****************************************************************************
 //
@@ -52,17 +52,18 @@ public class PortParser extends AbstractParser {
 		return _logger;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	protected Set<Filter> buildFilters(JSONObject json) {
+	protected Set<PortFilter> buildFilters(JSONObject json) {
 //		logger().error("PortParser.JSON=" + json);
 		Set<Long> indexes = buildNumberList(json.get(PORT_INDEXES));
 		Set<String> metrics = buildPatternList(json.get(METRIC_NAME_PATTERNS));
-		Set<Filter> metricFilters = new HashSet<>();
+		Set<MetricFilter> metricFilters = new HashSet<>();
 		for (String pattern : metrics) {
 //			logger().error("create metric filter, pattern=" + pattern);
 			metricFilters.add(new MetricFilter(pattern));
 		}
-		Set<Filter> result = new HashSet<>();
+		Set<PortFilter> result = new HashSet<>();
 		for (Long index : indexes) {
 //			logger().error("create port filter, index=" + index);
 			result.add(new PortFilter(index, metricFilters));

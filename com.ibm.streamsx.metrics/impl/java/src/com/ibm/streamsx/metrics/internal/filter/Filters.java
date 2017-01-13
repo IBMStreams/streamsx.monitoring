@@ -1,6 +1,6 @@
 //
 // ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
+// * Copyright (C) 2016, 2017, International Business Machines Corporation    *
 // * All rights reserved.                                                     *
 // ****************************************************************************
 //
@@ -216,9 +216,8 @@ public class Filters {
 			JSONArtifact root = JSON.parse(inputStream);
 			DomainParser domainParser = new DomainParser();
 			if (domainParser.validate(root)) {
-				Set<Filter> domainFilters = domainParser.buildFilters(root);
-				for (Filter filter : domainFilters) {
-					DomainFilter domainFilter = (DomainFilter)filter;
+				Set<DomainFilter> domainFilters = domainParser.buildFilters(root);
+				for (DomainFilter domainFilter : domainFilters) {
 					filters._domainFilters.put(domainFilter.getRegularExpression(), domainFilter);
 				}
 			}

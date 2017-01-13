@@ -1,6 +1,6 @@
 //
 // ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
+// * Copyright (C) 2016, 2017, International Business Machines Corporation    *
 // * All rights reserved.                                                     *
 // ****************************************************************************
 //
@@ -14,7 +14,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
-final class PortFilter extends NumberMatcher implements Filter {
+final class PortFilter extends NumberMatcher {
 
 	/**
 	 * Logger for tracing.
@@ -26,10 +26,9 @@ final class PortFilter extends NumberMatcher implements Filter {
 	 */
 	protected Map<String /* regular expression */, MetricFilter> _metricFilters = new HashMap<>();
 
-	public PortFilter(Long portIndex, Set<Filter> metricFilters) throws PatternSyntaxException {
+	public PortFilter(Long portIndex, Set<MetricFilter> metricFilters) throws PatternSyntaxException {
 		super(portIndex);
-		for(Filter filter : metricFilters) {
-			MetricFilter metricFilter = (MetricFilter)filter;
+		for(MetricFilter metricFilter : metricFilters) {
 			_metricFilters.put(metricFilter.getRegularExpression(), metricFilter);
 		}
 	}

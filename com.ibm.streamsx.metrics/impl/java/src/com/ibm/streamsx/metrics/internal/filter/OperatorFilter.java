@@ -1,6 +1,6 @@
 //
 // ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
+// * Copyright (C) 2016, 2017, International Business Machines Corporation    *
 // * All rights reserved.                                                     *
 // ****************************************************************************
 //
@@ -14,7 +14,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
-final class OperatorFilter extends PatternMatcher implements Filter {
+final class OperatorFilter extends PatternMatcher {
 
 	/**
 	 * Logger for tracing.
@@ -36,18 +36,15 @@ final class OperatorFilter extends PatternMatcher implements Filter {
 	 */
 	protected Map<Long /* port index */, PortFilter> _outputPortFilters = new HashMap<>();
 
-	public OperatorFilter(String regularExpression, Set<Filter> metricFilters, Set<Filter> inputPortFilters, Set<Filter> outputPortFilters) throws PatternSyntaxException {
+	public OperatorFilter(String regularExpression, Set<MetricFilter> metricFilters, Set<PortFilter> inputPortFilters, Set<PortFilter> outputPortFilters) throws PatternSyntaxException {
 		super(regularExpression);
-		for(Filter filter : metricFilters) {
-			MetricFilter metricFilter = (MetricFilter)filter;
+		for(MetricFilter metricFilter : metricFilters) {
 			_metricFilters.put(metricFilter.getRegularExpression(), metricFilter);
 		}
-		for(Filter filter : inputPortFilters) {
-			PortFilter portFilter = (PortFilter)filter;
+		for(PortFilter portFilter : inputPortFilters) {
 			_inputPortFilters.put(portFilter.getNumber(), portFilter);
 		}
-		for(Filter filter : outputPortFilters) {
-			PortFilter portFilter = (PortFilter)filter;
+		for(PortFilter portFilter : outputPortFilters) {
 			_outputPortFilters.put(portFilter.getNumber(), portFilter);
 		}
 	}

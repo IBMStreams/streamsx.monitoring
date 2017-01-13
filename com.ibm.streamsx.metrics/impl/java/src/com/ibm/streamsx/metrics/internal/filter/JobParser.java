@@ -1,6 +1,6 @@
 //
 // ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
+// * Copyright (C) 2016, 2017, International Business Machines Corporation    *
 // * All rights reserved.                                                     *
 // ****************************************************************************
 //
@@ -82,13 +82,14 @@ public class JobParser extends AbstractParser {
 		return _logger;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	protected Set<Filter> buildFilters(JSONObject json) {
+	protected Set<JobFilter> buildFilters(JSONObject json) {
 //		logger().error("Job.JSON=" + json);
 		Set<String> patterns = buildPatternList(json.get(JOB_NAME_PATTERNS));
-		Set<Filter> operatorFilters = _operatorParser.buildFilters((JSONArtifact)json.get(OPERATORS));
-		Set<Filter> peFilters = _peParser.buildFilters((JSONArtifact)json.get(PES));
-		Set<Filter> result = new HashSet<>();
+		Set<OperatorFilter> operatorFilters = _operatorParser.buildFilters((JSONArtifact)json.get(OPERATORS));
+		Set<PeFilter> peFilters = _peParser.buildFilters((JSONArtifact)json.get(PES));
+		Set<JobFilter> result = new HashSet<>();
 		for (String pattern : patterns) {
 //			logger().error("create job filter, pattern=" + pattern);
 			result.add(new JobFilter(pattern, operatorFilters, peFilters));

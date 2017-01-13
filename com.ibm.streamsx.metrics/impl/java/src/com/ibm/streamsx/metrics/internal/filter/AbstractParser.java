@@ -1,6 +1,6 @@
 //
 // ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
+// * Copyright (C) 2016, 2017, International Business Machines Corporation    *
 // * All rights reserved.                                                     *
 // ****************************************************************************
 //
@@ -197,13 +197,13 @@ abstract class AbstractParser {
 		return result;
 	}
 	
-	protected Set<Filter> buildFilters(JSONArtifact json) {
+	protected <T> Set<T> buildFilters(JSONArtifact json) {
 //		logger().error("JSON=" + json);
-		Set<Filter> filters = new HashSet<>();
+		Set<T> filters = new HashSet<>();
 		if (json instanceof JSONArray) {
 			for (Object obj : (JSONArray)json) {
 				if (obj instanceof JSONObject) {
-					Set<Filter> tmp = buildFilters((JSONObject)obj);
+					Set<T> tmp = buildFilters((JSONObject)obj);
 					if (tmp != null) {
 						filters.addAll(tmp);
 					}
@@ -211,7 +211,7 @@ abstract class AbstractParser {
 			}
 		}
 		else if (json instanceof JSONObject) {
-			Set<Filter> tmp = buildFilters((JSONObject)json);
+			Set<T> tmp = buildFilters((JSONObject)json);
 			if (tmp != null) {
 				filters.addAll(tmp);
 			}
@@ -219,7 +219,7 @@ abstract class AbstractParser {
 		return filters;
 	}
 
-	protected abstract Set<Filter> buildFilters(JSONObject json);
+	protected abstract <T> Set<T> buildFilters(JSONObject json);
 
 	protected Set<Long> buildNumberList(String key, Object json) {
 		Set<Long> result = new HashSet<>();
