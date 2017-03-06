@@ -58,3 +58,17 @@ command:
 ```
 firefox com.ibm.streamsx.metrics/doc/spldoc/html/index.html &
 ```
+
+### Using the MetricsElasticSearchSink and MetricsInfluxDBSink
+The MetricsElasticSearchSink operator requires you to have an ElasticSearch server
+running. Download and install ElasticSearch [here](https://www.elastic.co/downloads/elasticsearch).
+
+To start the ElasticSearch server on Linux, perform the following command:
+`sudo service elasticsearch start`
+
+The MetricsInfluxDBSink requires you to have an InfluxDB server running. Download and install
+InfluxDB [here](https://www.influxdata.com/downloads/).
+
+To start the InfluxDB server on Linux, perform the following command:
+`sudo service influxdb start`
+
