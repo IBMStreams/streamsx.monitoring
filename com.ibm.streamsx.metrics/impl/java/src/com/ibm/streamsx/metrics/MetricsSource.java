@@ -19,6 +19,7 @@ import com.ibm.streams.operator.OperatorContext;
 import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.StreamingData.Punctuation;
 import com.ibm.streams.operator.StreamingOutput;
+import com.ibm.streams.operator.model.Icons;
 import com.ibm.streams.operator.model.OutputPortSet;
 import com.ibm.streams.operator.model.OutputPortSet.WindowPunctuationOutputMode;
 import com.ibm.streams.operator.model.OutputPorts;
@@ -66,6 +67,10 @@ import com.ibm.streams.operator.model.Parameter;
 			description=MetricsSource.DESC_OUTPUT_PORT
 			)
 })
+@Icons(
+		location16 = "icons/MetricsSource_16.gif", 
+		location32 = "icons/MetricsSource_32.gif"
+)
 public class MetricsSource extends AbstractOperator {
 
 	// ------------------------------------------------------------------------
