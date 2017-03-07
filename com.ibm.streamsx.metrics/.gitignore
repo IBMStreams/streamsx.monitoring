@@ -2,4 +2,6 @@
 /output/
 /.toolkitList
 /toolkit.xml
-doc/
+/doc/
+/bin/
+/.classpath

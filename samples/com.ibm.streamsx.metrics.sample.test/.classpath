@@ -8,8 +8,5 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/kotowski/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.management.jmxmp.jar"/>
-	<classpathentry kind="lib" path="/home/kotowski/InfoSphere_Streams/4.2.0.0/lib/com.ibm.streams.management.mx.jar"/>
-	<classpathentry kind="lib" path="/home/kotowski/InfoSphere_Streams/4.2.0.0/ext/lib/jmxremote_optional.jar"/>
 	<classpathentry kind="output" path="impl/java/bin"/>
 </classpath>
