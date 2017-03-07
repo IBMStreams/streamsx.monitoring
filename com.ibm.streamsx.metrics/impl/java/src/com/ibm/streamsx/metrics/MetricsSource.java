@@ -7,6 +7,7 @@
 
 package com.ibm.streamsx.metrics;
 
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -18,7 +19,6 @@ import com.ibm.streams.operator.OperatorContext;
 import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.StreamingData.Punctuation;
 import com.ibm.streams.operator.StreamingOutput;
-import com.ibm.streams.operator.model.Libraries;
 import com.ibm.streams.operator.model.OutputPortSet;
 import com.ibm.streams.operator.model.OutputPortSet.WindowPunctuationOutputMode;
 import com.ibm.streams.operator.model.OutputPorts;
@@ -46,6 +46,12 @@ import com.ibm.streams.operator.model.Parameter;
  * </ul>
  * <p>With the exception of operator initialization, all the other events may occur concurrently with each other, 
  * which lead to these methods being called concurrently by different threads.</p> 
+ * 
+ * Do not use the @Libraries annotation because the operator requires class
+ * libraries from the IBM Streams' installation, and the STREAMS_INSTALL
+ * environment variable would be evaluated during compile-time only. This
+ * would require identical install locations for the build and run-time
+ * environment.
  */
 @PrimitiveOperator(
 		name="MetricsSource",
@@ -60,15 +66,6 @@ import com.ibm.streams.operator.model.Parameter;
 			description=MetricsSource.DESC_OUTPUT_PORT
 			)
 })
-@Libraries({
-	// As described here:
-	// http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/jmxapi-start.html
-	// Environment variables (@...@) are evaluated during compile-time and must
-	// be identical in the run-time environment.
-	"@STREAMS_INSTALL@/lib/com.ibm.streams.management.jmxmp.jar",
-	"@STREAMS_INSTALL@/lib/com.ibm.streams.management.mx.jar",
-	"@STREAMS_INSTALL@/ext/lib/jmxremote_optional.jar"
-	})
 public class MetricsSource extends AbstractOperator {
 
 	// ------------------------------------------------------------------------
@@ -278,6 +275,11 @@ public class MetricsSource extends AbstractOperator {
 		super.initialize(context);
 		_trace.trace("Operator " + context.getName() + " initializing in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 
+		// Dynamic registration of additional class libraries to get rid of
+		// the @Libraries annotation and its compile-time evaluation of
+		// environment variables.
+		setupClassPaths(context);
+		
 		/*
 		 * The domainId parameter is optional. If the application developer does
 		 * not set it, use the domain id under which the operator itself is
@@ -426,5 +428,39 @@ public class MetricsSource extends AbstractOperator {
 
 		// Must call super.shutdown()
 		super.shutdown();
+	}
+
+	/**
+	 * Registers additional class libraries to get rid of the @Libraries
+	 * annotation for the operator. Although the @Libraries annotation
+	 * supports environment variables, these are evaluated during
+	 * compile-time only requiring identical IBM Streams installation paths
+	 * for the build and run-time environment.
+	 *  
+	 * @param context
+	 * Context information for the Operator's execution context.
+	 * 
+	 * @throws Exception 
+	 * Throws exception in case of unavailable STREAM_INSTALL environment
+	 * variable, or problems while loading the required class libraries.
+	 */
+	private void setupClassPaths(OperatorContext context) throws Exception {
+		final String STREAMS_INSTALL = System.getenv("STREAMS_INSTALL");
+		if (STREAMS_INSTALL == null || STREAMS_INSTALL.isEmpty()) {
+			throw new Exception("STREAMS_INSTALL environment variable must be set");
+		}
+		// See: http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/jmxapi-start.html
+		String[] libraries = {
+				STREAMS_INSTALL + "/lib/com.ibm.streams.management.jmxmp.jar",
+				STREAMS_INSTALL + "/lib/com.ibm.streams.management.mx.jar",
+				STREAMS_INSTALL + "/ext/lib/jmxremote_optional.jar"
+		};
+		try {
+			context.addClassLibraries(libraries);
+		}
+		catch(MalformedURLException e) {
+			_trace.error("problem while adding class libraries: " + String.join(",", libraries), e);
+			throw e;
+		}
 	}
 }
