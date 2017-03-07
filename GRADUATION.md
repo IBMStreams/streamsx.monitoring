@@ -10,8 +10,8 @@ Incubation for projects is covered here: https://github.com/IBMStreams/administr
   * Status: No
 - [ ] :red_circle: Project is properly documented
   * Status: No
-- [ ] :red_circle: Project has samples and instructions to help users get started easily
-  * Status: No
+- [ ] :large_orange_diamond: Project has samples and instructions to help users get started easily
+  * Status: Samples available
 - [ ] :red_circle: Sufficient testing
   * Status: No
 - [ ] :red_circle: Instructions on how to get started with development and contributing to project
