@@ -18,7 +18,7 @@
 	<target name="init">
 		<mkdir dir="${build.dir}" />
 		<copy file="${basedir}/.classpath_tpl"
-			 tofile="${basedir}/.classpath" >
+			 tofile="${basedir}/.classpath" overwrite="true">
 		    <filterchain>
 		       <replacetokens>
 			    <token key="STREAMS_INSTALL" value="${streams.install}"/>
