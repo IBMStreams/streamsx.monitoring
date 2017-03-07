@@ -103,7 +103,7 @@ composite Main {
 				password: getSubmissionTimeValue("password");
 				domainId: getSubmissionTimeValue("domainId");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
-				filterDocument: dataDirectory() + "/MetricsSource_MonitorEverything.json";
+				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorEverything.json";
 				emitMetricTuple: onChangedValue;
 		}
 		
@@ -132,7 +132,7 @@ composite Main {
 				password: getSubmissionTimeValue("password");
 				domainId: getSubmissionTimeValue("domainId");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
-				filterDocument: dataDirectory() + "/MetricsSource_MonitorSomeCustomMetrics.json";
+				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorSomeCustomMetrics.json";
 				emitMetricTuple: periodic;
 		}
 		
@@ -160,7 +160,7 @@ composite Main {
 //				password: getSubmissionTimeValue("password");
 ////				domainId: getSubmissionTimeValue("domainId");
 //				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
-//				filterDocument: dataDirectory() + "/filters.json";
+//				filterDocument: getThisToolkitDir()+"/etc" + "/filters.json";
 //				emitMetricTuple: onChangedValue;
 //		}
 		

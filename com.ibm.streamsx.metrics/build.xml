@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+// *******************************************************************************
+// * Copyright (C)2017, International Business Machines Corporation and *
+// * others. All Rights Reserved. *
+// *******************************************************************************
+-->
+<project name="com.ibm.streamsx.metrics" basedir="." default="all">
+
+	<property environment="env" />
+	<property name="streams.install" value="${env.STREAMS_INSTALL}" />
+	<property name="src.dir" location="impl/java/src" />
+	<property name="build.dir" location="impl/java/bin" />
+	<property name="spl-mt" value="${streams.install}/bin/spl-make-toolkit" />
+
+	<target name="all" depends="indexToolkit"/>
+	
+	<target name="init">
+		<mkdir dir="${build.dir}" />
+		<copy file="${basedir}/.classpath_tpl"
+			 tofile="${basedir}/.classpath" >
+		    <filterchain>
+		       <replacetokens>
+			    <token key="STREAMS_INSTALL" value="${streams.install}"/>
+			</replacetokens>
+		    </filterchain>
+		</copy>
+	</target>
+
+	<path id="cp.streams">
+		<pathelement location="${streams.install}/lib/com.ibm.streams.operator.samples.jar" />
+		<pathelement location="${streams.install}/lib/com.ibm.streams.management.jmxmp.jar" />
+		<pathelement location="${streams.install}/lib/com.ibm.streams.management.mx.jar" />
+		<pathelement location="${streams.install}/ext/lib/jmxremote_optional.jar" />
+	</path>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true">
+			<classpath>
+				<path refid="cp.streams" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="clean">
+		<!-- toolkit clean -->
+		<exec executable="${spl-mt}"  failonerror="true">
+			<arg value="-c"/>
+			<arg value="-i"/>
+			<arg value="."/>
+    		</exec>
+		<delete dir="${build.dir}" />
+		<delete dir="${basedir}/output" quiet="true"/>
+	</target>
+	
+	<target name="indexToolkit" depends="compile">
+		<exec executable="${spl-mt}" failonerror="true">
+			<arg value="-i"/>
+			<arg value="."/>
+		</exec>
+	</target>
+
+</project>
