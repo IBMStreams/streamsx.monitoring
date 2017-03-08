@@ -7,8 +7,12 @@
 
 package com.ibm.streamsx.metrics;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.Map;
+
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
@@ -189,7 +193,17 @@ public class MetricsSource extends AbstractOperator {
 			+ "* **onChangedValue** (default)\\n"
 			+ "\\n"
 			+ "  For each monitored metric a tuple is emitted during each scan cycle if the metric value changed.";
+
+	private static final Object PARAMETER_CONNECTION_URL = "connectionURL";
 	
+	private static final Object PARAMETER_USER = "user";
+
+	private static final Object PARAMETER_PASSWORD = "password";
+
+	private static final Object PARAMETER_FILTER_DOCUMENT = "filterDocument";
+
+	private static final String MISSING_VALUE = "The following value must be specified as parameter or in the application configuration: ";
+
 	// ------------------------------------------------------------------------
 	// Implementation.
 	// ------------------------------------------------------------------------
@@ -301,8 +315,6 @@ public class MetricsSource extends AbstractOperator {
 		// environment variables.
 		setupClassPaths(context);
 		
-//		getOperatorContext().getPE().getApplicationConfiguration(name)
-		
 		/*
 		 * The domainId parameter is optional. If the application developer does
 		 * not set it, use the domain id under which the operator itself is
@@ -323,35 +335,14 @@ public class MetricsSource extends AbstractOperator {
 		 * configuration files or a combination of the two. 
 		 */
 
-		_operatorConfiguration.set_filters(Filters.setupFilters(_operatorConfiguration.get_filterDocument()));
+		setupFilters();
 		boolean isValidDomain = _operatorConfiguration.get_filters().matchesDomainId(_operatorConfiguration.get_domainId());
 		if (!isValidDomain)
 		{
 			throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domainId() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
 		}
 		
-		/*
-		 * Prepare the JMX environment settings.
-		 */
-		HashMap<String, Object> env = new HashMap<>();
-		String [] credentials = { _operatorConfiguration.get_user(), _operatorConfiguration.get_password() };
-		env.put("jmx.remote.credentials", credentials);
-		env.put("jmx.remote.protocol.provider.pkgs", "com.ibm.streams.management");
-		/*
-		 * TODO streamtool getdomainproperty jmx.sslOption
-		 * Code taken from:
-		 * http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/jmxapi-lgop.html
-		 * 
-		 * Is this needed? Seems to be not needed.
-		 */
-//		String sslOption = "TLSv1";
-//		env.put("jmx.remote.tls.enabled.protocols", sslOption);
-
-		/*
-		 * Setup the JMX connector and MBean connection.
-		 */
-		_operatorConfiguration.set_jmxConnector(JMXConnectorFactory.connect(new JMXServiceURL(_operatorConfiguration.get_connectionURL()), env));
-		_operatorConfiguration.set_mbeanServerConnection(_operatorConfiguration.get_jmxConnector().getMBeanServerConnection());
+		setupJMXConnection();
 
 		/*
 		 * Evaluate the output schema once.
@@ -486,4 +477,98 @@ public class MetricsSource extends AbstractOperator {
 			throw e;
 		}
 	}
+
+	/**
+	 * Sets up a JMX connection. The connection URL, the user, and the password
+	 * can be set with the operator parameters, or via application configuration.
+	 * 
+	 * @throws Exception
+	 * Throws exception in case of invalid/bad URLs or other I/O problems.
+	 */
+	protected void setupJMXConnection() throws Exception {
+		// Apply defaults, which are the parameter values.
+		String connectionURL = _operatorConfiguration.get_connectionURL();
+		String user = _operatorConfiguration.get_user();
+		String password = _operatorConfiguration.get_password();
+		// Override defaults if the application configuration is specified
+		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+		if (applicationConfigurationName != null) {
+			Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
+			if (properties.containsKey(PARAMETER_CONNECTION_URL)) {
+				connectionURL = properties.get(PARAMETER_CONNECTION_URL);
+			}
+			if (properties.containsKey(PARAMETER_USER)) {
+				user = properties.get(PARAMETER_USER);
+			}
+			if (properties.containsKey(PARAMETER_PASSWORD)) {
+				password = properties.get(PARAMETER_PASSWORD);
+			}
+		}
+		// Ensure a valid configuration.
+		if (connectionURL == null) {
+			throw new Exception(MISSING_VALUE + PARAMETER_CONNECTION_URL);
+		}
+		if (user == null) {
+			throw new Exception(MISSING_VALUE + PARAMETER_USER);
+		}
+		if (password == null) {
+			throw new Exception(MISSING_VALUE + PARAMETER_PASSWORD);
+		}
+		/*
+		 * Prepare the JMX environment settings.
+		 */
+		HashMap<String, Object> env = new HashMap<>();
+		String [] credentials = { user, password };
+		env.put("jmx.remote.credentials", credentials);
+		env.put("jmx.remote.protocol.provider.pkgs", "com.ibm.streams.management");
+		/*
+		 * TODO streamtool getdomainproperty jmx.sslOption
+		 * Code taken from:
+		 * http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/jmxapi-lgop.html
+		 * 
+		 * Is this needed? Seems to be not needed.
+		 */
+//		String sslOption = "TLSv1";
+//		env.put("jmx.remote.tls.enabled.protocols", sslOption);
+
+		/*
+		 * Setup the JMX connector and MBean connection.
+		 */
+		_operatorConfiguration.set_jmxConnector(JMXConnectorFactory.connect(new JMXServiceURL(connectionURL), env));
+		_operatorConfiguration.set_mbeanServerConnection(_operatorConfiguration.get_jmxConnector().getMBeanServerConnection());
+	}
+
+	/**
+	 * Setup the filters. The filters are either specified in an external text
+	 * file (filterDocument parameter specifies the file path), or in the
+	 * application control object as JSON string.
+	 *  
+	 * @throws Exception
+	 * Throws in case of I/O issues or if the filter document is neither
+	 * specified as parameter (file path), nor in the application configuration
+	 * (JSON string).
+	 */
+	protected void setupFilters() throws Exception {
+		boolean done = false;
+		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+		if (applicationConfigurationName != null) {
+			Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
+			if (properties.containsKey(PARAMETER_FILTER_DOCUMENT)) {
+				String filterDocument = properties.get(PARAMETER_FILTER_DOCUMENT);
+				try(InputStream inputStream = new ByteArrayInputStream(filterDocument.getBytes())) {
+					_operatorConfiguration.set_filters(Filters.setupFilters(inputStream));
+					done = true;
+				}
+			}
+		}
+		if (!done) {
+			// The filters are not specified in the application configuration.
+			String filterDocument = _operatorConfiguration.get_filterDocument();
+			if (filterDocument == null) {
+				throw new Exception(MISSING_VALUE + PARAMETER_FILTER_DOCUMENT);
+			}
+			_operatorConfiguration.set_filters(Filters.setupFilters(filterDocument));
+		}
+	}
+
 }

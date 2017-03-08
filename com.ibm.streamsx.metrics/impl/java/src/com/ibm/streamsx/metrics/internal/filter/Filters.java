@@ -209,21 +209,43 @@ public class Filters {
 	 * </ul>
 	 */
 	static public Filters setupFilters(String filterDocument) throws IOException {
-		Filters filters = new Filters();
 		Path file = new File(filterDocument).toPath();
-		InputStream inputStream = Files.newInputStream(file);
-		try {
-			JSONArtifact root = JSON.parse(inputStream);
-			DomainParser domainParser = new DomainParser();
-			if (domainParser.validate(root)) {
-				Set<DomainFilter> domainFilters = domainParser.buildFilters(root);
-				for (DomainFilter domainFilter : domainFilters) {
-					filters._domainFilters.put(domainFilter.getRegularExpression(), domainFilter);
-				}
-			}
+		try(InputStream inputStream = Files.newInputStream(file)) {
+			return setupFilters(inputStream);
 		}
-		finally {
-			inputStream.close();
+	}
+
+	/**
+	 * Read the filterDocument input stream, parse its JSON-formatted content, and
+	 * build a filter tree.
+	 * 
+	 * @param inputStream
+	 * Specifies the input stream that provides a JSON-formatted text, which
+	 * contains the specification of the filter criteria for domain, instance,
+	 * job, operator, and metric names.
+	 * 
+	 * @return
+	 * A tree of filter objects that is used to evaluate whether a given
+	 * domain, instance, job, operator, or metric name matches the specified
+	 * filter criteria.
+	 * 
+	 * @throws IOException
+	 * This exception is thrown under the following conditions.
+	 * <ul>
+	 * <li>An I/O error occurred, for example, the input stream fails to read data.</li>
+	 * <li>The filterDocument contains an invalid JSON document.</li>
+	 * <li>The filterDocument contains a valid JSON document (syntax) but required JSON attributes are missing (semantic).</li>
+	 * </ul>
+	 */
+	static public Filters setupFilters(InputStream inputStream) throws IOException {
+		Filters filters = new Filters();
+		JSONArtifact root = JSON.parse(inputStream);
+		DomainParser domainParser = new DomainParser();
+		if (domainParser.validate(root)) {
+			Set<DomainFilter> domainFilters = domainParser.buildFilters(root);
+			for (DomainFilter domainFilter : domainFilters) {
+				filters._domainFilters.put(domainFilter.getRegularExpression(), domainFilter);
+			}
 		}
 		return filters;
 	}

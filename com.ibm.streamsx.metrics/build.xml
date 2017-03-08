@@ -20,6 +20,7 @@
 	
 	<target name="init">
 		<mkdir dir="${build.dir}" />
+		<mkdir dir="${impl.lib.dir}" />
 		<copy file="${basedir}/.classpath_tpl"
 			 tofile="${basedir}/.classpath" overwrite="true">
 		    <filterchain>
