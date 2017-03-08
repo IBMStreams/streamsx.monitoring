@@ -43,7 +43,7 @@ composite Main {
 				password: getSubmissionTimeValue("password");
 				domainId: getSubmissionTimeValue("domainId");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
-				filterDocument: dataDirectory() + "/MetricsSource_MonitorMemoryMetrics.json";
+				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorMemoryMetrics.json";
 				emitMetricTuple: onChangedValue;
 		}
 		
