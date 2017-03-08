@@ -132,36 +132,44 @@ public class MetricsSource extends AbstractOperator {
 			+ "to this port."
 			;
 	
+	private static final String DESC_PARAM_APPLICATION_CONFIGURATION_NAME = 
+			"Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] "
+			+ "that can contain connectionURL, user, password, and filterDocument "
+			+ "properties. The application configuration overrides values that "
+			+ "are specified with the corresponding parameters.";
+	
 	private static final String DESC_PARAM_CONNECTION_URL = 
 			"Specifies the connection URL as returned by the `streamtool "
-			+ "getjmxconnect` command.";
+			+ "getjmxconnect` command. If the **applicationConfigurationName** "
+			+ "parameter is specified, the application configuration can "
+			+ "override this parameter value.";
 	
 	private static final String DESC_PARAM_USER = 
-			"Specifies the user that is required for the JMX connection.";
+			"Specifies the user that is required for the JMX connection. If "
+			+ "the **applicationConfigurationName** parameter is specified, "
+			+ "the application configuration can override this parameter value.";
 	
 	private static final String DESC_PARAM_PASSWORD = 
-			"Specifies the password that is required for the JMX connection.";
+			"Specifies the password that is required for the JMX connection. If "
+			+ "the **applicationConfigurationName** parameter is specified, "
+			+ "the application configuration can override this parameter value.";
 	
 	private static final String DESC_PARAM_DOMAIN_ID = 
 			"Specifies the domain id that is monitored. If no domain id is "
 			+ "specified, the domain id under which this operator is running "
 			+ "is used. If the operator is running in a standalone application "
-			+ "it raises an exception and aborts.";
-	
-	private static final String DESC_PARAM_RETRY_PERIOD = 
-			"Specifies the period after which a failed JMX connect is retried. "
-			+ "The default is 10.0 seconds.";
-	
-	private static final String DESC_PARAM_RETRY_COUNT = 
-			"Specifies the retry count for failed JMX connects. The default is "
-			+ "-1, which means infinite retries.";
+			+ "it raises an exception and aborts. If "
+			+ "the **applicationConfigurationName** parameter is specified, "
+			+ "the application configuration can override this parameter value.";
 	
 	private static final String DESC_PARAM_FILTER_DOCUMENT = 
 			"Specifies the path to a JSON-formatted document that specifies "
 			+ "the domain, instance, job, operator, and metric name filters as "
 			+ "regular expressions. Each regular expression must follow the "
 			+ "rules that are specified for Java "
-			+ "[https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern].";
+			+ "[https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. "
+			+ "If the **applicationConfigurationName** parameter is specified, "
+			+ "the application configuration can override this parameter value.";
 	
 	private static final String DESC_PARAM_SCAN_PERIOD = 
 			"Specifies the period after which a new metrics scan is "
@@ -197,7 +205,7 @@ public class MetricsSource extends AbstractOperator {
 	private DomainHandler _domainHandler = null;
 	
 	@Parameter(
-			optional=false,
+			optional=true,
 			description=MetricsSource.DESC_PARAM_CONNECTION_URL
 			)
 	public void setConnectionURL(String connectionURL) {
@@ -205,7 +213,7 @@ public class MetricsSource extends AbstractOperator {
 	}
 
 	@Parameter(
-			optional=false,
+			optional=true,
 			description=MetricsSource.DESC_PARAM_USER
 			)
 	public void setUser(String user) {
@@ -213,7 +221,7 @@ public class MetricsSource extends AbstractOperator {
 	}
 
 	@Parameter(
-			optional=false,
+			optional=true,
 			description=MetricsSource.DESC_PARAM_PASSWORD
 			)
 	public void setPassword(String password) {
@@ -230,22 +238,14 @@ public class MetricsSource extends AbstractOperator {
 
 	@Parameter(
 			optional=true,
-			description=MetricsSource.DESC_PARAM_RETRY_PERIOD
+			description=MetricsSource.DESC_PARAM_APPLICATION_CONFIGURATION_NAME
 			)
-	public void setRetryPeriod(double retryPeriod) {
-		_operatorConfiguration.set_retryPeriod(retryPeriod);
+	public void setApplicationConfigurationName(String applicationConfigurationName) {
+		_operatorConfiguration.set_applicationConfigurationName(applicationConfigurationName);
 	}
 
 	@Parameter(
 			optional=true,
-			description=MetricsSource.DESC_PARAM_RETRY_COUNT
-			)
-	public void setRetryCount(int retryCount) {
-		_operatorConfiguration.set_retryCount(retryCount);
-	}
-
-	@Parameter(
-			optional=false,
 			description=MetricsSource.DESC_PARAM_FILTER_DOCUMENT
 			)
 	public void setFilterDocument(String filterDocument) {
@@ -284,6 +284,8 @@ public class MetricsSource extends AbstractOperator {
 		// the @Libraries annotation and its compile-time evaluation of
 		// environment variables.
 		setupClassPaths(context);
+		
+//		getOperatorContext().getPE().getApplicationConfiguration(name)
 		
 		/*
 		 * The domainId parameter is optional. If the application developer does

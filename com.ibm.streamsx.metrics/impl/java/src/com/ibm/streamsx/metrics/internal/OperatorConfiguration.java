@@ -39,16 +39,9 @@ public class OperatorConfiguration {
 	private String _domainId = null;
 
 	/**
-	 * Specifies the period after which a failed JMX connect is repeated. The
-	 * default is 10.0 seconds.
+	 * Specifies the name of the application configuration object.
 	 */
-	private Double _retryPeriod = Double.valueOf(10.0);
-
-	/**
-	 * Specifies the retry count for failed JMX connects. The default is -1,
-	 * which means infinite retries.
-	 */
-	private Integer _retryCount = Integer.valueOf(-1);
+	private String _applicationConfigurationName = null;
 
 	/**
 	 * Specifies the path to a JSON-formatted document that specifies the
@@ -106,20 +99,12 @@ public class OperatorConfiguration {
 		this._domainId = domainId;
 	}
 
-	public Double get_retryPeriod() {
-		return _retryPeriod;
+	public String get_applicationConfigurationName() {
+		return _applicationConfigurationName;
 	}
 
-	public void set_retryPeriod(Double retryPeriod) {
-		this._retryPeriod = retryPeriod;
-	}
-
-	public Integer get_retryCount() {
-		return _retryCount;
-	}
-
-	public void set_retryCount(Integer retryCount) {
-		this._retryCount = retryCount;
+	public void set_applicationConfigurationName(String applicationConfigurationName) {
+		this._applicationConfigurationName = applicationConfigurationName;
 	}
 
 	public String get_filterDocument() {
