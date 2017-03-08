@@ -10,8 +10,11 @@
 	<property environment="env" />
 	<property name="streams.install" value="${env.STREAMS_INSTALL}" />
 	<property name="src.dir" location="impl/java/src" />
-	<property name="build.dir" location="impl/java/bin" />
+	<property name="build.dir" location="impl/java/classes" />
+	<property name="java.bin.dir" location="impl/java/bin" />
 	<property name="spl-mt" value="${streams.install}/bin/spl-make-toolkit" />
+	<property name="impl.lib.dir" value="impl/lib" />
+	<property name="jarfile" value="com.ibm.streamsx.metrics.jar" />
 
 	<target name="all" depends="indexToolkit"/>
 	
@@ -42,6 +45,14 @@
 		</javac>
 	</target>
 
+	<target name="package" depends="compile">
+		<jar destfile="${impl.lib.dir}/${jarfile}" 
+			 basedir="${build.dir}"
+			 filesonly="true">		
+	        <fileset dir="${src.dir}" includes="com/ibm/streamsx/metrics/messages/*.properties"/>
+		</jar>
+	</target>
+
 	<target name="clean">
 		<!-- toolkit clean -->
 		<exec executable="${spl-mt}"  failonerror="true">
@@ -50,10 +61,12 @@
 			<arg value="."/>
     		</exec>
 		<delete dir="${build.dir}" />
+		<delete dir="${java.bin.dir}" />
 		<delete dir="${basedir}/output" quiet="true"/>
+		<delete file="${impl.lib.dir}/${jarfile}"/>
 	</target>
 	
-	<target name="indexToolkit" depends="compile">
+	<target name="indexToolkit" depends="package">
 		<exec executable="${spl-mt}" failonerror="true">
 			<arg value="-i"/>
 			<arg value="."/>

@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.ibm.streams.operator.AbstractOperator;
 import com.ibm.streams.operator.OperatorContext;
+import com.ibm.streams.operator.OperatorContext.ContextCheck;
 import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.StreamingData.Punctuation;
 import com.ibm.streams.operator.StreamingOutput;
@@ -30,6 +31,9 @@ import com.ibm.streamsx.metrics.internal.filter.Filters;
 import com.ibm.streamsx.metrics.internal.DomainHandler;
 import com.ibm.streamsx.metrics.internal.EmitMetricTupleMode;
 import com.ibm.streams.operator.model.Parameter;
+import com.ibm.streams.operator.compile.OperatorContextChecker;
+import com.ibm.streams.operator.state.ConsistentRegionContext;
+import com.ibm.streamsx.metrics.messages.Messages;
 
 /**
  * A source operator that does not receive any input streams and produces new tuples. 
@@ -266,6 +270,18 @@ public class MetricsSource extends AbstractOperator {
 			)
 	public void setEmitMetricTuple(EmitMetricTupleMode mode) {
 		_operatorConfiguration.set_emitMetricTuple(mode);
+	}
+
+	@ContextCheck(compile = true)
+	public static void checkInConsistentRegion(OperatorContextChecker checker) {
+		//consistent region check
+		OperatorContext oContext = checker.getOperatorContext();
+		ConsistentRegionContext cContext = oContext.getOptionalContext(ConsistentRegionContext.class);
+		if(cContext != null) {
+			if(cContext.isStartOfRegion()) {
+				checker.setInvalidContext(Messages.getString("CONSISTENT_CHECK"), new String[] {"MetricsSource"});
+			}
+		}		
 	}
 
 	/**
