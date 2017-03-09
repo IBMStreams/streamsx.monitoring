@@ -116,7 +116,7 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 
 	@Override
 	protected boolean isRelevantMetric(String metricName) {
-		boolean isRelevant = _operatorConfiguration.get_filters().matchesPeMetricName(_domainId, _instanceId, _jobName, metricName);
+		boolean isRelevant = _operatorConfiguration.get_filters().matchesPeMetricName(_domainId, _instanceId, _jobName, _peId, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
 				_trace.info("The following pe metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", metric=" + metricName);
@@ -135,7 +135,7 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	}
 
 	protected void addValidInputPort(Integer portIndex) {
-		boolean matches = _operatorConfiguration.get_filters().matchesPeInputPortIndex(_domainId, _instanceId, _jobName, portIndex);
+		boolean matches = _operatorConfiguration.get_filters().matchesPeInputPortIndex(_domainId, _instanceId, _jobName, _peId, portIndex);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
 				_trace.info("The following input port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
@@ -150,7 +150,7 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	}
 
 	protected void addValidOutputPort(Integer portIndex) {
-		boolean matches = _operatorConfiguration.get_filters().matchesPeOutputPortIndex(_domainId, _instanceId, _jobName, portIndex);
+		boolean matches = _operatorConfiguration.get_filters().matchesPeOutputPortIndex(_domainId, _instanceId, _jobName, _peId, portIndex);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
 				_trace.info("The following output port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
@@ -171,7 +171,6 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	 * Throws Exception if submitting the tuple failed. 
 	 */
 	public void captureMetrics() throws Exception {
-
 		// Determine the trace level status once per function.
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 

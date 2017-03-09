@@ -7,6 +7,7 @@
 
 package com.ibm.streamsx.metrics.internal.filter;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -125,11 +126,16 @@ final class JobFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeMetricName(String jobName, String metricName) {
+	public boolean matchesPeId(String jobName, BigInteger peId) {
 		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
+		return matches;
+	}
+
+	public boolean matchesPeMetricName(String jobName, BigInteger peId, String metricName) {
+		boolean matches = matchesPeId(jobName, peId);
 		if (matches) {
 			for(PeFilter filter : _peFilters) {
-				matches = filter.matchesPeMetricName(metricName);
+				matches = filter.matchesPeMetricName(peId, metricName);
 				if (matches) {
 					break;
 				}
@@ -138,11 +144,11 @@ final class JobFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortIndex(String jobName, Integer portIndex) {
-		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
+	public boolean matchesPeInputPortIndex(String jobName, BigInteger peId, Integer portIndex) {
+		boolean matches = matchesPeId(jobName, peId);
 		if (matches) {
 			for(PeFilter filter : _peFilters) {
-				matches = filter.matchesPeInputPortIndex(portIndex);
+				matches = filter.matchesPeInputPortIndex(peId, portIndex);
 				if (matches) {
 					break;
 				}
@@ -151,11 +157,11 @@ final class JobFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortMetricName(String jobName, Integer portIndex, String metricName) {
-		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
+	public boolean matchesPeInputPortMetricName(String jobName, BigInteger peId, Integer portIndex, String metricName) {
+		boolean matches = matchesPeId(jobName, peId);
 		if (matches) {
 			for(PeFilter filter : _peFilters) {
-				matches = filter.matchesPeInputPortMetricName(portIndex, metricName);
+				matches = filter.matchesPeInputPortMetricName(peId, portIndex, metricName);
 				if (matches) {
 					break;
 				}
@@ -164,11 +170,11 @@ final class JobFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortIndex(String jobName, Integer portIndex) {
-		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
+	public boolean matchesPeOutputPortIndex(String jobName, BigInteger peId, Integer portIndex) {
+		boolean matches = matchesPeId(jobName, peId);
 		if (matches) {
 			for(PeFilter filter : _peFilters) {
-				matches = filter.matchesPeOutputPortIndex(portIndex);
+				matches = filter.matchesPeOutputPortIndex(peId, portIndex);
 				if (matches) {
 					break;
 				}
@@ -177,11 +183,11 @@ final class JobFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortMetricName(String jobName, Integer portIndex, String metricName) {
-		boolean matches = matchesJobName(jobName) && (_peFilters.size() > 0);
+	public boolean matchesPeOutputPortMetricName(String jobName, BigInteger peId, Integer portIndex, String metricName) {
+		boolean matches = matchesPeId(jobName, peId);
 		if (matches) {
 			for(PeFilter filter : _peFilters) {
-				matches = filter.matchesPeOutputPortMetricName(portIndex, metricName);
+				matches = filter.matchesPeOutputPortMetricName(peId, portIndex, metricName);
 				if (matches) {
 					break;
 				}

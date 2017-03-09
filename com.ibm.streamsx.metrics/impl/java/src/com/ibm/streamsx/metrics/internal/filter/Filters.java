@@ -10,6 +10,7 @@ package com.ibm.streamsx.metrics.internal.filter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -131,10 +132,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeMetricName(String domainId, String instanceId, String jobName, String metricName) {
+	public boolean matchesPeId(String domainId, String instanceId, String jobName, BigInteger peId) {
 		boolean matches = false;
 		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeMetricName(domainId, instanceId, jobName, metricName);
+			matches = filter.matchesPeId(domainId, instanceId, jobName, peId);
 			if (matches) {
 				break;
 			}
@@ -142,10 +143,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
+	public boolean matchesPeMetricName(String domainId, String instanceId, String jobName, BigInteger peId, String metricName) {
 		boolean matches = false;
 		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeInputPortIndex(domainId, instanceId, jobName, portIndex);
+			matches = filter.matchesPeMetricName(domainId, instanceId, jobName, peId, metricName);
 			if (matches) {
 				break;
 			}
@@ -153,10 +154,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortMetricName(String domainId, String instanceId, String jobName, Integer portIndex, String metricName) {
+	public boolean matchesPeInputPortIndex(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex) {
 		boolean matches = false;
 		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeInputPortMetricName(domainId, instanceId, jobName, portIndex, metricName);
+			matches = filter.matchesPeInputPortIndex(domainId, instanceId, jobName, peId, portIndex);
 			if (matches) {
 				break;
 			}
@@ -164,10 +165,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
+	public boolean matchesPeInputPortMetricName(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
 		boolean matches = false;
 		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeOutputPortIndex(domainId, instanceId, jobName, portIndex);
+			matches = filter.matchesPeInputPortMetricName(domainId, instanceId, jobName, peId, portIndex, metricName);
 			if (matches) {
 				break;
 			}
@@ -175,10 +176,21 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortMetricName(String domainId, String instanceId, String jobName, Integer portIndex, String metricName) {
+	public boolean matchesPeOutputPortIndex(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex) {
 		boolean matches = false;
 		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeOutputPortMetricName(domainId, instanceId, jobName, portIndex, metricName);
+			matches = filter.matchesPeOutputPortIndex(domainId, instanceId, jobName, peId, portIndex);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortMetricName(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
+		boolean matches = false;
+		for(DomainFilter filter : _domainFilters.values()) {
+			matches = filter.matchesPeOutputPortMetricName(domainId, instanceId, jobName, peId, portIndex, metricName);
 			if (matches) {
 				break;
 			}

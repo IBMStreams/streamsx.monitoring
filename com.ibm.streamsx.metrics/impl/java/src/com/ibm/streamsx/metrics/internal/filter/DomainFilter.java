@@ -7,6 +7,7 @@
 
 package com.ibm.streamsx.metrics.internal.filter;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -142,11 +143,11 @@ final class DomainFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeMetricName(String domainId, String instanceId, String jobName, String metricName) {
+	public boolean matchesPeId(String domainId, String instanceId, String jobName, BigInteger peId) {
 		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
-				matches = filter.matchesPeMetricName(instanceId, jobName, metricName);
+				matches = filter.matchesPeId(instanceId, jobName, peId);
 				if (matches) {
 					break;
 				}
@@ -155,11 +156,11 @@ final class DomainFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
+	public boolean matchesPeMetricName(String domainId, String instanceId, String jobName, BigInteger peId, String metricName) {
 		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
-				matches = filter.matchesPeInputPortIndex(instanceId, jobName, portIndex);
+				matches = filter.matchesPeMetricName(instanceId, jobName, peId, metricName);
 				if (matches) {
 					break;
 				}
@@ -168,11 +169,11 @@ final class DomainFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortMetricName(String domainId, String instanceId, String jobName, Integer portIndex, String metricName) {
+	public boolean matchesPeInputPortIndex(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex) {
 		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
-				matches = filter.matchesPeInputPortMetricName(instanceId, jobName, portIndex, metricName);
+				matches = filter.matchesPeInputPortIndex(instanceId, jobName, peId, portIndex);
 				if (matches) {
 					break;
 				}
@@ -181,11 +182,11 @@ final class DomainFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortIndex(String domainId, String instanceId, String jobName, Integer portIndex) {
+	public boolean matchesPeInputPortMetricName(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
 		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
-				matches = filter.matchesPeOutputPortIndex(instanceId, jobName, portIndex);
+				matches = filter.matchesPeInputPortMetricName(instanceId, jobName, peId, portIndex, metricName);
 				if (matches) {
 					break;
 				}
@@ -194,11 +195,24 @@ final class DomainFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortMetricName(String domainId, String instanceId, String jobName, Integer portIndex, String metricName) {
+	public boolean matchesPeOutputPortIndex(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex) {
 		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
 		if (matches) {
 			for(InstanceFilter filter : _instanceFilters.values()) {
-				matches = filter.matchesPeOutputPortMetricName(instanceId, jobName, portIndex, metricName);
+				matches = filter.matchesPeOutputPortIndex(instanceId, jobName, peId, portIndex);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
+
+	public boolean matchesPeOutputPortMetricName(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
+		if (matches) {
+			for(InstanceFilter filter : _instanceFilters.values()) {
+				matches = filter.matchesPeOutputPortMetricName(instanceId, jobName, peId, portIndex, metricName);
 				if (matches) {
 					break;
 				}

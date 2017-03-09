@@ -78,7 +78,7 @@ public class PeOutputPortHandler extends MetricOwningHandler {
 
 	@Override
 	protected boolean isRelevantMetric(String metricName) {
-		boolean isRelevant = _operatorConfiguration.get_filters().matchesPeOutputPortMetricName(_domainId, _instanceId, _jobName, _portIndex, metricName);
+		boolean isRelevant = _operatorConfiguration.get_filters().matchesPeOutputPortMetricName(_domainId, _instanceId, _jobName, _peId, _portIndex, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
 				_trace.info("The following output port metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + _portIndex + ", metric=" + metricName);

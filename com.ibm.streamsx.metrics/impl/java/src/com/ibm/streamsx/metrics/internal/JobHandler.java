@@ -153,7 +153,18 @@ public class JobHandler implements NotificationListener {
 	}
 	
 	protected void addPE(BigInteger peId) {
-		_peHandlers.put(peId, new PeHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, peId));
+		boolean matches = _operatorConfiguration.get_filters().matchesPeId(_domainId, _instanceId, _jobName, peId);
+		if (_trace.isInfoEnabled()) {
+			if (matches) {
+				_trace.info("The following PE meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + peId);
+			}
+			else { 
+				_trace.info("The following PE does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + peId);
+			}
+		}
+		if (matches) {
+			_peHandlers.put(peId, new PeHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, peId));
+		}
 	}
 	
 	/**
