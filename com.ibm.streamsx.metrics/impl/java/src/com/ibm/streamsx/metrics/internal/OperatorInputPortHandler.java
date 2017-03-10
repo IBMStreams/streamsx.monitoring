@@ -22,7 +22,7 @@ import com.ibm.streams.management.job.OperatorInputPortMXBean;
 /**
  * 
  */
-public class OperatorInputPortHandler extends MetricOwningHandler {
+public class OperatorInputPortHandler extends MetricOwningHandler implements Closeable {
 
 	/**
 	 * Logger for tracing.

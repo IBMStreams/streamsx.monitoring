@@ -40,7 +40,7 @@ import com.ibm.streams.management.domain.DomainMXBean;
  *   </p></li>
  * </ul> 
  */
-public class DomainHandler implements NotificationListener {
+public class DomainHandler implements NotificationListener, Closeable {
 
 	/**
 	 * Logger for tracing.
@@ -50,6 +50,8 @@ public class DomainHandler implements NotificationListener {
 	private OperatorConfiguration _operatorConfiguration = null;
 
 	private String _domainId = null;
+	
+	private ObjectName _objName = null;
 	
 	private DomainMXBean _domain = null;
 	
@@ -66,8 +68,8 @@ public class DomainHandler implements NotificationListener {
 		_operatorConfiguration = operatorConfiguration;
 		_domainId = domainId;
 
-		ObjectName domainObjName = ObjectNameBuilder.domain(_domainId);
-		_domain = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), domainObjName, DomainMXBean.class, true);
+		_objName = ObjectNameBuilder.domain(_domainId);
+		_domain = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), _objName, DomainMXBean.class, true);
 
 		/*
 		 * Register to get domain-related notifications.
@@ -76,7 +78,7 @@ public class DomainHandler implements NotificationListener {
 		filter.enableType(Notifications.INSTANCE_CREATED);
 		filter.enableType(Notifications.INSTANCE_DELETED);
 		try {
-			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(domainObjName, this, filter, null);
+			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(_objName, this, filter, null);
 		} catch (InstanceNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -163,6 +165,20 @@ public class DomainHandler implements NotificationListener {
 		if (isDebugEnabled) {
 			_trace.debug("<-- captureMetrics(domain=" + _domainId + ")");
 		}
+	}
+
+	/**
+	 * Remove notification listeners from this and child objects.
+	 */
+	@Override
+	public void close() throws Exception {
+		// Remove the notification listener.
+		_operatorConfiguration.get_mbeanServerConnection().removeNotificationListener(_objName, this);
+		// Close all resources of all child objects.
+		for(InstanceHandler handler : _instanceHandlers.values()) {
+			handler.close();
+		}
+		_instanceHandlers.clear();
 	}
 
 }

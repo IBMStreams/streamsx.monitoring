@@ -30,7 +30,7 @@ import com.ibm.streams.management.job.PeMXBean;
 /**
  * 
  */
-public class PeHandler extends MetricOwningHandler implements NotificationListener {
+public class PeHandler extends MetricOwningHandler implements NotificationListener, Closeable {
 
 	/**
 	 * Logger for tracing.
@@ -44,6 +44,8 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	private BigInteger _jobId = null;
 	
 	private String _jobName = null;
+	
+	private ObjectName _objName = null;
 	
 	private BigInteger _peId = null;
 	
@@ -68,8 +70,8 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 		_jobName = jobName;
 		_peId = peId;
 
-		ObjectName peObjName = ObjectNameBuilder.pe(_domainId, _instanceId, _peId);
-		_pe = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), peObjName, PeMXBean.class, true);
+		_objName = ObjectNameBuilder.pe(_domainId, _instanceId, _peId);
+		_pe = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), _objName, PeMXBean.class, true);
 		
 		/*
 		 * Register to get pe-related notifications.
@@ -77,7 +79,7 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 		NotificationFilterSupport filter = new NotificationFilterSupport();
 		filter.enableType(Notifications.PE_NOTIFICATION);
 		try {
-			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(peObjName, this, filter, null);
+			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(_objName, this, filter, null);
 		} catch (InstanceNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -200,6 +202,24 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 		if (isDebugEnabled) {
 			_trace.debug("<-- captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ")");
 		}
+	}
+
+	/**
+	 * Remove notification listeners from this and child objects.
+	 */
+	@Override
+	public void close() throws Exception {
+		// Remove the notification listener.
+		_operatorConfiguration.get_mbeanServerConnection().removeNotificationListener(_objName, this);
+		// Close all resources of all child objects.
+		for(PeInputPortHandler handler : _inputPortHandlers.values()) {
+			handler.close();
+		}
+		_inputPortHandlers.clear();
+		for(PeOutputPortHandler handler : _outputPortHandlers.values()) {
+			handler.close();
+		}
+		_outputPortHandlers.clear();
 	}
 
 }

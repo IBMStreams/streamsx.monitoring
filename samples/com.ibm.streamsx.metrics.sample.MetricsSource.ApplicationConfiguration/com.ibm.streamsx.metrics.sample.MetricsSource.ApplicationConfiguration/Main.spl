@@ -50,17 +50,9 @@ composite Main {
 		}
 		
 		/*
-		 * Drop metric tuples that do not belong to @parallel-annotated
-		 * operators.
-		 */
-		(stream<I> ParallelizedOperatorMetrics) as UDPDetector = Filter(Notifications as I) {
-			param filter: channel != -1;
-		}
-		
-		/*
 		 * The Custom traces the received metric value notifications.
 		 */
-		() as NotificationTracer = Custom(ParallelizedOperatorMetrics as I) {
+		() as NotificationTracer = Custom(Notifications as I) {
 			logic
 			onTuple I: {
 				appTrc(Trace.error, "Notification: " + (rstring)I);

@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.ibm.json.java.JSONArtifact;
 import com.ibm.json.java.JSONObject;
 
 public class PortParser extends AbstractParser {

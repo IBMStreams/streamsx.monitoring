@@ -55,4 +55,9 @@ configure-incomplete:
 	# see https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.metrics.sample.MetricsSource.ApplicationConfiguration
 	streamtool mkappconfig --property user=$(USER) com.ibm.streamsx.metrics.sample.MetricsSource.ApplicationConfiguration
-	
+
+configure-memory:
+	streamtool chappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) --property filterDocument=`cat etc/MetricsSource_MonitorMemoryMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.metrics.sample.MetricsSource.ApplicationConfiguration
+
+configure-original:
+	streamtool chappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.metrics.sample.MetricsSource.ApplicationConfiguration

@@ -30,7 +30,7 @@ import com.ibm.streams.management.job.OperatorMXBean;
 /**
  * 
  */
-public class OperatorHandler extends MetricOwningHandler implements NotificationListener {
+public class OperatorHandler extends MetricOwningHandler implements NotificationListener, Closeable {
 
 	/**
 	 * Logger for tracing.
@@ -44,6 +44,8 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 	private BigInteger _jobId = null;
 	
 	private String _jobName = null;
+	
+	private ObjectName _objName = null;
 	
 	private String _operatorName = null;
 	
@@ -68,8 +70,8 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 		_jobName = jobName;
 		_operatorName = operatorName;
 
-		ObjectName operatorObjName = ObjectNameBuilder.operator(_domainId, _instanceId, _jobId, _operatorName);
-		_operator = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), operatorObjName, OperatorMXBean.class, true);
+		_objName = ObjectNameBuilder.operator(_domainId, _instanceId, _jobId, _operatorName);
+		_operator = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), _objName, OperatorMXBean.class, true);
 		
 		/*
 		 * Register to get job-related notifications.
@@ -78,7 +80,7 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 		filter.enableType(Notifications.OPERATOR_CONNECTION_ADDED);
 		filter.enableType(Notifications.OPERATOR_CONNECTION_REMOVED);
 		try {
-			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(operatorObjName, this, filter, null);
+			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(_objName, this, filter, null);
 		} catch (InstanceNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -217,6 +219,24 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 		if (isDebugEnabled) {
 			_trace.debug("<-- captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ")");
 		}
+	}
+
+	/**
+	 * Remove notification listeners from this and child objects.
+	 */
+	@Override
+	public void close() throws Exception {
+		// Remove the notification listener.
+		_operatorConfiguration.get_mbeanServerConnection().removeNotificationListener(_objName, this);
+		// Close all resources of all child objects.
+		for(OperatorInputPortHandler handler : _inputPortHandlers.values()) {
+			handler.close();
+		}
+		_inputPortHandlers.clear();
+		for(OperatorOutputPortHandler handler : _outputPortHandlers.values()) {
+			handler.close();
+		}
+		_outputPortHandlers.clear();
 	}
 
 }

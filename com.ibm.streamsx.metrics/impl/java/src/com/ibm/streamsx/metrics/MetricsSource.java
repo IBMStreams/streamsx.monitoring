@@ -222,6 +222,13 @@ public class MetricsSource extends AbstractOperator {
 	
 	private DomainHandler _domainHandler = null;
 	
+	/**
+	 * If the application configuration is used (applicationConfigurationName
+	 * parameter is set), save the active filterDocument (as JSON string) to
+	 * detect whether it changes between consecutive checks.
+	 */
+	private String activeFilterDocumentFromApplicationConfiguration = null;
+	
 	@Parameter(
 			optional=true,
 			description=MetricsSource.DESC_PARAM_CONNECTION_URL
@@ -355,7 +362,7 @@ public class MetricsSource extends AbstractOperator {
 		 * Further actions are handled in the domain handler that manages
 		 * instances that manages jobs, etc.
 		 */
-		_domainHandler = new DomainHandler(_operatorConfiguration, _operatorConfiguration.get_domainId());
+		scanDomain();
 
 		/*
 		 * Create the thread for producing tuples. 
@@ -405,6 +412,8 @@ public class MetricsSource extends AbstractOperator {
 	private void produceTuples() throws Exception  {
 		boolean quit = false;
 		while(!quit) {
+			detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
+			
 			_domainHandler.captureMetrics();
 			
 			/*
@@ -539,6 +548,41 @@ public class MetricsSource extends AbstractOperator {
 	}
 
 	/**
+	 * Detects whether the filterDocument in the application configuration
+	 * changed if the applicationConfigurationName parameter is specified. 
+	 * <p>
+	 * @throws Exception 
+	 * Throws in case of I/O issues or if the filter document is neither
+	 * specified as parameter (file path), nor in the application configuration
+	 * (JSON string).
+	 */
+	protected void detecteAndProcessChangedFilterDocumentInApplicationConfiguration() throws Exception {
+		boolean isChanged = false;
+		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+		if (applicationConfigurationName != null) {
+			String filterDocument = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName).get(PARAMETER_FILTER_DOCUMENT);
+			if (filterDocument != null) {
+				if (activeFilterDocumentFromApplicationConfiguration == null) {
+					isChanged = true;
+				}
+				else if (!activeFilterDocumentFromApplicationConfiguration.equals(filterDocument)) {
+					isChanged = true;
+				}
+			}
+			if (isChanged) {
+				_domainHandler.close();
+				_domainHandler = null;
+				setupFilters();
+				scanDomain();
+			}
+		}
+	}
+	
+	protected void scanDomain() {
+		_domainHandler = new DomainHandler(_operatorConfiguration, _operatorConfiguration.get_domainId());
+	}
+
+	/**
 	 * Setup the filters. The filters are either specified in an external text
 	 * file (filterDocument parameter specifies the file path), or in the
 	 * application control object as JSON string.
@@ -555,8 +599,10 @@ public class MetricsSource extends AbstractOperator {
 			Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
 			if (properties.containsKey(PARAMETER_FILTER_DOCUMENT)) {
 				String filterDocument = properties.get(PARAMETER_FILTER_DOCUMENT);
+				_trace.debug("Detected modified filterDocument in application configuration: " + filterDocument);
 				try(InputStream inputStream = new ByteArrayInputStream(filterDocument.getBytes())) {
 					_operatorConfiguration.set_filters(Filters.setupFilters(inputStream));
+					activeFilterDocumentFromApplicationConfiguration = filterDocument;
 					done = true;
 				}
 			}

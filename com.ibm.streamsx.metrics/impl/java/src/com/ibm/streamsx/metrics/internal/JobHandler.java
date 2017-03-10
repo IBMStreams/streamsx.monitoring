@@ -51,7 +51,7 @@ import com.ibm.streams.management.job.JobMXBean;
  *   </p></li>
  * </ul> 
  */
-public class JobHandler implements NotificationListener {
+public class JobHandler implements NotificationListener, Closeable {
 
 	/**
 	 * Logger for tracing.
@@ -64,6 +64,8 @@ public class JobHandler implements NotificationListener {
 
 	private String _instanceId = null;
 
+	private ObjectName _objName = null;
+	
 	private BigInteger _jobId = null;
 	
 	private String _jobName = null;
@@ -86,8 +88,8 @@ public class JobHandler implements NotificationListener {
 		_instanceId = instanceId;
 		_jobId = jobId;
 
-		ObjectName jobObjName = ObjectNameBuilder.job(_domainId, _instanceId, _jobId);
-		_job = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), jobObjName, JobMXBean.class, true);
+		_objName = ObjectNameBuilder.job(_domainId, _instanceId, _jobId);
+		_job = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), _objName, JobMXBean.class, true);
 
 		_jobName = _job.getName();
 
@@ -97,7 +99,7 @@ public class JobHandler implements NotificationListener {
 		NotificationFilterSupport filter = new NotificationFilterSupport();
 		filter.enableType(Notifications.INACTIVITY_WARNING);
 		try {
-			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(jobObjName, this, filter, null);
+			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(_objName, this, filter, null);
 		} catch (InstanceNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -245,6 +247,24 @@ public class JobHandler implements NotificationListener {
 		// -----------------------------------------------------------------------------
 		// SNAPSHOT METRICS CODE (END)
 		// -----------------------------------------------------------------------------
+	}
+
+	/**
+	 * Remove notification listeners from this and child objects.
+	 */
+	@Override
+	public void close() throws Exception {
+		// Remove the notification listener.
+		_operatorConfiguration.get_mbeanServerConnection().removeNotificationListener(_objName, this);
+		// Close all resources of all child objects.
+		for(OperatorHandler handler : _operatorHandlers.values()) {
+			handler.close();
+		}
+		_peHandlers.clear();
+		for(PeHandler handler : _peHandlers.values()) {
+			handler.close();
+		}
+		_peHandlers.clear();
 	}
 
 }
