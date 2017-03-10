@@ -22,7 +22,7 @@ import com.ibm.streams.management.job.PeOutputPortMXBean;
 /**
  * 
  */
-public class PeOutputPortHandler extends MetricOwningHandler {
+public class PeOutputPortHandler extends MetricOwningHandler implements Closeable {
 
 	/**
 	 * Logger for tracing.
