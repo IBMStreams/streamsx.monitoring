@@ -9,6 +9,7 @@ package com.ibm.streamsx.metrics;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import com.ibm.streams.operator.AbstractOperator;
 import com.ibm.streams.operator.OperatorContext;
 import com.ibm.streams.operator.OperatorContext.ContextCheck;
 import com.ibm.streams.operator.OutputTuple;
+import com.ibm.streams.operator.ProcessingElement;
 import com.ibm.streams.operator.StreamingData.Punctuation;
 import com.ibm.streams.operator.StreamingOutput;
 import com.ibm.streams.operator.model.Icons;
@@ -230,8 +232,6 @@ public class MetricsSource extends AbstractOperator {
 	 */
 	private String activeFilterDocumentFromApplicationConfiguration = null;
 
-	private boolean _isApplicationConfigurationSupported;
-	
 	@Parameter(
 			optional=true,
 			description=MetricsSource.DESC_PARAM_CONNECTION_URL
@@ -325,11 +325,6 @@ public class MetricsSource extends AbstractOperator {
 		// environment variables.
 		setupClassPaths(context);
 
-		_isApplicationConfigurationSupported = isApplicationConfigurationSupported();
-		if (!_isApplicationConfigurationSupported && _operatorConfiguration.get_applicationConfigurationName() != null) {
-			_trace.error("The " + context.getName() + " operator is configured to use application configuration but the active Streams release does not support it.");
-		}
-		
 		/*
 		 * The domainId parameter is optional. If the application developer does
 		 * not set it, use the domain id under which the operator itself is
@@ -507,20 +502,18 @@ public class MetricsSource extends AbstractOperator {
 		String connectionURL = _operatorConfiguration.get_connectionURL();
 		String user = _operatorConfiguration.get_user();
 		String password = _operatorConfiguration.get_password();
-		if (_isApplicationConfigurationSupported) {
-			// Override defaults if the application configuration is specified
-			String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
-			if (applicationConfigurationName != null) {
-				Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
-				if (properties.containsKey(PARAMETER_CONNECTION_URL)) {
-					connectionURL = properties.get(PARAMETER_CONNECTION_URL);
-				}
-				if (properties.containsKey(PARAMETER_USER)) {
-					user = properties.get(PARAMETER_USER);
-				}
-				if (properties.containsKey(PARAMETER_PASSWORD)) {
-					password = properties.get(PARAMETER_PASSWORD);
-				}
+		// Override defaults if the application configuration is specified
+		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+		if (applicationConfigurationName != null) {
+			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
+			if (properties.containsKey(PARAMETER_CONNECTION_URL)) {
+				connectionURL = properties.get(PARAMETER_CONNECTION_URL);
+			}
+			if (properties.containsKey(PARAMETER_USER)) {
+				user = properties.get(PARAMETER_USER);
+			}
+			if (properties.containsKey(PARAMETER_PASSWORD)) {
+				password = properties.get(PARAMETER_PASSWORD);
 			}
 		}
 		// Ensure a valid configuration.
@@ -568,24 +561,22 @@ public class MetricsSource extends AbstractOperator {
 	 */
 	protected void detecteAndProcessChangedFilterDocumentInApplicationConfiguration() throws Exception {
 		boolean isChanged = false;
-		if (_isApplicationConfigurationSupported) {
-			String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
-			if (applicationConfigurationName != null) {
-				String filterDocument = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName).get(PARAMETER_FILTER_DOCUMENT);
-				if (filterDocument != null) {
-					if (activeFilterDocumentFromApplicationConfiguration == null) {
-						isChanged = true;
-					}
-					else if (!activeFilterDocumentFromApplicationConfiguration.equals(filterDocument)) {
-						isChanged = true;
-					}
+		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+		if (applicationConfigurationName != null) {
+			String filterDocument = getApplicationConfiguration(applicationConfigurationName).get(PARAMETER_FILTER_DOCUMENT);
+			if (filterDocument != null) {
+				if (activeFilterDocumentFromApplicationConfiguration == null) {
+					isChanged = true;
 				}
-				if (isChanged) {
-					_domainHandler.close();
-					_domainHandler = null;
-					setupFilters();
-					scanDomain();
+				else if (!activeFilterDocumentFromApplicationConfiguration.equals(filterDocument)) {
+					isChanged = true;
 				}
+			}
+			if (isChanged) {
+				_domainHandler.close();
+				_domainHandler = null;
+				setupFilters();
+				scanDomain();
 			}
 		}
 	}
@@ -606,18 +597,16 @@ public class MetricsSource extends AbstractOperator {
 	 */
 	protected void setupFilters() throws Exception {
 		boolean done = false;
-		if (_isApplicationConfigurationSupported) {
-			String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
-			if (applicationConfigurationName != null) {
-				Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
-				if (properties.containsKey(PARAMETER_FILTER_DOCUMENT)) {
-					String filterDocument = properties.get(PARAMETER_FILTER_DOCUMENT);
-					_trace.debug("Detected modified filterDocument in application configuration: " + filterDocument);
-					try(InputStream inputStream = new ByteArrayInputStream(filterDocument.getBytes())) {
-						_operatorConfiguration.set_filters(Filters.setupFilters(inputStream));
-						activeFilterDocumentFromApplicationConfiguration = filterDocument;
-						done = true;
-					}
+		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+		if (applicationConfigurationName != null) {
+			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
+			if (properties.containsKey(PARAMETER_FILTER_DOCUMENT)) {
+				String filterDocument = properties.get(PARAMETER_FILTER_DOCUMENT);
+				_trace.debug("Detected modified filterDocument in application configuration: " + filterDocument);
+				try(InputStream inputStream = new ByteArrayInputStream(filterDocument.getBytes())) {
+					_operatorConfiguration.set_filters(Filters.setupFilters(inputStream));
+					activeFilterDocumentFromApplicationConfiguration = filterDocument;
+					done = true;
 				}
 			}
 		}
@@ -632,21 +621,26 @@ public class MetricsSource extends AbstractOperator {
 	}
 
 	/**
-	 * Determine whether the application configuration is supported.
+	 * Calls the ProcessingElement.getApplicationConfiguration() method to
+	 * retrieve the application configuration if application configuration
+	 * is supported.
 	 * 
 	 * @return
-	 * True if the application configuration is supported. False if the
-	 * application configuration is not supported.
+	 * The application configuration.
 	 */
-	protected boolean isApplicationConfigurationSupported() {
-		boolean result = true;
+	@SuppressWarnings("unchecked")
+	protected Map<String,String> getApplicationConfiguration(String applicationConfigurationName) {
+		Map<String,String> properties = null;
 		try {
-			getOperatorContext().getPE().getClass().getMethod("getApplicationConfiguration", new Class[]{String.class});
+			ProcessingElement pe = getOperatorContext().getPE();
+			Method method = ProcessingElement.class.getMethod("getApplicationConfiguration", new Class[]{String.class});
+			Object returnedObject = method.invoke(pe, applicationConfigurationName);
+			properties = (Map<String,String>)returnedObject;
 		}
-		catch (NoSuchMethodException | SecurityException e) {
-			result = false;
+		catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			properties = new HashMap<>();
 		}
-		return result;
+		return properties;
 	}
 	
 }
