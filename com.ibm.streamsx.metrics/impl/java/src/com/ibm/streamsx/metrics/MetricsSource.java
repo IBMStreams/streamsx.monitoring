@@ -9,6 +9,7 @@ package com.ibm.streamsx.metrics;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -228,6 +229,8 @@ public class MetricsSource extends AbstractOperator {
 	 * detect whether it changes between consecutive checks.
 	 */
 	private String activeFilterDocumentFromApplicationConfiguration = null;
+
+	private boolean _isApplicationConfigurationSupported;
 	
 	@Parameter(
 			optional=true,
@@ -321,6 +324,11 @@ public class MetricsSource extends AbstractOperator {
 		// the @Libraries annotation and its compile-time evaluation of
 		// environment variables.
 		setupClassPaths(context);
+
+		_isApplicationConfigurationSupported = isApplicationConfigurationSupported();
+		if (!_isApplicationConfigurationSupported && _operatorConfiguration.get_applicationConfigurationName() != null) {
+			_trace.error("The " + context.getName() + " operator is configured to use application configuration but the active Streams release does not support it.");
+		}
 		
 		/*
 		 * The domainId parameter is optional. If the application developer does
@@ -499,18 +507,20 @@ public class MetricsSource extends AbstractOperator {
 		String connectionURL = _operatorConfiguration.get_connectionURL();
 		String user = _operatorConfiguration.get_user();
 		String password = _operatorConfiguration.get_password();
-		// Override defaults if the application configuration is specified
-		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
-		if (applicationConfigurationName != null) {
-			Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
-			if (properties.containsKey(PARAMETER_CONNECTION_URL)) {
-				connectionURL = properties.get(PARAMETER_CONNECTION_URL);
-			}
-			if (properties.containsKey(PARAMETER_USER)) {
-				user = properties.get(PARAMETER_USER);
-			}
-			if (properties.containsKey(PARAMETER_PASSWORD)) {
-				password = properties.get(PARAMETER_PASSWORD);
+		if (_isApplicationConfigurationSupported) {
+			// Override defaults if the application configuration is specified
+			String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+			if (applicationConfigurationName != null) {
+				Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
+				if (properties.containsKey(PARAMETER_CONNECTION_URL)) {
+					connectionURL = properties.get(PARAMETER_CONNECTION_URL);
+				}
+				if (properties.containsKey(PARAMETER_USER)) {
+					user = properties.get(PARAMETER_USER);
+				}
+				if (properties.containsKey(PARAMETER_PASSWORD)) {
+					password = properties.get(PARAMETER_PASSWORD);
+				}
 			}
 		}
 		// Ensure a valid configuration.
@@ -558,22 +568,24 @@ public class MetricsSource extends AbstractOperator {
 	 */
 	protected void detecteAndProcessChangedFilterDocumentInApplicationConfiguration() throws Exception {
 		boolean isChanged = false;
-		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
-		if (applicationConfigurationName != null) {
-			String filterDocument = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName).get(PARAMETER_FILTER_DOCUMENT);
-			if (filterDocument != null) {
-				if (activeFilterDocumentFromApplicationConfiguration == null) {
-					isChanged = true;
+		if (_isApplicationConfigurationSupported) {
+			String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+			if (applicationConfigurationName != null) {
+				String filterDocument = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName).get(PARAMETER_FILTER_DOCUMENT);
+				if (filterDocument != null) {
+					if (activeFilterDocumentFromApplicationConfiguration == null) {
+						isChanged = true;
+					}
+					else if (!activeFilterDocumentFromApplicationConfiguration.equals(filterDocument)) {
+						isChanged = true;
+					}
 				}
-				else if (!activeFilterDocumentFromApplicationConfiguration.equals(filterDocument)) {
-					isChanged = true;
+				if (isChanged) {
+					_domainHandler.close();
+					_domainHandler = null;
+					setupFilters();
+					scanDomain();
 				}
-			}
-			if (isChanged) {
-				_domainHandler.close();
-				_domainHandler = null;
-				setupFilters();
-				scanDomain();
 			}
 		}
 	}
@@ -594,16 +606,18 @@ public class MetricsSource extends AbstractOperator {
 	 */
 	protected void setupFilters() throws Exception {
 		boolean done = false;
-		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
-		if (applicationConfigurationName != null) {
-			Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
-			if (properties.containsKey(PARAMETER_FILTER_DOCUMENT)) {
-				String filterDocument = properties.get(PARAMETER_FILTER_DOCUMENT);
-				_trace.debug("Detected modified filterDocument in application configuration: " + filterDocument);
-				try(InputStream inputStream = new ByteArrayInputStream(filterDocument.getBytes())) {
-					_operatorConfiguration.set_filters(Filters.setupFilters(inputStream));
-					activeFilterDocumentFromApplicationConfiguration = filterDocument;
-					done = true;
+		if (_isApplicationConfigurationSupported) {
+			String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+			if (applicationConfigurationName != null) {
+				Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
+				if (properties.containsKey(PARAMETER_FILTER_DOCUMENT)) {
+					String filterDocument = properties.get(PARAMETER_FILTER_DOCUMENT);
+					_trace.debug("Detected modified filterDocument in application configuration: " + filterDocument);
+					try(InputStream inputStream = new ByteArrayInputStream(filterDocument.getBytes())) {
+						_operatorConfiguration.set_filters(Filters.setupFilters(inputStream));
+						activeFilterDocumentFromApplicationConfiguration = filterDocument;
+						done = true;
+					}
 				}
 			}
 		}
@@ -617,4 +631,22 @@ public class MetricsSource extends AbstractOperator {
 		}
 	}
 
+	/**
+	 * Determine whether the application configuration is supported.
+	 * 
+	 * @return
+	 * True if the application configuration is supported. False if the
+	 * application configuration is not supported.
+	 */
+	protected boolean isApplicationConfigurationSupported() {
+		boolean result = true;
+		try {
+			getOperatorContext().getPE().getClass().getMethod("getApplicationConfiguration", new Class[]{String.class});
+		}
+		catch (NoSuchMethodException | SecurityException e) {
+			result = false;
+		}
+		return result;
+	}
+	
 }
