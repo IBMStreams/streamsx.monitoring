@@ -9,6 +9,8 @@ package com.ibm.streamsx.metrics;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ import com.ibm.streams.operator.AbstractOperator;
 import com.ibm.streams.operator.OperatorContext;
 import com.ibm.streams.operator.OperatorContext.ContextCheck;
 import com.ibm.streams.operator.OutputTuple;
+import com.ibm.streams.operator.ProcessingElement;
 import com.ibm.streams.operator.StreamingData.Punctuation;
 import com.ibm.streams.operator.StreamingOutput;
 import com.ibm.streams.operator.model.Icons;
@@ -228,7 +231,7 @@ public class MetricsSource extends AbstractOperator {
 	 * detect whether it changes between consecutive checks.
 	 */
 	private String activeFilterDocumentFromApplicationConfiguration = null;
-	
+
 	@Parameter(
 			optional=true,
 			description=MetricsSource.DESC_PARAM_CONNECTION_URL
@@ -321,7 +324,7 @@ public class MetricsSource extends AbstractOperator {
 		// the @Libraries annotation and its compile-time evaluation of
 		// environment variables.
 		setupClassPaths(context);
-		
+
 		/*
 		 * The domainId parameter is optional. If the application developer does
 		 * not set it, use the domain id under which the operator itself is
@@ -502,7 +505,7 @@ public class MetricsSource extends AbstractOperator {
 		// Override defaults if the application configuration is specified
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {
-			Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
+			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
 			if (properties.containsKey(PARAMETER_CONNECTION_URL)) {
 				connectionURL = properties.get(PARAMETER_CONNECTION_URL);
 			}
@@ -560,7 +563,7 @@ public class MetricsSource extends AbstractOperator {
 		boolean isChanged = false;
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {
-			String filterDocument = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName).get(PARAMETER_FILTER_DOCUMENT);
+			String filterDocument = getApplicationConfiguration(applicationConfigurationName).get(PARAMETER_FILTER_DOCUMENT);
 			if (filterDocument != null) {
 				if (activeFilterDocumentFromApplicationConfiguration == null) {
 					isChanged = true;
@@ -596,7 +599,7 @@ public class MetricsSource extends AbstractOperator {
 		boolean done = false;
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {
-			Map<String,String> properties = getOperatorContext().getPE().getApplicationConfiguration(applicationConfigurationName);
+			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
 			if (properties.containsKey(PARAMETER_FILTER_DOCUMENT)) {
 				String filterDocument = properties.get(PARAMETER_FILTER_DOCUMENT);
 				_trace.debug("Detected modified filterDocument in application configuration: " + filterDocument);
@@ -617,4 +620,27 @@ public class MetricsSource extends AbstractOperator {
 		}
 	}
 
+	/**
+	 * Calls the ProcessingElement.getApplicationConfiguration() method to
+	 * retrieve the application configuration if application configuration
+	 * is supported.
+	 * 
+	 * @return
+	 * The application configuration.
+	 */
+	@SuppressWarnings("unchecked")
+	protected Map<String,String> getApplicationConfiguration(String applicationConfigurationName) {
+		Map<String,String> properties = null;
+		try {
+			ProcessingElement pe = getOperatorContext().getPE();
+			Method method = ProcessingElement.class.getMethod("getApplicationConfiguration", new Class[]{String.class});
+			Object returnedObject = method.invoke(pe, applicationConfigurationName);
+			properties = (Map<String,String>)returnedObject;
+		}
+		catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			properties = new HashMap<>();
+		}
+		return properties;
+	}
+	
 }
