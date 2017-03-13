@@ -9,8 +9,8 @@
  * This sample application demonstrate how to use the **applicationConfigurationName**
  * parameter.
  * 
- * You can run this application in standalone mode to see the metric values as
- * they are printed to the console.
+ * You need to run this application in distributed mode when parameters are applied
+ * with the Application Configuration.
  */
 
 namespace com.ibm.streamsx.metrics.sample.MetricsSource.ApplicationConfiguration;
