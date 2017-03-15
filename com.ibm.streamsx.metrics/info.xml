@@ -51,7 +51,7 @@ of the toolkit.
 Install IBM Streams. Configure the product environment variables by entering the
 following command:
  
-    source <product-installation-root-directory>/4.0.0.0/bin/streamsprofile.sh
+    source <product-installation-root-directory>/4.1.0.0/bin/streamsprofile.sh
 
 # About this task
 
@@ -103,7 +103,7 @@ by toolkit with their namespaces as prefixes.
   **streamtool submitjob** command or by using Streams Studio. 
 
 		]]></info:description>
-		<info:version>1.0.1</info:version>
+		<info:version>1.0.2</info:version>
 		<info:requiredProductVersion>4.1.0.0</info:requiredProductVersion>
 	</info:identity>
 	<info:dependencies/>

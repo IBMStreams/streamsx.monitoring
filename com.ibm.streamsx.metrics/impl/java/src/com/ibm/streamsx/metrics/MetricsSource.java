@@ -164,6 +164,11 @@ public class MetricsSource extends AbstractOperator {
 			"Specifies the password that is required for the JMX connection. If "
 			+ "the **applicationConfigurationName** parameter is specified, "
 			+ "the application configuration can override this parameter value.";
+
+	private static final String DESC_PARAM_SSL_OPTION = 
+			"Specifies the sslOption that is required for the JMX connection. If "
+			+ "the **applicationConfigurationName** parameter is specified, "
+			+ "the application configuration can override this parameter value.";	
 	
 	private static final String DESC_PARAM_DOMAIN_ID = 
 			"Specifies the domain id that is monitored. If no domain id is "
@@ -202,6 +207,8 @@ public class MetricsSource extends AbstractOperator {
 	private static final Object PARAMETER_USER = "user";
 
 	private static final Object PARAMETER_PASSWORD = "password";
+	
+	private static final Object PARAMETER_SSL_OPTION = "sslOption";
 
 	private static final Object PARAMETER_FILTER_DOCUMENT = "filterDocument";
 
@@ -256,6 +263,14 @@ public class MetricsSource extends AbstractOperator {
 		_operatorConfiguration.set_password(password);
 	}
 
+	@Parameter(
+			optional=true,
+			description=MetricsSource.DESC_PARAM_SSL_OPTION
+			)
+	public void setSslOption(String sslOption) {
+		_operatorConfiguration.set_sslOption(sslOption);
+	}
+	
 	@Parameter(
 			optional=true,
 			description=MetricsSource.DESC_PARAM_DOMAIN_ID
@@ -502,6 +517,7 @@ public class MetricsSource extends AbstractOperator {
 		String connectionURL = _operatorConfiguration.get_connectionURL();
 		String user = _operatorConfiguration.get_user();
 		String password = _operatorConfiguration.get_password();
+		String sslOption = "";
 		// Override defaults if the application configuration is specified
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {
@@ -514,6 +530,9 @@ public class MetricsSource extends AbstractOperator {
 			}
 			if (properties.containsKey(PARAMETER_PASSWORD)) {
 				password = properties.get(PARAMETER_PASSWORD);
+			}
+			if (properties.containsKey(PARAMETER_SSL_OPTION)) {
+				sslOption = properties.get(PARAMETER_SSL_OPTION);
 			}
 		}
 		// Ensure a valid configuration.
@@ -534,14 +553,13 @@ public class MetricsSource extends AbstractOperator {
 		env.put("jmx.remote.credentials", credentials);
 		env.put("jmx.remote.protocol.provider.pkgs", "com.ibm.streams.management");
 		/*
-		 * TODO streamtool getdomainproperty jmx.sslOption
+		 * get the value from: streamtool getdomainproperty jmx.sslOption
 		 * Code taken from:
 		 * http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/jmxapi-lgop.html
-		 * 
-		 * Is this needed? Seems to be not needed.
 		 */
-//		String sslOption = "TLSv1";
-//		env.put("jmx.remote.tls.enabled.protocols", sslOption);
+		if (sslOption != "") {
+			env.put("jmx.remote.tls.enabled.protocols", sslOption);
+		}
 
 		/*
 		 * Setup the JMX connector and MBean connection.

@@ -48,8 +48,7 @@ Find the full documentation [here](https://ibmstreams.github.io/streamsx.metrics
 You can generate HTML from the SPLDOC with the following commands:
 
 ```
-spl-make-toolkit -i com.ibm.streamsx.metrics
-spl-make-doc -i com.ibm.streamsx.metrics
+ant all
 ```
 
 You can view the HTML pages with any browser, or, for example, the following
@@ -58,3 +57,14 @@ command:
 ```
 firefox com.ibm.streamsx.metrics/doc/spldoc/html/index.html &
 ```
+
+## Streaming Analytics service on IBM Bluemix
+
+This toolkit is compatible with the Streaming Analytics service on Bluemix.
+
+It is recommended to create an Application Configuration before launching a sample application using the MetricsSource operator.
+
+1. Build and launch the sample application **com.ibm.streamsx.metrics.sample.SetupApplicationConfiguration**
+2. Build and launch the sample application **com.ibm.streamsx.metrics.sample.MetricsSource.ApplicationConfiguration**
+
+

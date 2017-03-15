@@ -34,6 +34,11 @@ public class OperatorConfiguration {
 	private String _password = null;
 
 	/**
+	 * Specifies the sslOption that is required for the JMX connection.
+	 */
+	private String _sslOption = null;	
+	
+	/**
 	 * Specifies the domain that is monitored.
 	 */
 	private String _domainId = null;
@@ -91,6 +96,14 @@ public class OperatorConfiguration {
 		this._password = password;
 	}
 
+	public String get_sslOption() {
+		return _sslOption;
+	}
+
+	public void set_sslOption(String sslOption) {
+		this._sslOption = sslOption;
+	}	
+	
 	public String get_domainId() {
 		return _domainId;
 	}
