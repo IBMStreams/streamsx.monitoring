@@ -41,7 +41,7 @@
 	</path>
 
 	<target name="compile" depends="init">
-		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" includeantruntime="no">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" includeantruntime="no" source="1.8" target="1.8">
 			<classpath>
 				<path refid="cp.streams" />
 			</classpath>
