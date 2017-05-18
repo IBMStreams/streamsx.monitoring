@@ -1,83 +1,57 @@
-<!DOCTYPE html>
-<html lang="en-us">
+<!doctype html>
+<html>
   <head>
-    <meta charset="UTF-8">
-    <title>streamsx.metrics by IBMStreams</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Streamsx.metrics by IBMStreams</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
   <body>
-    <section class="page-header">
-      <h1 class="project-name">streamsx.metrics</h1>
-      <h2 class="project-tagline">The com.ibm.streamsx.metrics toolkit supports monitoring Streams applications by providing the MetricsSource operator that can produce a stream of metrics.</h2>
-      <a href="https://github.com/IBMStreams/streamsx.metrics" class="btn">View on GitHub</a>
-      <a href="https://github.com/IBMStreams/streamsx.metrics/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/IBMStreams/streamsx.metrics/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/IBMStreams/streamsx.metrics">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/IBMStreams/streamsx.metrics/releases">RELEASES</a></li>
+          <li class="downloads"><a href="https://github.com/IBMStreams/streamsx.metrics/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/IBMStreams/streamsx.metrics/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
 
-    <section class="main-content">
-      <h1>
-<a id="streamsxmetrics" class="anchor" href="#streamsxmetrics" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>streamsx.metrics</h1>
+    <div class="wrapper">
 
-<p>The <strong>com.ibm.streamsx.metrics</strong> toolkit supports monitoring Streams applications
+      <section>
+        <div id="title">
+          <h1>Streamsx.metrics</h1>
+          <p>The <strong>com.ibm.streamsx.metrics</strong> toolkit supports monitoring Streams applications
 by providing the <strong>MetricsSource</strong> operator that can produce a stream of metrics.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/IBMStreams">IBMStreams</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
 
-<p>IBM Streams supports standard and custom metrics that are assigned to operators
-and operator ports in a Streams application, for example, the number of received
-and sent tuples. These metrics can be monitored with the Streams console or
-Streams Studio to identify whether a Streams application runs as expected or
-whether it has some issues.</p>
+<h3>
+<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>What's New</h3>
+<p><a href="https://github.com/IBMStreams/streamsx.metrics/releases">Metrics Toolkit for Streams 4.2 is now avalable!</a></p>
+<p><a href="doc/spldoc/html/index.html">SPLDoc for the Metrics toolkit</a></p>
 
-<p>IBM Streams provides the
-<a href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.toolkits.doc/spldoc/dita/tk%24spl/op%24spl.adapter%24MetricsSink.html">spl.adapter::MetricsSink</a>
-operator to set metrics values from within a Streams applications, and SPL
-functions in the <a href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.toolkits.doc/spldoc/dita/tk%24spl/ns%24spl.utility.html">spl.utility</a>
-namespace to create custom metrics, and to set and get metrics values:</p>
-
+<h3><a name="StreamsQSE" class="anchor" href="#StreamsQSE"><span class="octicon octicon-link"></span></a>Streams Quick Start Edition (QSE)</h3>
 <ul>
-<li>spl.utility::createCustomMetric</li>
-<li>spl.utility::getCustomMetricNames</li>
-<li>spl.utility::getCustomMetricValue</li>
-<li>spl.utility::getInputPortMetricValue</li>
-<li>spl.utility::getOutputPortMetricValue</li>
-<li>spl.utility::hasCustomMetric</li>
-<li>spl.utility::setCustomMetricValue</li>
+<li><a href="http://ibmstreams.github.io">IBM Streams on Github</a></li>
+<li><a href="http://ibmstreams.github.io/streamsx.documentation/docs/4.2/qse-intro/">Introduction to Streams Quick Start Edition</a></li>
+<li><a href="http://ibmstreams.github.io/streamsx.documentation/docs/4.2/qse-getting-started/">Streams Getting Started Guide</a></li>
+<li><a href="https://developer.ibm.com/streamsdev/">StreamsDev</a></li>
 </ul>
-
-<p>The functions are limited to the operator that owns a metric. An operator A
-cannot access the metrics of an operator B.</p>
-
-<p>If you want to monitor Streams or Streams applications with non-Streams
-applications, you can use the following API:</p>
-
-<ul>
-<li><a href="http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.ref.doc/doc/jmxapi.html">JMX</a></li>
-<li><a href="http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.restapi.doc/doc/restapis.html">REST</a></li>
-</ul>
-
-<p>The com.ibm.streamsx.metrics toolkit completes this list of APIs with the
-<strong>com.ibm.streamsx.metrics::MetricsSource</strong> operator that uses the <strong>JMX API</strong>
-to retrieve metrics from one or more jobs, and provides them as tuple stream.</p>
-
-<p>This introduction and further details are described in the toolkit's info.xml
-file, and the operator's implementation.</p>
-
-<h2>
-<a id="spldoc-documentation" class="anchor" href="#spldoc-documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SPLDOC documentation</h2>
-
-<p><a href="doc/spldoc/html/tk$com.ibm.streamsx.metrics/tk$com.ibm.streamsx.metrics.html">SPLDoc for the com.ibm.streamsx.metrics toolkit</a></p>
-
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/IBMStreams/streamsx.metrics">streamsx.metrics</a> is maintained by <a href="https://github.com/IBMStreams">IBMStreams</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
-
-    </section>
-
-  
+    
   </body>
 </html>
