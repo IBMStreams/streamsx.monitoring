@@ -1,6 +1,7 @@
 *.class
 
 **/.apt_generated/
+/tmp/
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
