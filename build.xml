@@ -12,6 +12,7 @@
   <property environment="env" />
   <property name="streams.install" value="${env.STREAMS_INSTALL}" />
   <property name="toolkit" location="com.ibm.streamsx.metrics"/>
+  <property name="tmp" location="tmp" />
 	
   <target name="all" depends="toolkit,samples,spldoc"/>
 
@@ -109,5 +110,22 @@
         <arg value="${tkdir}"/>
      </exec>
   </target>
-
+  <!-- Targets to build releases -->
+  <target name="release"  depends="clean,all">
+	<mkdir dir="${tmp}" />
+	<!-- Create the time stamp -->
+	<tstamp />
+	<!-- Extract info from the toolkit's info.xml -->
+	<xmlproperty file="${toolkit}/info.xml" prefix="tkinfo" keepRoot="no" />
+	<echo message="Toolkit Version: ${tkinfo.info:identity.info:version}" />
+        <property name="releasefilename" value="${tmp}/streamsx.metrics.toolkits-${tkinfo.info:identity.info:version}-${DSTAMP}-${TSTAMP}.tgz" />
+    	<tar compression="gzip" longfile="gnu"
+             destfile="${releasefilename}"
+    	     basedir="${basedir}"
+             includes="com.ibm.streamsx.metrics/** samples/**"
+             excludes="**/.gitignore com.ibm.streamsx.metrics/.settings/** com.ibm.streamsx.metrics/.project com.ibm.streamsx.metrics/.classpat*"
+    	/>
+        <checksum file="${releasefilename}"/>
+        <checksum algorithm="sha1" file="${releasefilename}"/>
+  </target>
 </project>
