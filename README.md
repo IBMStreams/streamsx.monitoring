@@ -13,6 +13,10 @@ The com.ibm.streamsx.metrics toolkit completes this list of APIs with the
 **com.ibm.streamsx.metrics::MetricsSource** operator that uses the **JMX API**
 to retrieve metrics from one or more jobs, and provides them as tuple stream.
 
+## Getting Started
+
+https://github.com/IBMStreams/streamsx.metrics/wiki/Getting-Started
+
 ## Documentation
 
 Find the full documentation [here](https://ibmstreams.github.io/streamsx.metrics/).
