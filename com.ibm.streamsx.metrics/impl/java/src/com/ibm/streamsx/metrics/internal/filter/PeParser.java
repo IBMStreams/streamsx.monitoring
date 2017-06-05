@@ -24,8 +24,12 @@ public class PeParser extends AbstractParser {
 	private static final String INPUT_PORTS = "inputPorts";
 
 	private static final String OUTPUT_PORTS = "outputPorts";
+	
+	private static final String CONNECTIONS = "connections";
 
 	private PortParser _portParser = new PortParser();
+	
+	private ConnectionParser _connectionParser = new ConnectionParser();
 	
 	protected PeParser() {
 
@@ -71,6 +75,23 @@ public class PeParser extends AbstractParser {
 			}
 			
 		});
+		
+		setValidationRule(CONNECTIONS, new IValidator() {
+
+			@Override
+			public boolean validate(String key, Object object) {
+				boolean result = true;
+				if (object instanceof JSONArtifact) {
+					result = _connectionParser.validate((JSONArtifact)object);
+				}
+				else {
+					result = false;
+					logger().error("filterDocument: The parsed object must be a JSONArtifact. Details: key=" + key + ", object=" + object);
+				}
+				return result;
+			}
+			
+		});
 	}
 
 	@Override
@@ -85,6 +106,7 @@ public class PeParser extends AbstractParser {
 		Set<String> metrics = buildPatternList(json.get(METRIC_NAME_PATTERNS));
 		Set<PortFilter> inputPortFilters = _portParser.buildFilters((JSONArtifact)json.get(INPUT_PORTS));
 		Set<PortFilter> outputPortFilters = _portParser.buildFilters((JSONArtifact)json.get(OUTPUT_PORTS));
+		Set<ConnectionFilter> connectionFilters = _connectionParser.buildFilters((JSONArtifact)json.get(CONNECTIONS));
 		Set<MetricFilter> metricFilters = new HashSet<>();
 		for (String pattern : metrics) {
 //			logger().error("create metric filter, pattern=" + pattern);
@@ -92,7 +114,7 @@ public class PeParser extends AbstractParser {
 		}
 		Set<PeFilter> result = new HashSet<>();
 //		logger().error("create PE filter");
-		result.add(new PeFilter(metricFilters, inputPortFilters, outputPortFilters));
+		result.add(new PeFilter(metricFilters, inputPortFilters, outputPortFilters, connectionFilters));
 		return result;
 	}
 

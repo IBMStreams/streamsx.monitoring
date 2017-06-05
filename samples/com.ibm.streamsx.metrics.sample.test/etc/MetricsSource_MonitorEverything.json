@@ -27,6 +27,13 @@
 										"metricNamePatterns":".*",
 									},
 								],
+								"connections":
+								[
+									{
+										"connectionIdPatterns":".*",
+										"metricNamePatterns":".*"
+									},
+								],
 							}
 						],
 						"operators":

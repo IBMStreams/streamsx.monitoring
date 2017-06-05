@@ -220,5 +220,18 @@ final class DomainFilter extends PatternMatcher {
 		}
 		return matches;
 	}
+	
+	public boolean matchesPeConnectionMetricName(String domainId, String instanceId, String jobName, BigInteger peId, String connectionId, String metricName) {
+		boolean matches = matchesDomainId(domainId) && (_instanceFilters.size() > 0);
+		if (matches) {
+			for(InstanceFilter filter : _instanceFilters.values()) {
+				matches = filter.matchesPeConnectionMetricName(instanceId, jobName, peId, connectionId, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
 
 }
