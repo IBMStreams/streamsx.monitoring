@@ -197,6 +197,17 @@ public class Filters {
 		}
 		return matches;
 	}
+	
+	public boolean matchesPeConnectionMetricName(String domainId, String instanceId, String jobName, BigInteger peId, String connectionId, String metricName) {
+		boolean matches = false;
+		for(DomainFilter filter : _domainFilters.values()) {
+			matches = filter.matchesPeConnectionMetricName(domainId, instanceId, jobName, peId, connectionId, metricName);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
 
 	/**
 	 * Read the filterDocument file, parse its JSON-formatted content, and

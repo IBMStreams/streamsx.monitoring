@@ -13,6 +13,10 @@ The com.ibm.streamsx.metrics toolkit completes this list of APIs with the
 **com.ibm.streamsx.metrics::MetricsSource** operator that uses the **JMX API**
 to retrieve metrics from one or more jobs, and provides them as tuple stream.
 
+## Getting Started
+
+https://github.com/IBMStreams/streamsx.metrics/wiki/Getting-Started
+
 ## Documentation
 
 Find the full documentation [here](https://ibmstreams.github.io/streamsx.metrics/).
@@ -20,10 +24,5 @@ Find the full documentation [here](https://ibmstreams.github.io/streamsx.metrics
 ## Streaming Analytics service on IBM Bluemix
 
 This toolkit is compatible with the Streaming Analytics service on Bluemix.
-
-It is recommended to create an Application Configuration before launching a sample application using the MetricsSource operator.
-
-1. Build and launch the sample application **com.ibm.streamsx.metrics.sample.SetupApplicationConfiguration**
-2. Build and launch the sample application **com.ibm.streamsx.metrics.sample.MetricsSource.ApplicationConfiguration**
 
 

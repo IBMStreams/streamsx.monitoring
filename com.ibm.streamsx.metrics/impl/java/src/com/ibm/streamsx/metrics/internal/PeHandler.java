@@ -54,6 +54,8 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	private Map<Integer /* port index */, PeInputPortHandler> _inputPortHandlers = new HashMap<>();
 
 	private Map<Integer /* port index */, PeOutputPortHandler> _outputPortHandlers = new HashMap<>();
+	
+	private Map<String /* connection id */, PeConnectionHandler> _connectionHandlers = new HashMap<>();
 
 	public PeHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId, BigInteger jobId, String jobName, BigInteger peId) {
 
@@ -104,6 +106,11 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 		for (Integer portIndex : _pe.getOutputPorts()) {
 			addValidOutputPort(portIndex);
 		}
+		
+		for (String connectionId : _pe.getConnections()) {
+			addValidConnection(connectionId);
+		}
+		
 	}
 
 	/**
@@ -165,6 +172,22 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 			_outputPortHandlers.put(portIndex, new PeOutputPortHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _peId, portIndex));
 		}
 	}
+	
+	protected void addValidConnection(String connectionId) {
+//		boolean matches = _operatorConfiguration.get_filters().matchesPeOutputPortIndex(_domainId, _instanceId, _jobName, _peId, portIndex);
+//		if (_trace.isInfoEnabled()) {
+//			if (matches) {
+//				_trace.info("The following output port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
+//			}
+//			else {
+//				_trace.info("The following output port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
+//			}
+//		}
+//		if (matches) {
+		if (true) {
+			_connectionHandlers.put(connectionId, new PeConnectionHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _peId, connectionId));
+		}
+	}
 
 	/**
 	 * Iterate all jobs to capture the job metrics.
@@ -197,6 +220,9 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 		}
 		for(Integer portIndex : _outputPortHandlers.keySet()) {
 			_outputPortHandlers.get(portIndex).captureMetrics();
+		}
+		for(String connectionId : _connectionHandlers.keySet()) {
+			_connectionHandlers.get(connectionId).captureMetrics();
 		}
 
 		if (isDebugEnabled) {

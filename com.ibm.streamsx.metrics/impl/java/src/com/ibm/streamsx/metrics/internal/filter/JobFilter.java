@@ -195,5 +195,18 @@ final class JobFilter extends PatternMatcher {
 		}
 		return matches;
 	}
+	
+	public boolean matchesPeConnectionMetricName(String jobName, BigInteger peId, String connectionId, String metricName) {
+		boolean matches = matchesPeId(jobName, peId);
+		if (matches) {
+			for(PeFilter filter : _peFilters) {
+				matches = filter.matchesPeConnectionMetricName(peId, connectionId, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
 
 }
