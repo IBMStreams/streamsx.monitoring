@@ -60,6 +60,11 @@ public class TupleContainer {
 	private Integer _portIndexAttributeIndex = null;
 	
 	/**
+	 * Index of the connectionId attribute.
+	 */
+	private Integer _connectionIdAttributeIndex = null;
+	
+	/**
 	 * Index of the channel attribute.
 	 */
 	private Integer _channelAttributeIndex = null;
@@ -156,6 +161,11 @@ public class TupleContainer {
 		if (_portIndexAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("portIndex");
 			_portIndexAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT32 ? attribute.getIndex() : -1) ;
+		}
+		// Connection-related attributes.
+		if (_connectionIdAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("connectionId");
+			_connectionIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
 		}
 		// Metric-related attributes.
 		if (_originAttributeIndex == null) {
@@ -258,6 +268,17 @@ public class TupleContainer {
 	public void setPortIndex(int portIndex) {
 		if (_portIndexAttributeIndex != -1) {
 			_tuple.setInt(_portIndexAttributeIndex, portIndex);
+		}
+	}
+	
+	/**
+	 * Optionally set the connection id in the output tuple.
+	 * 
+	 * @param connectionId
+	 */
+	public void setConnectionId(String connectionId) {
+		if (_connectionIdAttributeIndex != -1) {
+			_tuple.setString(_connectionIdAttributeIndex, connectionId);
 		}
 	}
 

@@ -207,5 +207,18 @@ final class InstanceFilter extends PatternMatcher {
 		}
 		return matches;
 	}
+	
+	public boolean matchesPeConnectionMetricName(String instanceId, String jobName, BigInteger peId, String peConnection, String metricName) {
+		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
+		if (matches) {
+			for(JobFilter filter : _jobFilters.values()) {
+				matches = filter.matchesPeConnectionMetricName(jobName, peId, peConnection, metricName);
+				if (matches) {
+					break;
+				}
+			}
+		}
+		return matches;
+	}
 
 }

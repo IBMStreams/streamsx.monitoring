@@ -36,8 +36,13 @@ final class PeFilter {
 	 * An operator has many output ports.
 	 */
 	protected Map<Long /* port index */, PortFilter> _outputPortFilters = new HashMap<>();
+	
+	/**
+	 * A PE has many connections.
+	 */
+	protected Map<String /* connection id */, ConnectionFilter> _connectionFilters = new HashMap<>();
 
-	public PeFilter(Set<MetricFilter> metricFilters, Set<PortFilter> inputPortFilters, Set<PortFilter> outputPortFilters) throws PatternSyntaxException {
+	public PeFilter(Set<MetricFilter> metricFilters, Set<PortFilter> inputPortFilters, Set<PortFilter> outputPortFilters, Set<ConnectionFilter> connectionFilters) throws PatternSyntaxException {
 		for(MetricFilter metricFilter : metricFilters) {
 			_metricFilters.put(metricFilter.getRegularExpression(), metricFilter);
 		}
@@ -46,6 +51,9 @@ final class PeFilter {
 		}
 		for(PortFilter portFilter : outputPortFilters) {
 			_outputPortFilters.put(portFilter.getNumber(), portFilter);
+		}
+		for(ConnectionFilter connectionFilter : connectionFilters) {
+			_connectionFilters.put(connectionFilter.getRegularExpression(), connectionFilter);
 		}
 	}
 
@@ -97,6 +105,17 @@ final class PeFilter {
 		boolean matches = false;
 		for(PortFilter filter : _outputPortFilters.values()) {
 			matches = filter.matchesPortMetricName(portIndex, metricName);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
+	
+	public boolean matchesPeConnectionMetricName(BigInteger peId, String peConnection, String metricName) {
+		boolean matches = false;
+		for(ConnectionFilter filter : _connectionFilters.values()) {
+			matches = filter.matchesConnectionMetricName(peConnection, metricName);
 			if (matches) {
 				break;
 			}
