@@ -64,7 +64,8 @@ public composite Origin {
 			OperatorOutputPort,
 			Pe,
 			PeInputPort,
-			PeOutputPort
+			PeOutputPort,
+			PeConnectionId
 		};
 }
 
