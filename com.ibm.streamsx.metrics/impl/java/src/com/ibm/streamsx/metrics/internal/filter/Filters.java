@@ -198,6 +198,17 @@ public class Filters {
 		return matches;
 	}
 	
+	public boolean matchesPeConnectionId(String domainId, String instanceId, String jobName, BigInteger peId, String connectionId) {
+		boolean matches = false;
+		for(DomainFilter filter : _domainFilters.values()) {
+			matches = filter.matchesPeConnectionId(domainId, instanceId, jobName, peId, connectionId);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
+	
 	public boolean matchesPeConnectionMetricName(String domainId, String instanceId, String jobName, BigInteger peId, String connectionId, String metricName) {
 		boolean matches = false;
 		for(DomainFilter filter : _domainFilters.values()) {
