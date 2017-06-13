@@ -174,17 +174,16 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	}
 	
 	protected void addValidConnection(String connectionId) {
-//		boolean matches = _operatorConfiguration.get_filters().matchesPeOutputPortIndex(_domainId, _instanceId, _jobName, _peId, portIndex);
-//		if (_trace.isInfoEnabled()) {
-//			if (matches) {
-//				_trace.info("The following output port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
-//			}
-//			else {
-//				_trace.info("The following output port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
-//			}
-//		}
-//		if (matches) {
-		if (true) {
+		boolean matches = _operatorConfiguration.get_filters().matchesPeConnectionId(_domainId, _instanceId, _jobName, _peId, connectionId);
+		if (_trace.isInfoEnabled()) {
+			if (matches) {
+				_trace.info("The following output port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", connection=" + connectionId);
+			}
+			else {
+				_trace.info("The following output port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", connection=" + connectionId);
+			}
+		}
+		if (matches) {
 			_connectionHandlers.put(connectionId, new PeConnectionHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _peId, connectionId));
 		}
 	}
