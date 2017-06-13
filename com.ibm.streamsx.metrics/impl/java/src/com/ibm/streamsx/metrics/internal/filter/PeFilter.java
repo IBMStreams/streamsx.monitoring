@@ -112,6 +112,17 @@ final class PeFilter {
 		return matches;
 	}
 	
+	public boolean matchesPeConnectionId(BigInteger peId, String connectionId) {
+		boolean matches = false;
+		for(ConnectionFilter filter : _connectionFilters.values()) {
+			matches = filter.matchesConnectionId(connectionId);
+			if (matches) {
+				break;
+			}
+		}
+		return matches;
+	}
+	
 	public boolean matchesPeConnectionMetricName(BigInteger peId, String peConnection, String metricName) {
 		boolean matches = false;
 		for(ConnectionFilter filter : _connectionFilters.values()) {

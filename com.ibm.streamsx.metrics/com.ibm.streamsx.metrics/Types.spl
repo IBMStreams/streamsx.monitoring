@@ -55,6 +55,12 @@ public composite Origin {
 		 *   number of submitted tuples or markers. The portIndex attribute
 		 *   specifies the index of the port.
 		 * 
+		 * * **PeConnection**
+		 * 
+		 *   A PE's output port has connection metrics that describe, for 
+		 * 	 example, the congestionFactor or nTuplesFilteredOut. The connectionId 
+		 *   attribute specifies the ID of the PE connection.
+		 * 
 		 * See [http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/metricaccess.html|Metrics Access]
 		 * in IBM's Knowledge Center for further details.
 		 */
@@ -65,7 +71,7 @@ public composite Origin {
 			Pe,
 			PeInputPort,
 			PeOutputPort,
-			PeConnectionId
+			PeConnection
 		};
 }
 
@@ -143,6 +149,11 @@ public composite Origin {
  *   If the metric belongs to an input or output port, the attribute holds the
  *   index of this port. Else, the attribute is set to 0.
  * 
+ * * **connectionId**
+ * 
+ *   If the metric belongs to a connection, the attribute holds the
+ *   ID of this connection.
+ * 
  * * **metricType**
  * 
  *   A string that identifies the type of metric. Some possible values for this
@@ -178,6 +189,7 @@ type Notification = tuple<
 	rstring operatorName,
 	int32 channel,
 	int32 portIndex,
+	rstring connectionId,
 	rstring metricType,
 	rstring metricKind,
 	rstring metricName,

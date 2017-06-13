@@ -109,7 +109,7 @@ public class PeConnectionHandler extends MetricOwningHandler implements Closeabl
 			_trace.debug("--> captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ", connectionId=" + _connectionId + ")");
 		}
 
-		_operatorConfiguration.get_tupleContainer().setOrigin("PeConnectionId");
+		_operatorConfiguration.get_tupleContainer().setOrigin("PeConnection");
 		_operatorConfiguration.get_tupleContainer().setConnectionId(_connectionId);
 		captureAndSubmitChangedMetrics();
 
