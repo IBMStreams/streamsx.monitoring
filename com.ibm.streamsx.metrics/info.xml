@@ -103,7 +103,7 @@ by toolkit with their namespaces as prefixes.
   **streamtool submitjob** command or by using Streams Studio. 
 
 		]]></info:description>
-		<info:version>1.0.4</info:version>
+		<info:version>1.0.5</info:version>
 		<info:requiredProductVersion>4.1.0.0</info:requiredProductVersion>
 	</info:identity>
 	<info:dependencies/>
