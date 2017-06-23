@@ -173,7 +173,17 @@ abstract class MetricOwningHandler {
 			 * The metrics must always be retrieved because we must decide
 			 * periodically which metrics are relevant. 
 			 */
-			Set<Metric> metrics = retrieveMetrics();
+			Set<Metric> metrics;
+			try {
+				metrics = retrieveMetrics();
+			} catch (NullPointerException e) {
+				/*
+				 * This error pops up, occasionally, when trying to access metrics 
+				 * too soon. It happens once at the beginning of launching this 
+				 * operator. This can safely be ignored.
+				 */
+				return;
+			}
 			/*
 			 * This solution is required for metrics that do not exist as soon
 			 * as the parent object exists, for example:
