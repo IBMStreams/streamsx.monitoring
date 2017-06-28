@@ -1,0 +1,67 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+/**
+ * A metrics ingest service for the 
+ * [com.ibm.streamsx.metrics::MetricsSource] operator.
+ * Converts tuples to JSON and publishes it to 'ingest-metrics' topic.
+ */
+ 
+namespace com.ibm.streamsx.metrics.service;
+
+use com.ibm.streamsx.metrics::MetricsSource ;
+use com.ibm.streamsx.json::TupleToJSON ;
+
+public composite MetricsIngestService
+{			
+	param
+		expression<rstring> $applicationConfigurationName;
+		
+	type
+		/**
+		 * The output schema of the [com.ibm.streamsx.metrics::MetricsSource] operator 
+		 * which is outputted to the [com.ibm.streamsx.json::TupleToJSON] operator.
+		 */
+		MetricType = tuple<
+				rstring metricName,
+				int64 metricValue,
+				rstring domainId,
+				rstring instanceId,
+				int64 jobId,
+				rstring jobName,
+				rstring resource,
+				int64 peId,
+				int64 lastTimeRetrieved
+			>;
+
+	graph
+		/**
+		 * The MetricsSource generates a tuple for each retrieved metric.
+		 */
+		stream<MetricType> MetricsSource_0 = MetricsSource()
+		{
+			param
+				applicationConfigurationName: $applicationConfigurationName;
+		}
+
+		/**
+		 * The TupleToJSON converts the MetricType tuples into JSON format.
+		 */
+		stream<rstring jsonString> TupleToJSON_0 = TupleToJSON(MetricsSource_0)
+		{
+		
+		}
+		
+		/**
+		 * The Export publishes the MetricType JSON string to the 'ingest-metrics' topic.
+		 */
+		() as Export_0 = Export(TupleToJSON_0)
+		{
+			param
+				properties: { topic = "ingest-metrics" };
+		}
+}
