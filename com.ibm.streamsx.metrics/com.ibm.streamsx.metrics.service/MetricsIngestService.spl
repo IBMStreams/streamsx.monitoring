@@ -8,7 +8,7 @@
 /**
  * A metrics ingest service for the 
  * [com.ibm.streamsx.metrics::MetricsSource] operator.
- * Converts tuples to JSON and publishes it to 'ingest-metrics' topic.
+ * Converts tuples to JSON and publishes it to 'streamsx/metrics/ingest' topic.
  */
  
 namespace com.ibm.streamsx.metrics.service;
@@ -45,11 +45,11 @@ public composite MetricsIngestService
 		stream<MetricType> MetricsSource_0 = MetricsSource()
 		{
 			param
-				applicationConfigurationName: $applicationConfigurationName;
+				applicationConfigurationName : $applicationConfigurationName ;
 		}
 
 		/**
-		 * The TupleToJSON converts the MetricType tuples into JSON format.
+		 * The TupleToJSON converts the MetricType tuples into JSON.
 		 */
 		stream<rstring jsonString> TupleToJSON_0 = TupleToJSON(MetricsSource_0)
 		{
@@ -57,11 +57,11 @@ public composite MetricsIngestService
 		}
 		
 		/**
-		 * The Export publishes the MetricType JSON string to the 'ingest-metrics' topic.
+		 * The Export publishes the MetricType JSON string to the 'streamsx/metrics/ingest' topic.
 		 */
 		() as Export_0 = Export(TupleToJSON_0)
 		{
 			param
-				properties: { topic = "ingest-metrics" };
+				properties : { topic = "streamsx/metrics/ingest" } ;
 		}
 }
