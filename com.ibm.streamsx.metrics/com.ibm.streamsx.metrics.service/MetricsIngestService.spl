@@ -6,43 +6,44 @@
 //
 
 /**
- * A metrics ingest service for the 
- * [com.ibm.streamsx.metrics::MetricsSource] operator.
- * Converts tuples to JSON and publishes it to 'streamsx/metrics/ingest' topic.
+ * A service which publishes the [com.ibm.streamsx.metrics::MetricsSource] 
+ * operator's tuples in JSON format to the 'streamsx/metrics/ingest' topic.
+ * 
+ * Output JSON Schema:
+ * {
+ *   "domainId" : string,
+ *   "instanceId" : string,
+ *   "jobId" : string,
+ *   "jobName" : string,
+ *   "resource" : string,
+ *   "peId" : long,
+ *   "operatorName" : string,
+ *   "channel" : int,
+ *   "portIndex" : int,
+ *   "connectionId" : string,
+ *   "metricType" : string,
+ *   "metricKind" : string,
+ *   "metricName" : string,
+ *   "metricValue" : long,
+ *   "lastTimeRetrieved" : long
+ * }
  */
  
 namespace com.ibm.streamsx.metrics.service;
 
-use com.ibm.streamsx.metrics::MetricsSource ;
+use com.ibm.streamsx.metrics::* ;
 use com.ibm.streamsx.json::TupleToJSON ;
 
 public composite MetricsIngestService
 {			
 	param
-		expression<rstring> $applicationConfigurationName;
-		
-	type
-		/**
-		 * The output schema of the [com.ibm.streamsx.metrics::MetricsSource] operator 
-		 * which is outputted to the [com.ibm.streamsx.json::TupleToJSON] operator.
-		 */
-		MetricType = tuple<
-				rstring metricName,
-				int64 metricValue,
-				rstring domainId,
-				rstring instanceId,
-				int64 jobId,
-				rstring jobName,
-				rstring resource,
-				int64 peId,
-				int64 lastTimeRetrieved
-			>;
+		expression<rstring> $applicationConfigurationName ;
 
 	graph
 		/**
 		 * The MetricsSource generates a tuple for each retrieved metric.
 		 */
-		stream<MetricType> MetricsSource_0 = MetricsSource()
+		stream<Notification> MetricsSource_0 = MetricsSource()
 		{
 			param
 				applicationConfigurationName : $applicationConfigurationName ;
