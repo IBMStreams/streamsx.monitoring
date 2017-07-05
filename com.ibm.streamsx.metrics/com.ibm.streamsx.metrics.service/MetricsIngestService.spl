@@ -33,6 +33,7 @@ namespace com.ibm.streamsx.metrics.service;
 
 use com.ibm.streamsx.metrics::* ;
 use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.topology.topic::Publish ;
 
 public composite MetricsIngestService
 {			
@@ -58,11 +59,11 @@ public composite MetricsIngestService
 		}
 		
 		/**
-		 * The Export publishes the MetricType JSON string to the 'streamsx/metrics/ingest' topic.
+		 * The Publish publishes the metrics JSON string to the 'streamsx/metrics/ingest' topic.
 		 */
-		() as Export_0 = Export(TupleToJSON_0)
+		() as Publish_0 = Publish(TupleToJSON_0)
 		{
 			param
-				properties : { topic = "streamsx/metrics/ingest" } ;
+				topic : "streamsx/metrics/ingest" ;
 		}
 }
