@@ -32,7 +32,7 @@
 namespace com.ibm.streamsx.metrics.service;
 
 use com.ibm.streamsx.metrics::* ;
-use com.ibm.streamsx.json::TupleToJSON ;
+use com.ibm.streamsx.json::* ;
 use com.ibm.streamsx.topology.topic::Publish ;
 
 public composite MetricsIngestService
@@ -54,7 +54,7 @@ public composite MetricsIngestService
 		/**
 		 * The TupleToJSON converts the Metrics tuples into JSON format.
 		 */
-		stream<rstring jsonString> JsonMetrics = TupleToJSON(Metrics)
+		stream<Json> JsonMetrics = TupleToJSON(Metrics)
 		{
 		
 		}
