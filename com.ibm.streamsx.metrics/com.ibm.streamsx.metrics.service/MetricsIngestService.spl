@@ -7,7 +7,7 @@
 
 /**
  * A service which publishes the [com.ibm.streamsx.metrics::MetricsSource] 
- * operator's tuples in JSON format to the 'streamsx/metrics/ingest' topic.
+ * operator's tuples in JSON format to the a specified topic.
  * 
  * Output JSON Schema:
  * {
@@ -39,7 +39,7 @@ public composite MetricsIngestService
 {			
 	param
 		expression<rstring> $applicationConfigurationName : getSubmissionTimeValue("applicationConfigurationName", "metricsConfig");
-		expression<rstring> $topic : getSubmissionTimeValue("topic", "streamsx/metrics/ingest");
+		expression<rstring> $topic : getSubmissionTimeValue("topic", "streamsx/metrics/values");
 
 	graph
 		/**
