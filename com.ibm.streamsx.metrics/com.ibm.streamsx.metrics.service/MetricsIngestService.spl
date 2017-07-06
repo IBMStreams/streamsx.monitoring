@@ -45,25 +45,24 @@ public composite MetricsIngestService
 		/**
 		 * The MetricsSource generates a tuple for each retrieved metric.
 		 */
-		stream<Notification> MetricsSource_0 = MetricsSource()
+		stream<Notification> Metrics = MetricsSource()
 		{
 			param
 				applicationConfigurationName : $applicationConfigurationName ;
-				emitMetricTuple : periodic ;
 		}
 
 		/**
-		 * The TupleToJSON converts the MetricType tuples into JSON.
+		 * The TupleToJSON converts the Metrics tuples into JSON format.
 		 */
-		stream<rstring jsonString> TupleToJSON_0 = TupleToJSON(MetricsSource_0)
+		stream<rstring jsonString> JsonMetrics = TupleToJSON(Metrics)
 		{
 		
 		}
 		
 		/**
-		 * The Publish publishes the metrics JSON string to the 'streamsx/metrics/ingest' topic.
+		 * The Publish publishes the JsonMetrics to the specified topic.
 		 */
-		() as Publish_0 = Publish(TupleToJSON_0)
+		() as Publish_0 = Publish(JsonMetrics)
 		{
 			param
 				topic : $topic ;
