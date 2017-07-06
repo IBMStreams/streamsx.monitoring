@@ -38,7 +38,8 @@ use com.ibm.streamsx.topology.topic::Publish ;
 public composite MetricsIngestService
 {			
 	param
-		expression<rstring> $applicationConfigurationName ;
+		expression<rstring> $applicationConfigurationName : getSubmissionTimeValue("applicationConfigurationName", "metricsConfig");
+		expression<rstring> $topic : getSubmissionTimeValue("topic", "streamsx/metrics/ingest");
 
 	graph
 		/**
@@ -48,6 +49,7 @@ public composite MetricsIngestService
 		{
 			param
 				applicationConfigurationName : $applicationConfigurationName ;
+				emitMetricTuple : periodic ;
 		}
 
 		/**
@@ -64,6 +66,6 @@ public composite MetricsIngestService
 		() as Publish_0 = Publish(TupleToJSON_0)
 		{
 			param
-				topic : "streamsx/metrics/ingest" ;
+				topic : $topic ;
 		}
 }
