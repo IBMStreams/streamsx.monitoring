@@ -10,7 +10,7 @@
  * operator's tuples in JSON format to the a specified topic.
  * 
  * Output JSON Schema:
- * {
+ * \{
  *   "domainId" : string,
  *   "instanceId" : string,
  *   "jobId" : string,
@@ -26,7 +26,7 @@
  *   "metricName" : string,
  *   "metricValue" : long,
  *   "lastTimeRetrieved" : long
- * }
+ * \}
  */
  
 namespace com.ibm.streamsx.metrics.service;
