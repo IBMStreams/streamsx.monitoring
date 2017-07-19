@@ -1,4 +1,4 @@
-# streamsx.metrics Graduation Status
+# streamsx.monitoring Graduation Status
 
 
 ## Overview

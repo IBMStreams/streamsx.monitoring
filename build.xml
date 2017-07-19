@@ -1,4 +1,4 @@
-<project name="streamsx.metrics" default="all" basedir=".">
+<project name="streamsx.monitoring" default="all" basedir=".">
 <!--
 // *******************************************************************************
 // * Copyright (C)2017, International Business Machines Corporation and *
@@ -6,12 +6,12 @@
 // *******************************************************************************
 -->
     <description>
-        Build file for streamsx.metrics project, built the toolkits and samples.
+        Build file for streamsx.monitoring project, built the toolkits and samples.
     </description>
   <!-- set global properties for this build -->
   <property environment="env" />
   <property name="streams.install" value="${env.STREAMS_INSTALL}" />
-  <property name="toolkit" location="com.ibm.streamsx.metrics"/>
+  <property name="toolkit" location="com.ibm.streamsx.monitoring"/>
   <property name="tmp" location="tmp" />
 	
   <target name="all" depends="toolkit,samples,spldoc"/>
@@ -37,7 +37,7 @@
     description="Create SPLDOC">
     <antcall target="spldoctoolkit">
        <param name="tkdir" value="${toolkit}"/>
-       <param name="tktitle" value="IBMStreams streamsx.metrics Toolkit"/>
+       <param name="tktitle" value="IBMStreams streamsx.monitoring Toolkit"/>
     </antcall>
     <subant target="spldoctoolkit" genericantfile="${basedir}/build.xml">
        <dirset dir="samples" includes="*"/>
@@ -118,12 +118,12 @@
 	<!-- Extract info from the toolkit's info.xml -->
 	<xmlproperty file="${toolkit}/info.xml" prefix="tkinfo" keepRoot="no" />
 	<echo message="Toolkit Version: ${tkinfo.info:identity.info:version}" />
-        <property name="releasefilename" value="${tmp}/streamsx.metrics.toolkits-${tkinfo.info:identity.info:version}-${DSTAMP}-${TSTAMP}.tgz" />
+        <property name="releasefilename" value="${tmp}/streamsx.monitoring.toolkits-${tkinfo.info:identity.info:version}-${DSTAMP}-${TSTAMP}.tgz" />
     	<tar compression="gzip" longfile="gnu"
              destfile="${releasefilename}"
     	     basedir="${basedir}"
-             includes="com.ibm.streamsx.metrics/** samples/**"
-             excludes="**/.gitignore com.ibm.streamsx.metrics/.settings/** com.ibm.streamsx.metrics/.project com.ibm.streamsx.metrics/.classpat*"
+             includes="com.ibm.streamsx.monitoring/** samples/**"
+             excludes="**/.gitignore com.ibm.streamsx.monitoring/.settings/** com.ibm.streamsx.monitoring/.project com.ibm.streamsx.monitoring/.classpat*"
     	/>
         <checksum file="${releasefilename}"/>
         <checksum algorithm="sha1" file="${releasefilename}"/>

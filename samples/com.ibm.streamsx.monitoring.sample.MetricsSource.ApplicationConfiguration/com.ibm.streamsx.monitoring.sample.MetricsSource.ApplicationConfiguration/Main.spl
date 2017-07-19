@@ -1,0 +1,72 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+/**
+ * This sample application demonstrate how to use the **applicationConfigurationName**
+ * parameter.
+ * 
+ * You need to run this application in distributed mode when parameters are applied
+ * with the Application Configuration.
+ */
+
+namespace com.ibm.streamsx.monitoring.sample.MetricsSource.ApplicationConfiguration;
+
+use com.ibm.streamsx.monitoring.metrics::MetricsSource;
+use com.ibm.streamsx.monitoring.metrics::Notification;
+
+composite Main {
+	type
+		MemoryMetric = tuple<
+			rstring resource,
+			rstring operatorName,
+			int32 channel,
+			rstring metricName,
+			int64 metricValue,
+			rstring domainId,
+			rstring instanceId,
+			int64 jobId,
+			rstring jobName,
+			int64 peId,
+			int64 lastTimeRetrieved
+		>;
+	graph
+		/*
+		 * The MetricsSource generates tuple for the specified metrics.
+		 */
+		stream<MemoryMetric> Notifications as O = MetricsSource() {
+			param
+				applicationConfigurationName: "com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration";
+//				connectionURL: getSubmissionTimeValue("connectionURL");
+//				user: getSubmissionTimeValue("user");
+//				password: getSubmissionTimeValue("password");
+//				domainId: getSubmissionTimeValue("domainId");
+				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
+				filterDocument: getThisToolkitDir()+"/etc/MetricsSource_MonitorOperatorMetrics.json";
+				emitMetricTuple: onChangedValue;
+		}
+		
+		/*
+		 * The Custom traces the received metric value notifications.
+		 */
+		() as NotificationTracer = Custom(Notifications as I) {
+			logic
+			onTuple I: {
+				appTrc(Trace.error, "Notification: " + (rstring)I);
+			}
+			onPunct I: {
+				appTrc(Trace.error, "Notification: " + (rstring)currentPunct());
+			}
+		}
+		
+		/*
+		 * A @parallel-annotated source.
+		 */
+		@parallel(width=3)
+		(stream<rstring dummy> Data) as AnnotatedSource = Beacon() {
+			param period: 3.0; 
+		}
+}

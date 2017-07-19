@@ -1,0 +1,112 @@
+// Copyright (C) 2017  International Business Machines Corporation
+// All Rights Reserved
+
+namespace com.ibm.streamsx.monitoring.sample.SetupApplicationConfiguration;
+
+use com.ibm.streamsx.shell::*;
+
+/**
+ * This sample application creates the **applicationConfiguration** for the current domain and instance.
+ * 
+ * You need to run this application in distributed mode.
+ * In the Streaming Analytics service, click LAUNCH to open the Streams Console, where you can submit and manage your jobs.
+ * Upload the application bundle file ./output/com.ibm.streamsx.monitoring.sample.SetupApplicationConfiguration.Main.sab from your file system.
+ * Enter the submission parameters user and password with the "userid" and "password" values from the Service Credentials.
+ *
+ * In the Streaming Analytics service, go to the Log Viewer and Click on the PE's Console Log to view output
+ */
+composite Main {
+
+	param
+		expression<rstring> $user: getSubmissionTimeValue("user");
+		expression<rstring> $password: getSubmissionTimeValue("password");
+		expression<rstring> $applicationConfigurationName: getSubmissionTimeValue("appConfig", "com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration");
+
+	type 
+
+		CommandType =
+			int32   commandNumber,
+			rstring command;
+
+		OutputType =
+			int32   commandNumber,
+			rstring command,
+			rstring outputLine;
+
+		ErrorType =
+			int64   commandNumber,
+			rstring command,
+			rstring errorLine;
+
+	graph
+
+		stream<CommandType> CommandStream as O = Custom() {
+			logic
+			onProcess: {
+				submit({commandNumber=1, command="streamtool getjmxconnect -d "+domainID()}, O);
+				submit({commandNumber=2, command="echo "+$password+" | streamtool getdomainproperty -d "+domainID()+" -U "+$user+" jmx.sslOption"}, O);
+			}
+		}
+
+		(stream<OutputType> OutStream;
+		stream<ErrorType> ErrorStream) = ShellSource(CommandStream as I) {
+			param
+				commandAttribute: command;
+				stdoutAttribute: "outputLine";
+		}
+
+		stream<CommandType> CommandStream2 as O = Custom(OutStream as I) {
+			logic state: {
+				mutable rstring jmxConnect = "";
+				mutable rstring sslOption = "";
+			}
+			onTuple I: {
+				printStringLn((rstring)I);				
+				if (1 == I.commandNumber) {
+					jmxConnect=I.outputLine;
+				}
+				if (2 == I.commandNumber) {
+					mutable int32 idx = 0;
+					idx = findFirstOf(I.outputLine, "=", 0);
+					if (idx >= 0) {
+						sslOption = substring(I.outputLine, idx+1, length(I.outputLine)-idx+1);
+						appTrc(Trace.debug, "instance=" + instanceID() +" domain=" + domainID() + " sslOption=" + sslOption + " jmxConnect=" + jmxConnect + " user=" + $user + " password=" + $password + " applicationConfigurationName=" + $applicationConfigurationName);
+						if ((length($user) > 0) && (length($password) > 0) && (length(jmxConnect) > 0) && (length(sslOption) > 0) && (length($applicationConfigurationName) > 0)) {
+							submit({commandNumber=3, command=getThisToolkitDir()+"/etc/createAppConfig.sh "+domainID()+" "+instanceID()+" "+$user+" "+$password+" "+jmxConnect+" "+sslOption+" "+$applicationConfigurationName}, O);
+						}
+						else {
+							appTrc(Trace.error, "Application configuration not created since configuration data is incomplete.");
+						}
+					}
+				}
+			}
+		}
+
+		(stream<OutputType> OutStream2;
+		stream<ErrorType> ErrorStream2) as AppConfigWriter = ShellSource(CommandStream2 as I) {
+			param
+				commandAttribute: command;
+				stdoutAttribute: "outputLine";
+		}
+
+		() as OutputPrinter2 = Custom(OutStream2 as I) {
+			logic
+			onTuple I: {
+				printStringLn((rstring)I);
+			}
+		}
+
+		() as ErrorPrinter = Custom(ErrorStream as I) {
+			logic
+			onTuple I: {
+				appTrc(Trace.error, (rstring)I);
+			}
+		}
+
+		() as ErrorPrinter2 = Custom(ErrorStream2 as I) {
+			logic
+			onTuple I: {
+				appTrc(Trace.error, (rstring)I);
+			}
+		}
+}
