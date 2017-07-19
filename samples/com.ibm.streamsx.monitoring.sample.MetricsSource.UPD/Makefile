@@ -24,7 +24,7 @@ endif
 SPLC_FLAGS += -t $(SPL_PATH) --output-directory=$(OUTPUT_DIR)
 
 SPL_CMD_ARGS ?= 
-SPL_MAIN_COMPOSITE = com.ibm.streamsx.monitoring.metrics.sample.MetricsSource.UPD::Main
+SPL_MAIN_COMPOSITE = com.ibm.streamsx.monitoring.sample.MetricsSource.UPD::Main
 
 build: distributed 
 
