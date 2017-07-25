@@ -17,23 +17,23 @@
 								[
 									{
 										"portIndexes":"*",
-										"metricNamePatterns":".*",
-									},
+										"metricNamePatterns":".*"
+									}
 								],
 								"outputPorts":
 								[
 									{
 										"portIndexes":"*",
-										"metricNamePatterns":".*",
-									},
+										"metricNamePatterns":".*"
+									}
 								],
 								"connections":
 								[
 									{
 										"connectionIdPatterns":".*",
 										"metricNamePatterns":".*"
-									},
-								],
+									}
+								]
 							}
 						],
 						"operators":
@@ -45,21 +45,21 @@
 								[
 									{
 										"portIndexes":"*",
-										"metricNamePatterns":".*",
-									},
+										"metricNamePatterns":".*"
+									}
 								],
 								"outputPorts":
 								[
 									{
 										"portIndexes":"*",
-										"metricNamePatterns":".*",
-									},
-								],
-							},
-						],
-					},
-				],
-			},
-		],
-	},
+										"metricNamePatterns":".*"
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
 ]

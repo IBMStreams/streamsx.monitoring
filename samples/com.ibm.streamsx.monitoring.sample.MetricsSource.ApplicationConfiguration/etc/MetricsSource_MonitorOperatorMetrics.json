@@ -17,14 +17,14 @@
 								[
 									{
 										"portIndexes":"*",
-										"metricNamePatterns":".*",
-									},
-								],
-							},
-						],
-					},
-				],
-			},
-		],
-	},
+										"metricNamePatterns":".*"
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
 ]
