@@ -1,7 +1,7 @@
 # streamsx.monitoring
 
-The **com.ibm.streamsx.monitoring** toolkit supports monitoring Streams applications
-by providing the **MetricsSource** operator that can produce a stream of metrics.
+The **com.ibm.streamsx.monitoring** provides capabilities to create applications that monitor IBM Streams and its applications. 
+The toolkit supports monitoring Streams applications by providing the **MetricsSource** operator that can produce a stream of metrics.
 
 If you want to monitor Streams or Streams applications with non-Streams
 applications, you can use the following API:
