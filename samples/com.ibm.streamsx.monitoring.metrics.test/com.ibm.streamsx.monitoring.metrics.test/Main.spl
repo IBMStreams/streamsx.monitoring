@@ -1,0 +1,180 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+namespace com.ibm.streamsx.monitoring.metrics.test;
+
+use com.ibm.streamsx.monitoring.metrics::MetricsSource;
+use com.ibm.streamsx.monitoring.metrics::Notification;
+
+/**
+ * Several numbers that are created by the Beacon and stored in metrics.
+ */
+type MetricNumbers = tuple<
+	int64 incrementingNumber,
+	int64 randomNumber
+>;
+
+/**
+ * Create the custom application metrics. The function is usable in the state
+ * logic of an operator.
+ */
+stateful boolean createMetrics() {
+	createCustomMetric("inc", "The incrementing number.", Sys.Counter, 0l);
+	createCustomMetric("rnd", "The random number.", Sys.Counter, 0l);
+	createCustomMetric("const", "The constant number.", Sys.Counter, 5l);
+	return true;
+}
+
+/**
+ * Set the custom application metrics.
+ * 
+ * @param numbers
+ * Specifies the numbers that are created by the Beacon operator.
+ */
+stateful void setMetrics(MetricNumbers numbers) {
+	setCustomMetricValue("inc", numbers.incrementingNumber);
+	setCustomMetricValue("rnd", numbers.randomNumber);
+}
+
+/**
+ * This test application for the [com.ibm.streamsx.monitoring.metrics::MetricsSource]
+ * operator creates incrementing and random numbers that are stored in
+ * metrics. The MetricsSource operator reports them.
+ */
+composite Main {
+	graph
+		// *********************************************************************
+		// Data Generator
+		// *********************************************************************
+
+		/*
+		 * The Beacon generates incrementing and random numbers.
+		 */
+		stream<MetricNumbers> Numbers as O = Beacon() {
+			param period: 5.0;
+			output O:
+				incrementingNumber = (int64)IterationCount(),
+				randomNumber = (int64)(random() * 1000.0);
+		}
+		
+		/*
+		 * The Custom stores the received numbers in metrics.
+		 */
+		() as Storage = Custom(Numbers as I) {
+			logic
+			state: {
+				boolean created = createMetrics();
+			}
+			onTuple I: {
+				setMetrics(I);
+			}
+		}
+		
+		/*
+		 * The Custom traces the generated values.
+		 */
+//		() as NumbersTracer = Custom(Numbers as I) {
+//			logic
+//			onTuple I: {
+//				appTrc(Trace.error, "Numbers: " + (rstring)I);
+//			}
+//			onPunct I: {
+//				appTrc(Trace.error, "Numbers: " + (rstring)currentPunct());
+//			}
+//		}
+
+		// *********************************************************************
+		// MetricsSource
+		// *********************************************************************
+
+		/*
+		 * The MetricsSource generates a tuple for each notified metric value
+		 * change.
+		 */
+		stream<Notification> ChangeNotifications as O = MetricsSource() {
+			param
+				connectionURL: getSubmissionTimeValue("connectionURL");
+//				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
+				user: getSubmissionTimeValue("user");
+				password: getSubmissionTimeValue("password");
+				domainId: getSubmissionTimeValue("domainId");
+				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
+				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorEverything.json";
+				emitMetricTuple: onChangedValue;
+		}
+		
+		/*
+		 * The Custom traces the received metric value change notifications.
+		 */
+		() as ChangeNotificationTracer = Custom(ChangeNotifications as I) {
+			logic
+			onTuple I: {
+				appTrc(Trace.error, "Notification[change]: " + (rstring)I);
+			}
+			onPunct I: {
+				appTrc(Trace.error, "Notification[change]: " + (rstring)currentPunct());
+			}
+		}
+
+		/*
+		 * The MetricsSource generates a tuple for each notified metric value
+		 * change.
+		 */
+		stream<Notification> PeriodicNotifications as O = MetricsSource() {
+			param
+				connectionURL: getSubmissionTimeValue("connectionURL");
+//				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
+				user: getSubmissionTimeValue("user");
+				password: getSubmissionTimeValue("password");
+				domainId: getSubmissionTimeValue("domainId");
+				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
+				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorSomeCustomMetrics.json";
+				emitMetricTuple: periodic;
+		}
+		
+		/*
+		 * The Custom traces the received metric value change notifications.
+		 */
+		() as PeriodicNotificationTracer = Custom(PeriodicNotifications as I) {
+			logic
+			onTuple I: {
+				appTrc(Trace.error, "Notification[periodic]: " + (rstring)I);
+			}
+			onPunct I: {
+				appTrc(Trace.error, "Notification[periodic]: " + (rstring)currentPunct());
+			}
+		}
+		/*
+		 * The MetricsSource generates a tuple for each notified metric value
+		 * change.
+		 */
+//		stream<Notification> ChangeNotifications_UnspecifiedDomainId as O = MetricsSource() {
+//			param
+//				connectionURL: getSubmissionTimeValue("connectionURL");
+////				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
+//				user: getSubmissionTimeValue("user");
+//				password: getSubmissionTimeValue("password");
+////				domainId: getSubmissionTimeValue("domainId");
+//				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
+//				filterDocument: getThisToolkitDir()+"/etc" + "/filters.json";
+//				emitMetricTuple: onChangedValue;
+//		}
+		
+		/*
+		 * The Custom traces the received metric value change notifications.
+		 */
+//		() as ChangeNotificationTracer_UnspecifiedDomainId = Custom(ChangeNotifications_UnspecifiedDomainId as I) {
+//			logic
+//			onTuple I: {
+//				appTrc(Trace.error, "Notification[change, unspecified domain id]: " + (rstring)I);
+//			}
+//			onPunct I: {
+//				appTrc(Trace.error, "Notification[change, unspecified domain id]: " + (rstring)currentPunct());
+//			}
+//		}
+
+}
