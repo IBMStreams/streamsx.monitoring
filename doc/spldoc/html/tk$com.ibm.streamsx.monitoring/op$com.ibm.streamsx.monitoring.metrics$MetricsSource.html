@@ -22,12 +22,12 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.metrics Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.metrics.html">com.ibm.streamsx.metrics 1.0.6</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.metrics.html">com.ibm.streamsx.metrics</a> &gt; MetricsSource</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.1.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.metrics.html">com.ibm.streamsx.monitoring.metrics</a> &gt; MetricsSource</p>
 
 </div>
 
 <div class="section splprimop">
-  <embed class="image" src="../../image/tk$com.ibm.streamsx.metrics/op$com.ibm.streamsx.metrics$MetricsSource.svg" width="672" height="112"/>
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics$MetricsSource.svg" width="872" height="112"/>
 </div>
 
 <div class="section">
@@ -47,7 +47,7 @@
 <p class="p">The MetricsSource operator monitors filter-matching domains, instances, and jobs that are running while the application that uses the MetricsSource operator, starts. Furthermore, the operator gets notifications for created and deleted instances, and submitted and cancelled jobs. Thererfore, the operator can retrieve metrics from filter-matching jobs that are submitted in the future.
 </p>
 
-  <dl class="dl"><dt class="dt dlterm"><a class="xref" href="op$com.ibm.streamsx.metrics$MetricsSource$1.html">Filter document</a>
+  <dl class="dl"><dt class="dt dlterm"><a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource$1.html">Filter document</a>
 </dt>
 <dd class="dd">
 </dd>
@@ -61,7 +61,7 @@
  
   <dt class="dt dlterm">Ports</dt>
 
-  <dd class="dd">This operator has 0 input port and 1 output port.</dd>
+  <dd class="dd">This operator has 0 input ports and 1 output port.</dd>
 
  
  
@@ -121,7 +121,7 @@
 
    <dd class="dd">
 
-<p class="p">The MetricsSource operator emits a metric tuple to this output port for each metric, for which the operator identifies a changed value. You can use the <a class="xref" href="spl$com.ibm.streamsx.metrics$Types.html#spldoc_compilationunit__type__Notification">Notification</a> tuple type, or any subset of the attributes specified for this type. After each scan cycle, the operator emits a WindowMarker to this port.
+<p class="p">The MetricsSource operator emits a metric tuple to this output port for each metric, for which the operator identifies a changed value. You can use the <a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__type__Notification">Notification</a> tuple type, or any subset of the attributes specified for this type. After each scan cycle, the operator emits a WindowMarker to this port.
 </p>
 
 <p class="p"/>
@@ -289,7 +289,7 @@ This operator supports 9 parameters.
 
  <dd class="dd">
   <ul class="sl simple">
-  <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: com.ibm.streamsx.metrics.internal.EmitMetricTupleMode
+  <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: com.ibm.streamsx.monitoring.metrics.internal.EmitMetricTupleMode
  (<tt class="ph tt">periodic, onChangedValue</tt>)  </li>
 
      <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
@@ -480,7 +480,7 @@ This operator supports 9 parameters.
 
   <dd class="dd"/>
 
-  <dd class="dd"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__dependencies__managedlibrary__libpath">Library Path</a>: <tt class="ph tt">../../impl/lib/com.ibm.streamsx.metrics.jar</tt></dd>
+  <dd class="dd"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__dependencies__managedlibrary__libpath">Library Path</a>: <tt class="ph tt">../../impl/lib/com.ibm.streamsx.monitoring.metrics.jar</tt></dd>
 
  
  </dl>
