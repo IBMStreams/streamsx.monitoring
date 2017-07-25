@@ -1,0 +1,47 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+/**
+ * Some useful type definitions for use with the
+ * [com.ibm.streamsx.monitoring.system::SystemMonitorSource] operator.
+ */
+
+namespace com.ibm.streamsx.monitoring.system;
+
+/**
+ * The SystemStatus type specifies all attributes that are filled by the 
+ * [com.ibm.streamsx.monitoring.system::SystemMonitorSource|SystemMonitorSource] operator
+ * 
+ * * **status**
+ * 
+ *   Date and time of the monitored values. If parameter details is set to true, then this
+ *   attribute contains additional information retrieved from top system command.
+ * 
+ * * **cpuUsage**
+ * 
+ *   The "recent cpu usage" for the whole system.
+ * 
+ * * **memUsage**
+ * 
+ *   The "recent cpu usage" for the whole system.
+ * 
+ * * **memTotal**
+ * 
+ *   The total available physical memory on the system in kB.
+ * 
+ * * **memUsed**
+ * 
+ *   The amount of physical memory that is used on the system in kB.
+ */
+type SystemStatus = tuple<
+	rstring status,
+	float32 cpuUsage,
+	float32 memUsage,
+	int32 memTotal,
+	int32 memUsed
+>;
+
