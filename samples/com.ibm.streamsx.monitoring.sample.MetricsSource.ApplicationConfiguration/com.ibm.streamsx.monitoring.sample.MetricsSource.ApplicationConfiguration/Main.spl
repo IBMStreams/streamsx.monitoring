@@ -40,10 +40,6 @@ composite Main {
 		stream<MemoryMetric> Notifications as O = MetricsSource() {
 			param
 				applicationConfigurationName: "com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration";
-//				connectionURL: getSubmissionTimeValue("connectionURL");
-//				user: getSubmissionTimeValue("user");
-//				password: getSubmissionTimeValue("password");
-//				domainId: getSubmissionTimeValue("domainId");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
 				filterDocument: getThisToolkitDir()+"/etc/MetricsSource_MonitorOperatorMetrics.json";
 				emitMetricTuple: onChangedValue;

@@ -621,9 +621,10 @@ public class MetricsSource extends AbstractOperator {
 			if (properties.containsKey(PARAMETER_FILTER_DOCUMENT)) {
 				String filterDocument = properties.get(PARAMETER_FILTER_DOCUMENT);
 				_trace.debug("Detected modified filterDocument in application configuration: " + filterDocument);
-				try(InputStream inputStream = new ByteArrayInputStream(filterDocument.getBytes())) {
+				String filterDoc = filterDocument.replaceAll("\\\\t", ""); // remove tabs
+				try(InputStream inputStream = new ByteArrayInputStream(filterDoc.getBytes())) {
 					_operatorConfiguration.set_filters(Filters.setupFilters(inputStream));
-					activeFilterDocumentFromApplicationConfiguration = filterDocument;
+					activeFilterDocumentFromApplicationConfiguration = filterDocument; // save origin document
 					done = true;
 				}
 			}
