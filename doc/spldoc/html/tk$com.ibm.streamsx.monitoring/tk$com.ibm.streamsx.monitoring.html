@@ -7,29 +7,29 @@
 <meta name="copyright" content="(C) Copyright 2005"/>
 <meta name="DC.rights.owner" content="(C) Copyright 2005"/>
 <meta name="DC.Type" content="reference"/>
-<meta name="DC.Title" content="Toolkit com.ibm.streamsx.monitoring 1.1.0"/>
+<meta name="DC.Title" content="Toolkit com.ibm.streamsx.monitoring 1.2.0"/>
 <meta name="DC.Format" content="XHTML"/>
 <meta name="DC.Identifier" content="spldoc_toolkit"/>
 <link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
 <link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
-<title>Toolkit com.ibm.streamsx.monitoring 1.1.0</title>
+<title>Toolkit com.ibm.streamsx.monitoring 1.2.0</title>
 </head>
 <body id="spldoc_toolkit">
 
 
-<h1 class="title topictitle1 spltoolkitname">Toolkit <tt class="ph tt">com.ibm.streamsx.monitoring 1.1.0</tt></h1>
+<h1 class="title topictitle1 spltoolkitname">Toolkit <tt class="ph tt">com.ibm.streamsx.monitoring 1.2.0</tt></h1>
 
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; com.ibm.streamsx.monitoring 1.1.0</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; com.ibm.streamsx.monitoring 1.2.0</p>
 
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-1">General Information</h2>
 
 
-<p class="p">The <strong class="ph b">com.ibm.streamsx.monitoring</strong> toolkit supports monitoring Streams applications by providing the <strong class="ph b">MetricsSource</strong> operator that can produce a stream of metrics.
+<p class="p">The <strong class="ph b">com.ibm.streamsx.monitoring</strong> provides capabilities to create applications that monitor IBM Streams and its applications. The <strong class="ph b">com.ibm.streamsx.monitoring</strong> toolkit supports monitoring Streams applications by providing the <strong class="ph b">MetricsSource</strong> operator that can produce a stream of metrics.
 </p>
 
 <p class="p">IBM Streams supports standard and custom metrics that are assigned to operators and operator ports in a Streams application, for example, the number of received and sent tuples. These metrics can be monitored with the Streams console or Streams Studio to identify whether a Streams application runs as expected or whether it has some issues.
@@ -87,7 +87,7 @@
   
   <dt class="dt dlterm">Version</dt>
 
-  <dd class="dd">1.1.0</dd>
+  <dd class="dd">1.2.0</dd>
 
   
   
@@ -138,6 +138,8 @@
 
         <dd class="dd">
 <ul class="sl simple">
+<li class="sli"><a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsMonitor.html">MetricsMonitor</a></li>
+
 <li class="sli"><a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">MetricsSource</a></li>
 
 </ul>
@@ -174,6 +176,41 @@
         <dd class="dd">
 <ul class="sl simple">
 <li class="sli"><a class="xref" href="spl$com.ibm.streamsx.monitoring.service$MetricsIngestService.html#spldoc_compilationunit__composite_operator__MetricsIngestService">MetricsIngestService</a></li>
+
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.monitoring.service$MetricsMonitorService.html#spldoc_compilationunit__composite_operator__MetricsMonitorService">MetricsMonitorService</a></li>
+
+</ul>
+
+        </dd>
+
+      </dl>
+</dd>
+
+         
+      <dt class="dt dlterm splpart"><a class="xref" href="ns$com.ibm.streamsx.monitoring.system.html">com.ibm.streamsx.monitoring.system</a></dt>
+
+      <dd class="dd"/>
+
+      <dd class="dd"><dl class="dl">
+        <dt class="dt dlterm">Operators</dt>
+
+        <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><a class="xref" href="op$com.ibm.streamsx.monitoring.system$SystemMonitorSource.html">SystemMonitorSource</a></li>
+
+</ul>
+
+        </dd>
+
+      </dl>
+</dd>
+
+      <dd class="dd"><dl class="dl">
+        <dt class="dt dlterm">Types</dt>
+
+        <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.monitoring.system$Types.html#spldoc_compilationunit__type__SystemStatus">SystemStatus</a></li>
 
 </ul>
 

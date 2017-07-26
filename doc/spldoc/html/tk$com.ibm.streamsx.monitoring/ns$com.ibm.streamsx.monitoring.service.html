@@ -22,14 +22,17 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.1.0</a> &gt; com.ibm.streamsx.monitoring.service</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.2.0</a> &gt; com.ibm.streamsx.monitoring.service</p>
 
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-1">Operators</h2>
   
 <ul class="sl simple">
-<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.service$MetricsIngestService.html#spldoc_compilationunit__composite_operator__MetricsIngestService">MetricsIngestService</a></strong>
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.service$MetricsIngestService.html#spldoc_compilationunit__composite_operator__MetricsIngestService">MetricsIngestService</a></strong>: A service which publishes the <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">com.ibm.streamsx.monitoring.metrics::MetricsSource</a>  operator's tuples in JSON format to a specified topic.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.service$MetricsMonitorService.html#spldoc_compilationunit__composite_operator__MetricsMonitorService">MetricsMonitorService</a></strong>: The MetricsMonitorService ingests metric tuples from the MetricsIngestService and  monitors the metric values against the threshold rules defined in the application  configuration's thresholdDocument property.
 </li>
 
 </ul>

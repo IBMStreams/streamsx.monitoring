@@ -32,13 +32,31 @@
 
   <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.service$MetricsIngestService.html#spldoc_compilationunit__composite_operator__MetricsIngestService">MetricsIngestService</a></dt>
 
-  <dd class="dd"/>
+  <dd class="dd">A service which publishes the <a class="xref" href="../tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">com.ibm.streamsx.monitoring.metrics::MetricsSource</a>  operator's tuples in JSON format to a specified topic.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics$MetricsMonitor.html">MetricsMonitor</a></dt>
+
+  <dd class="dd">The MetricsMonitor operator compares the metric tuple values against the threshold rules defined in the application configuration's thresholdDocument property.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.service$MetricsMonitorService.html#spldoc_compilationunit__composite_operator__MetricsMonitorService">MetricsMonitorService</a></dt>
+
+  <dd class="dd">The MetricsMonitorService ingests metric tuples from the MetricsIngestService and  monitors the metric values against the threshold rules defined in the application  configuration's thresholdDocument property.</dd>
 
 
 
   <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">MetricsSource</a></dt>
 
   <dd class="dd">The MetricsSource operator uses the <a class="xref" href="http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.ref.doc/doc/jmxapi.html">JMX</a> API to retrieve metrics from one or more jobs, and provides metric changes as tuple stream. </dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.system$SystemMonitorSource.html">SystemMonitorSource</a></dt>
+
+  <dd class="dd">The Java Operator SystemMonitorSource collects the CPU and Memory usage from the current running system and emits a tuple in an interval.</dd>
 
 
 </dl>

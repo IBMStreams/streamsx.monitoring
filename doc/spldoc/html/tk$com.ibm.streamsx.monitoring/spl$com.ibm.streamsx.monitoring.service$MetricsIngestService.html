@@ -22,17 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.1.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.service.html">com.ibm.streamsx.monitoring.service</a> &gt; MetricsIngestService.spl</p>
-
-</div>
-
-<div class="section">
-
-<p class="p">A service which publishes the <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">com.ibm.streamsx.monitoring.metrics::MetricsSource</a>  operator's tuples in JSON format to the a specified topic.
-</p>
-
-<p class="p">Output JSON Schema: {   "domainId" : string,   "instanceId" : string,   "jobId" : string,   "jobName" : string,   "resource" : string,   "peId" : long,   "operatorName" : string,   "channel" : int,   "portIndex" : int,   "connectionId" : string,   "metricType" : string,   "metricKind" : string,   "metricName" : string,   "metricValue" : long,   "lastTimeRetrieved" : long } 
-</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.2.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.service.html">com.ibm.streamsx.monitoring.service</a> &gt; MetricsIngestService.spl</p>
 
 </div>
 
@@ -47,7 +37,7 @@
 
       <dd class="dd">
 <ul class="sl simple">
-<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.service$MetricsIngestService.html#spldoc_compilationunit__composite_operator__MetricsIngestService">MetricsIngestService</a></strong>
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.service$MetricsIngestService.html#spldoc_compilationunit__composite_operator__MetricsIngestService">MetricsIngestService</a></strong>: A service which publishes the <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">com.ibm.streamsx.monitoring.metrics::MetricsSource</a>  operator's tuples in JSON format to a specified topic.
 </li>
 
 </ul>
@@ -69,6 +59,26 @@
 
 <div class="section splgraph">
   <embed class="image" src="../../image/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.service$MetricsIngestService.svg" width="337" height="109"/>
+</div>
+
+<div class="section">
+
+<p class="p">A service which publishes the <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">com.ibm.streamsx.monitoring.metrics::MetricsSource</a>  operator's tuples in JSON format to a specified topic.
+</p>
+
+<p class="p">Output JSON Schema: {   "domainId" : string,   "instanceId" : string,   "jobId" : string,   "jobName" : string,   "resource" : string,   "peId" : long,   "operatorName" : string,   "channel" : int,   "portIndex" : int,   "connectionId" : string,   "metricType" : string,   "metricKind" : string,   "metricName" : string,   "metricValue" : long,   "lastTimeRetrieved" : long }
+</p>
+
+<div class="p">This composite depends on the following toolkits:
+<ul class="ul">
+<li class="li"> <strong class="ph b">com.ibm.streamsx.topology</strong></li>
+
+<li class="li"> <strong class="ph b">com.ibm.streamsx.json</strong></li>
+
+</ul>
+
+</div>
+
 </div>
 
 <div class="section"><h2 class="title sectiontitle">Parameters</h2>
