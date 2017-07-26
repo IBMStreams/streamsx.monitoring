@@ -5,9 +5,16 @@
 // ****************************************************************************
 //
 
+ 
+namespace com.ibm.streamsx.monitoring.service;
+
+use com.ibm.streamsx.monitoring.metrics::* ;
+use com.ibm.streamsx.json::* ;
+use com.ibm.streamsx.topology.topic::Publish ;
+
 /**
  * A service which publishes the [com.ibm.streamsx.monitoring.metrics::MetricsSource] 
- * operator's tuples in JSON format to the a specified topic.
+ * operator's tuples in JSON format to a specified topic.
  * 
  * Output JSON Schema:
  * \{
@@ -27,14 +34,12 @@
  *   "metricValue" : long,
  *   "lastTimeRetrieved" : long
  * \}
+ * 
+ * This composite depends on the following toolkits:
+ * * **com.ibm.streamsx.topology**
+ * * **com.ibm.streamsx.json**
+ * 
  */
- 
-namespace com.ibm.streamsx.monitoring.service;
-
-use com.ibm.streamsx.monitoring.metrics::* ;
-use com.ibm.streamsx.json::* ;
-use com.ibm.streamsx.topology.topic::Publish ;
-
 public composite MetricsIngestService
 {			
 	param
@@ -45,8 +50,7 @@ public composite MetricsIngestService
 		/**
 		 * The MetricsSource generates a tuple for each retrieved metric.
 		 */
-		stream<Notification> Metrics = MetricsSource()
-		{
+		stream<Notification> Metrics = MetricsSource() {
 			param
 				applicationConfigurationName : $applicationConfigurationName ;
 		}
@@ -54,16 +58,13 @@ public composite MetricsIngestService
 		/**
 		 * The TupleToJSON converts the Metrics tuples into JSON format.
 		 */
-		stream<Json> JsonMetrics = TupleToJSON(Metrics)
-		{
-		
+		stream<Json> JsonMetrics = TupleToJSON(Metrics) {
 		}
 		
 		/**
 		 * The Publish publishes the JsonMetrics to the specified topic.
 		 */
-		() as Publish_0 = Publish(JsonMetrics)
-		{
+		() as Publish_0 = Publish(JsonMetrics) {
 			param
 				topic : $topic ;
 		}

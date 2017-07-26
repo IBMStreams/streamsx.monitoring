@@ -15,14 +15,18 @@ use com.ibm.streamsx.json::* ;
 
 /**
  * The MetricsMonitorService ingests metric tuples from the MetricsIngestService and 
- * monitors the metric values against the threshol rules defined in the application 
+ * monitors the metric values against the threshold rules defined in the application 
  * configuration's thresholdDocument property.
  * 
  * Once a threshold is violated, an alert message is sent out, containing the details 
  * on the current metric value, the threshold rule that Was triggered. It also includes 
  * more details on the metric (from the tuple).
+ * 
+ * This composite depends on the following toolkits:
+ * * **com.ibm.streamsx.topology**
+ * * **com.ibm.streamsx.json**
+ * 
  */
- 
 public composite MetricsMonitorService
 {
 	param
@@ -49,8 +53,7 @@ public composite MetricsMonitorService
 		 * The Subscribe imports the metric tuples JSON from the topic  the MetricsSourceService's 
 		 * is publishing to.
 		 */
-		stream<Json> JsonMetrics = Subscribe()
-		{
+		stream<Json> JsonMetrics = Subscribe() {
 			param
 				topic : $metricsSourceTopic ;
 				streamType : Json ;
@@ -58,9 +61,7 @@ public composite MetricsMonitorService
 		
 		/** The JSONToTuple converts the JSON back into Metrics tuples.		
 		*/
-		stream<Notification> Metrics = JSONToTuple(JsonMetrics)
-		{
-		
+		stream<Notification> Metrics = JSONToTuple(JsonMetrics) {
 		}
 
 		/**
@@ -68,24 +69,20 @@ public composite MetricsMonitorService
 		 * defined in the application configuration's thresholdDocument property. It outputs 
 		 * an alert whenever any threshold rules are violated.
 		 */
-		stream<rstring message> AlertMessage = MetricsMonitor(Metrics)
-		{
+		stream<rstring message> AlertMessage = MetricsMonitor(Metrics) {
 			param
 				applicationConfigurationName : $applicationConfigurationName ;
 		}
 		
 		/** The TupleToJSON converts the alert message into JSON to prepare it for publishing.		
 		*/
-		stream<Json> JsonMessage = TupleToJSON(AlertMessage)
-		{
-		
+		stream<Json> JsonMessage = TupleToJSON(AlertMessage) {
 		}
 
 		/**
 		 * The Publish publishes the alert messsages to the user-defined topic (default: 'streamsx/monitoring/metrics/alerts').
 		 */
-		() as Publish_0 = Publish(JsonMessage)
-		{
+		() as Publish_0 = Publish(JsonMessage) {
 			param
 				 topic : $metricsMonitorTopic ;
 		}

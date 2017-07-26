@@ -31,7 +31,8 @@ import com.ibm.streams.operator.model.PrimitiveOperator;
 @PrimitiveOperator(
 		name="MetricsMonitor",
 		namespace="com.ibm.streamsx.monitoring.metrics",
-		description="Java Operator MetricsMonitor"
+		description="The MetricsMonitor operator compares the metric tuple values against the threshold rules defined in the application configuration's thresholdDocument property.\\n"
+		+ "It outputs an alert whenever any threshold rules are violated."
 		)
 @InputPorts({
 	@InputPortSet(
