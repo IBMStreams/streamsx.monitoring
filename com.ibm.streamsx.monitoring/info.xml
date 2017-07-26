@@ -4,6 +4,7 @@
 	<info:identity>
 		<info:name>com.ibm.streamsx.monitoring</info:name>
 		<info:description><![CDATA[
+The **com.ibm.streamsx.monitoring** provides capabilities to create applications that monitor IBM Streams and its applications.
 The **com.ibm.streamsx.monitoring** toolkit supports monitoring Streams applications
 by providing the **MetricsSource** operator that can produce a stream of metrics.
 
@@ -103,7 +104,7 @@ by toolkit with their namespaces as prefixes.
   **streamtool submitjob** command or by using Streams Studio. 
 
 		]]></info:description>
-		<info:version>1.1.0</info:version>
+		<info:version>1.2.0</info:version>
 		<info:requiredProductVersion>4.1.0.0</info:requiredProductVersion>
 	</info:identity>
 	<info:dependencies/>

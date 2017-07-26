@@ -40,12 +40,12 @@ clean:
 configure:
 	# see https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+	streamtool mkappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) --property password=$(USER) com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 
 configure-json:
 	# see https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+	streamtool mkappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) --property password=$(USER) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 
 configure-none:
 	# see https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html
@@ -57,7 +57,7 @@ configure-incomplete:
 	streamtool mkappconfig --property user=$(USER) com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 
 configure-memory:
-	streamtool chappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) --property filterDocument=`cat etc/MetricsSource_MonitorMemoryMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+	streamtool chappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) --property password=$(USER) --property filterDocument=`cat etc/MetricsSource_MonitorMemoryMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 
 configure-original:
-	streamtool chappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+	streamtool chappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(USER) --property password=$(USER) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration

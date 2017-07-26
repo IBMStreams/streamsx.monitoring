@@ -10,8 +10,6 @@
  * domain and emits submit metrics as tuple stream for \@parallel-annotated
  * operators. The application uses a subset of the output attributes only.
  * 
- * You can run this application in standalone mode to see the metric values as
- * they are printed to the console.
  */
 
 namespace com.ibm.streamsx.monitoring.sample.MetricsSource.UPD;

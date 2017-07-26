@@ -14,13 +14,13 @@
 							{
 								"metricNamePatterns":
 								[
-									"n(Resident)?MemoryConsumption",
+									"n(Resident)?MemoryConsumption"
 								]
 							}
-						],
-					},
-				],
-			},
-		],
-	},
+						]
+					}
+				]
+			}
+		]
+	}
 ]

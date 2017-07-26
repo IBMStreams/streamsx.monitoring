@@ -14,7 +14,7 @@
 	<property name="java.bin.dir" location="impl/java/bin" />
 	<property name="spl-mt" value="${streams.install}/bin/spl-make-toolkit" />
 	<property name="impl.lib.dir" location="impl/lib" />
-	<property name="jarfile" value="com.ibm.streamsx.monitoring.metrics.jar" />
+	<property name="jarfile" value="com.ibm.streamsx.monitoring.jar" />
 	<property name="gensrc.dir" location="impl/java/src-gen"/>
 
 	<target name="all" depends="indexToolkit"/>
