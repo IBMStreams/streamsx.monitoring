@@ -111,14 +111,16 @@ public class Thresholds {
 				
 				if (operator == null && currentValue == thresholdValue) {
 					return true;
-				} else if (operator.equals(">=") && currentValue >= thresholdValue) {
-					return true;
-				} else if (operator.equals("<=") && currentValue <= thresholdValue) {
-					return true;
-				} else if (operator.equals(">") && currentValue > thresholdValue) {
-					return true;
-				} else if (operator.equals("<") && currentValue < thresholdValue) {
-					return true;
+				} else if (operator != null) {
+					if (operator.equals(">=") && currentValue >= thresholdValue) {
+						return true;
+					} else if (operator.equals("<=") && currentValue <= thresholdValue) {
+						return true;
+					} else if (operator.equals(">") && currentValue > thresholdValue) {
+						return true;
+					} else if (operator.equals("<") && currentValue < thresholdValue) {
+						return true;
+					}
 				}
 			}
 		}
