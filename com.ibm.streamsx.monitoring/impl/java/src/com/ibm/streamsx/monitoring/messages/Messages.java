@@ -1,10 +1,10 @@
-package com.ibm.streamsx.monitoring.metrics.messages;
+package com.ibm.streamsx.monitoring.messages;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class Messages {
-	private static final String BUNDLE_NAME = "com.ibm.streamsx.monitoring.metrics.messages.messages";
+	private static final String BUNDLE_NAME = "com.ibm.streamsx.monitoring.messages.messages";
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 

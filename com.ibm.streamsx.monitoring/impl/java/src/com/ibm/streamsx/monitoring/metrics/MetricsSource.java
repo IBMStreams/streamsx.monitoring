@@ -40,7 +40,7 @@ import com.ibm.streamsx.monitoring.metrics.internal.EmitMetricTupleMode;
 import com.ibm.streams.operator.model.Parameter;
 import com.ibm.streams.operator.compile.OperatorContextChecker;
 import com.ibm.streams.operator.state.ConsistentRegionContext;
-import com.ibm.streamsx.monitoring.metrics.messages.Messages;
+import com.ibm.streamsx.monitoring.messages.Messages;
 
 /**
  * A source operator that does not receive any input streams and produces new tuples. 
