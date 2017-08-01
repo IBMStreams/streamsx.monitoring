@@ -25,6 +25,7 @@ import com.ibm.streams.management.Notifications;
 import com.ibm.streams.management.ObjectNameBuilder;
 import com.ibm.streams.management.instance.InstanceMXBean;
 import com.ibm.streams.management.job.JobMXBean;
+import com.ibm.streams.operator.Tuple;
 
 /**
  * Listen for the following domain notifications:
@@ -107,13 +108,17 @@ public class InstanceHandler implements NotificationListener, Closeable {
 	@Override
 	public void handleNotification(Notification notification, Object handback) {
 		boolean isInfoEnabled = _trace.isInfoEnabled();
-//		if (notification.getSequenceNumber())
+
+		
 		if (notification.getType().equals(Notifications.JOB_ADDED)) {
 			if(notification.getUserData() instanceof BigInteger) {
 				/*
 				 * Register existing jobs.
 				 */
 				BigInteger jobId = (BigInteger)notification.getUserData();
+				final Tuple tuple = _operatorConfiguration.get_tupleContainer().getTuple(notification, handback, _domainId, _instanceId, jobId, null, null, null, null, null);
+				_operatorConfiguration.get_tupleContainer().submit(tuple);		
+
 				addValidJob(jobId);
 				if (isInfoEnabled) {
 					_trace.info("received JOB_ADDED notification: jobId=" + jobId);
@@ -128,8 +133,11 @@ public class InstanceHandler implements NotificationListener, Closeable {
 				/*
 				 * Unregister existing jobs.
 				 */
-				BigInteger jobId = (BigInteger)notification.getUserData();
-				if (_jobHandlers.containsKey(jobId)) {
+				BigInteger jobId = (BigInteger)notification.getUserData();				
+				if (_jobHandlers.containsKey(jobId)) {					
+					final Tuple tuple = _operatorConfiguration.get_tupleContainer().getTuple(notification, handback, _domainId, _instanceId, jobId, null, null, null, null, null);
+					_operatorConfiguration.get_tupleContainer().submit(tuple);
+					
 					_jobHandlers.remove(jobId);
 					if (isInfoEnabled) {
 						_trace.info("received JOB_REMOVED notification for monitored job: jobId=" + jobId);

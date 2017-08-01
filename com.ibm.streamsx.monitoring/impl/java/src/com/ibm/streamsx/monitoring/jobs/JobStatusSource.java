@@ -5,7 +5,7 @@
 // ****************************************************************************
 //
 
-package com.ibm.streamsx.monitoring;
+package com.ibm.streamsx.monitoring.jobs;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -68,7 +68,7 @@ import com.ibm.streamsx.monitoring.messages.Messages;
  */
 @PrimitiveOperator(
 		name="JobStatusSource",
-		namespace="com.ibm.streamsx.monitoring",
+		namespace="com.ibm.streamsx.monitoring.jobs",
 		description=JobStatusSource.DESC_OPERATOR
 		)
 @OutputPorts({
@@ -193,7 +193,7 @@ public class JobStatusSource extends AbstractOperator {
 			"The JobStatusSource operator emits a status tuple to this "
 			+ "output port for each notification, for which the operator "
 			+ "identifies a changed value. You can use the "
-			+ "[type:com.ibm.streamsx.monitoring.job::Notification|Notification] "
+			+ "[type:com.ibm.streamsx.monitoring.jobs::JobStatusNotification|JobStatusNotification] "
 			+ "tuple type, or any subset of the attributes specified for this type"
 			;
 	

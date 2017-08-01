@@ -7,7 +7,8 @@
 
 namespace com.ibm.streamsx.monitoring.jobs.test;
 
-use com.ibm.streamsx.monitoring::JobStatusSource;
+use com.ibm.streamsx.monitoring.jobs::JobStatusSource;
+use com.ibm.streamsx.monitoring.jobs::*;
 
 
 
@@ -22,7 +23,7 @@ composite Main {
 		 * The MetricsSource generates a tuple for each notified metric value
 		 * change.
 		 */
-		stream<tuple<rstring source, rstring notifyType, int64 sequence, timestamp ts, rstring message, rstring peHealth, rstring peStatus>> ChangeNotifications as O = JobStatusSource() {
+		stream<JobStatusNotification> ChangeNotifications as O = JobStatusSource() {
 			param
 //				connectionURL: getSubmissionTimeValue("connectionURL");
 				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";

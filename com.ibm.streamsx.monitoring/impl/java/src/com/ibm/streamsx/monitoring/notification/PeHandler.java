@@ -11,9 +11,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.JMX;
@@ -22,11 +19,11 @@ import javax.management.NotificationFilterSupport;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
-import com.ibm.streams.management.Metric;
 import com.ibm.streams.management.Notifications;
 import com.ibm.streams.management.ObjectNameBuilder;
 import com.ibm.streams.management.job.PeMXBean;
 import com.ibm.streams.operator.Tuple;
+
 
 /**
  * 
@@ -74,7 +71,7 @@ public class PeHandler implements NotificationListener, Closeable {
 		 * Register to get pe-related notifications.
 		 */
 		NotificationFilterSupport filter = new NotificationFilterSupport();
-		filter.enableType(Notifications.PE_NOTIFICATION);
+//		filter.enableType(Notifications.PE_NOTIFICATION);
 		filter.enableType(Notifications.PE_CHANGED);
 		
 		try {
@@ -95,9 +92,12 @@ public class PeHandler implements NotificationListener, Closeable {
 	 */
 	@Override
 	public void handleNotification(Notification notification, Object handback) {
-		_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
-		final Tuple tuple = _operatorConfiguration.get_tupleContainer().getTuple(notification, handback, _pe.getHealth(), _pe.getStatus());
+		if (_trace.isDebugEnabled()) {
+			_trace.debug("notification: " + notification + ", userData=" + notification.getUserData());
+		}
+		final Tuple tuple = _operatorConfiguration.get_tupleContainer().getTuple(notification, handback, _domainId, _instanceId, _jobId, _jobName, _pe.getResource(), _peId, _pe.getHealth(), _pe.getStatus());
 		_operatorConfiguration.get_tupleContainer().submit(tuple);		
+
 	}
 
 	/**

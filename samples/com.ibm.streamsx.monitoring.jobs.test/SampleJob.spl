@@ -1,0 +1,89 @@
+
+public composite SampleJob
+{
+	type
+		CommandEnum = enum{
+			data, // Indicates a normal data tuple.
+			fail, // The PE that holds the CrashOp must fail.
+			delay // Delay for some seconds.
+		};
+
+		CommandType = tuple<CommandEnum cmd>, tuple<uint64 value>;
+
+	graph
+
+		/**
+		 * Trigger the test.
+		 */
+		stream<boolean dummy> Triggers as O = Beacon()
+		{
+			param
+				iterations: 1;
+		}
+		
+		/**
+		 * Generate the source data i.e. the hash based on the iteration count.
+		 * Already provide the duplicate and unique 
+		 */
+		stream<CommandType> SourceData as O = Custom(Triggers as I)
+		{
+			logic
+				state: {
+					list<tuple<CommandEnum cmd, uint64 value>> actions =
+					[
+						{ cmd = data,  value =  0ul },
+						{ cmd = data,  value =  1ul },
+						{ cmd = data,  value =  2ul },
+						{ cmd = data,  value =  3ul },
+						{ cmd = data,  value =  4ul },
+						
+						{ cmd = delay, value = 3ul },
+						{ cmd = fail,  value =  0ul }, // fail
+						{ cmd = delay, value = 3ul },
+
+						{ cmd = data,  value =  5ul },
+						{ cmd = data,  value =  6ul },
+						{ cmd = data,  value =  7ul },
+						{ cmd = data,  value =  8ul },
+						{ cmd = data,  value =  9ul }
+					];
+					mutable O otuple = (O){};
+				}
+				onTuple I: {
+					for(tuple<CommandEnum cmd, uint64 value> action in actions) {
+						appTrc(Trace.error, "action=" + (rstring)action.cmd + ", value=" + (rstring)action.value);
+						if (action.cmd in [data, fail])
+						{
+							otuple.cmd   = action.cmd;
+							otuple.value = action.value;
+							submit(otuple, O);
+						}
+						else
+						{
+							appLog(Log.warn, "Dummy warning.");
+							block((float64)action.value);
+						}
+					}
+				}			
+		}
+
+
+		() as CrashSink = Custom(SourceData as I) 
+		{
+			logic 
+			onTuple I: {
+				appTrc(Trace.error, "tuple=" + (rstring)I);
+				if (I.cmd == fail)
+				{
+					appLog(Log.error, "Operator is requested to fail.");
+					abort();
+				}
+			}
+			config
+				restartable : true;
+		}
+		
+		
+	config
+		placement : partitionExlocation("TEST");		
+}

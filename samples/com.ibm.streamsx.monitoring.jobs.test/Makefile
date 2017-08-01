@@ -21,17 +21,20 @@ else
   SPL_PATH = $(STREAMSX_MONITORING_TOOLKIT)
 endif
 
-SPLC_FLAGS += -t $(SPL_PATH) --output-directory=$(OUTPUT_DIR)
+SPLC_FLAGS += -t $(SPL_PATH)
 
 SPL_CMD_ARGS ?= 
 SPL_MAIN_COMPOSITE = com.ibm.streamsx.monitoring.jobs.test::Main
+SPL_MAIN_COMPOSITE1 = SampleJob
+OUTPUT_DIR1 = $(OUTPUT_DIR)/sample
 
 build: distributed 
 
 all: clean build
 
 distributed:
-	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS)
+	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS) --output-directory=$(OUTPUT_DIR)
+	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE1) $(SPL_CMD_ARGS) --output-directory=$(OUTPUT_DIR1)
 
 clean:
 	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE)
