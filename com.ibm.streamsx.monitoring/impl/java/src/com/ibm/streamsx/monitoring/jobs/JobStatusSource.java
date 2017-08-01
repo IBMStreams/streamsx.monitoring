@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.NotificationListener;
 import javax.management.remote.JMXConnectorFactory;
@@ -262,11 +263,6 @@ public class JobStatusSource extends AbstractOperator {
 	// ------------------------------------------------------------------------
 	
 	/**
-	 * Thread for calling <code>checkConfig()</code> to check for updates in application configuration 
-	 */
-	private Thread _processThread;
-
-	/**
 	 * Logger for tracing.
 	 */
 	private static Logger _trace = Logger.getLogger(JobStatusSource.class.getName());
@@ -413,30 +409,24 @@ public class JobStatusSource extends AbstractOperator {
 		scanDomain();
 
 		/*
-		 * Create the thread for producing tuples. 
-		 * The thread is created at initialize time but started.
-		 * The thread will be started by allPortsReady().
-		 */
-		_processThread = getOperatorContext().getThreadFactory().newThread(
+		 * Enable scheduled service for checking application configuration updates,
+		 * if application configuration is configured.
+		 */		
+		if (_operatorConfiguration.get_applicationConfigurationName() != null) {
+		java.util.concurrent.ScheduledExecutorService scheduler = getOperatorContext().getScheduledExecutorService();
+		scheduler.scheduleWithFixedDelay(
 				new Runnable() {
-
 					@Override
 					public void run() {
 						try {
-							checkConfig();
+							detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
 						} catch (Exception e) {
 							_trace.error("Operator error", e);
 						}                    
 					}
-
-				});
-
-		/*
-		 * Set the thread not to be a daemon to ensure that the SPL runtime
-		 * will wait for the thread to complete before determining the
-		 * operator is complete.
-		 */
-		_processThread.setDaemon(false);
+				}, 3000l, Double.valueOf(_operatorConfiguration.get_scanPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);
+		}
+		createAvoidCompletionThread();
 	}
 
 	/**
@@ -448,39 +438,13 @@ public class JobStatusSource extends AbstractOperator {
 	public synchronized void allPortsReady() throws Exception {
 		OperatorContext context = getOperatorContext();
 		_trace.trace("Operator " + context.getName() + " all ports are ready in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
-		// Start a thread for producing tuples because operator 
-		// implementations must not block and must return control to the caller.
-		_processThread.start();
 	}
 
 	/**
-	 * Check for updates in Application Configuration
-	 * @throws Exception if an error occurs while reading the Application Configuration
-	 */
-	private void checkConfig() throws Exception  {
-		boolean quit = false;
-		while(!quit) {
-			detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
-			
-			Thread.sleep(Double.valueOf(_operatorConfiguration.get_scanPeriod() * 1000.0).longValue());
-		}
-
-		/*
-		 * When finished, submit a final punctuation:
-		 */
-		_operatorConfiguration.get_tupleContainer().punctuate(Punctuation.FINAL_MARKER);
-	}
-
-	/**
-	 * Shutdown this operator, which will interrupt the thread
-	 * executing the <code>checkConfig()</code> method.
+	 * Shutdown this operator.
 	 * @throws Exception Operator failure, will cause the enclosing PE to terminate.
 	 */
 	public synchronized void shutdown() throws Exception {
-		if (_processThread != null) {
-			_processThread.interrupt();
-			_processThread = null;
-		}
 		OperatorContext context = getOperatorContext();
 		_trace.trace("Operator " + context.getName() + " shutting down in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 
