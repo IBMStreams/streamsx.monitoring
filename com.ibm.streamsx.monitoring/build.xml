@@ -53,7 +53,7 @@
 		<jar destfile="${impl.lib.dir}/${jarfile}" 
 			 basedir="${build.dir}"
 			 filesonly="true">		
-	        <fileset dir="${src.dir}" includes="com/ibm/streamsx/monitoring/metrics/messages/*.properties"/>
+	        <fileset dir="${src.dir}" includes="com/ibm/streamsx/monitoring/messages/*.properties"/>
 		</jar>
 	</target>
 
