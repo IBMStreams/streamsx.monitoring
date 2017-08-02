@@ -5,8 +5,10 @@
 		<info:name>com.ibm.streamsx.monitoring</info:name>
 		<info:description><![CDATA[
 The **com.ibm.streamsx.monitoring** provides capabilities to create applications that monitor IBM Streams and its applications.
-The **com.ibm.streamsx.monitoring** toolkit supports monitoring Streams applications
-by providing the **MetricsSource** operator that can produce a stream of metrics.
+
+The toolkit contains operators that uses the **JMX API** to monitor applications:
+* **com.ibm.streamsx.monitoring.metrics::MetricsSource** retrieves metrics from one or more jobs and provides them as tuple stream.
+* **com.ibm.streamsx.monitoring.jobs::JobStatusSource** receives notifications of PE status changes from one or more jobs and provides them as tuple stream.
 
 IBM Streams supports standard and custom metrics that are assigned to operators
 and operator ports in a Streams application, for example, the number of received
