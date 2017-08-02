@@ -1,0 +1,45 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+namespace com.ibm.streamsx.monitoring.jobs.sample;
+
+use com.ibm.streamsx.monitoring.jobs::JobStatusSource;
+use com.ibm.streamsx.monitoring.jobs::*;
+
+/**
+ * This sample application demonstrates the usage of the [com.ibm.streamsx.monitoring::JobStatusSource]
+ * operator and monitors all jobs and reports the Job/PE status events.
+ */
+composite Monitor {
+
+	graph
+
+		/*
+		 * The JobStatusSource generates a tuple for each notified PE status change.
+		 */
+		stream<JobStatusNotification> ChangeNotifications as O = JobStatusSource() {
+			param
+				connectionURL: getSubmissionTimeValue("connectionURL");
+//				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
+				user: getSubmissionTimeValue("user");
+				password: getSubmissionTimeValue("password");
+				filterDocument: getThisToolkitDir()+"/etc" + "/JobStatusSource_MonitorEverything.json";
+		}
+		
+		/*
+		 * The Custom traces the received notifications.
+		 */
+		() as ChangeNotificationTracer = Custom(ChangeNotifications as I) {
+			logic
+			onTuple I: {
+				printStringLn((rstring)I);
+			}
+		}
+
+
+
+}
