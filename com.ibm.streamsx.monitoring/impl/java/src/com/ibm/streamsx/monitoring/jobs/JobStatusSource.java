@@ -76,7 +76,7 @@ import com.ibm.streamsx.monitoring.messages.Messages;
 	@OutputPortSet(
 			cardinality=1,
 			optional=false,
-			windowPunctuationOutputMode=WindowPunctuationOutputMode.Generating,
+			windowPunctuationOutputMode=WindowPunctuationOutputMode.Free,
 			description=JobStatusSource.DESC_OUTPUT_PORT
 			)
 })
@@ -92,6 +92,11 @@ public class JobStatusSource extends AbstractOperator {
 			+ "[http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.ref.doc/doc/jmxapi.html|JMX] "
 			+ "API to retrieve status updates from one or more jobs, and provides "
 			+ "status changes as tuple stream.\\n"
+			+ "\\n"
+			+ "The operator emits tuples for the following notification types:\\n"
+			+ "* com.ibm.streams.management.job.added\\n"
+			+ "* com.ibm.streams.management.job.removed\\n"
+			+ "* com.ibm.streams.management.pe.changed\\n"			
 			+ "\\n"
 			+ "As an application developer, you provide the so-called filter "
 			+ "document. The filter document specifies patterns for domain, "
@@ -393,8 +398,7 @@ public class JobStatusSource extends AbstractOperator {
 
 		setupFilters();
 		boolean isValidDomain = _operatorConfiguration.get_filters().matchesDomainId(_operatorConfiguration.get_domainId());
-		if (!isValidDomain)
-		{
+		if (!isValidDomain) {
 			throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domainId() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
 		}
 		
@@ -413,18 +417,18 @@ public class JobStatusSource extends AbstractOperator {
 		 * if application configuration is configured.
 		 */		
 		if (_operatorConfiguration.get_applicationConfigurationName() != null) {
-		java.util.concurrent.ScheduledExecutorService scheduler = getOperatorContext().getScheduledExecutorService();
-		scheduler.scheduleWithFixedDelay(
-				new Runnable() {
-					@Override
-					public void run() {
-						try {
-							detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
-						} catch (Exception e) {
-							_trace.error("Operator error", e);
-						}                    
-					}
-				}, 3000l, Double.valueOf(_operatorConfiguration.get_scanPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);
+			java.util.concurrent.ScheduledExecutorService scheduler = getOperatorContext().getScheduledExecutorService();
+			scheduler.scheduleWithFixedDelay(
+					new Runnable() {
+						@Override
+						public void run() {
+							try {
+								detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
+							} catch (Exception e) {
+								_trace.error("Operator error", e);
+							}                    
+						}
+					}, 3000l, Double.valueOf(_operatorConfiguration.get_scanPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);
 		}
 		createAvoidCompletionThread();
 	}

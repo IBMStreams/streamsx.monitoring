@@ -24,17 +24,16 @@ endif
 SPLC_FLAGS += -t $(SPL_PATH)
 
 SPL_CMD_ARGS ?= 
-SPL_MAIN_COMPOSITE = com.ibm.streamsx.monitoring.jobs.test::Main
-SPL_MAIN_COMPOSITE1 = SampleJob
-OUTPUT_DIR1 = $(OUTPUT_DIR)/sample
+SPL_MAIN_COMPOSITE = com.ibm.streamsx.monitoring.jobs.sample::Monitor
+SPL_MAIN_COMPOSITE1 = com.ibm.streamsx.monitoring.jobs.sample::SampleJob
 
 build: distributed 
 
 all: clean build
 
 distributed:
-	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS) --output-directory=$(OUTPUT_DIR)
-	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE1) $(SPL_CMD_ARGS) --output-directory=$(OUTPUT_DIR1)
+	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS) --output-directory=$(OUTPUT_DIR)/monitor
+	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE1) $(SPL_CMD_ARGS) --output-directory=$(OUTPUT_DIR)/sample
 
 clean:
 	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE)

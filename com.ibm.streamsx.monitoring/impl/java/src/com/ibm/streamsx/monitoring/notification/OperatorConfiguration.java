@@ -50,14 +50,14 @@ public class OperatorConfiguration {
 
 	/**
 	 * Specifies the path to a JSON-formatted document that specifies the
-	 * domain, instance, job, operator, and metric name filters as regular
+	 * domain, instance, job, operator filters as regular
 	 * expressions. Each regular expression must follow the rules that are
 	 * specified for Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Pattern</a>.
 	 */
 	private String _filterDocument = null;
 
 	/**
-	 * Specifies the period after which a new metrics scan is initiated. The
+	 * Specifies the period after which a new application configuration scan is initiated. The
 	 * default is 5.0 seconds.
 	 */
 	private Double _scanPeriod = Double.valueOf(5.0);
