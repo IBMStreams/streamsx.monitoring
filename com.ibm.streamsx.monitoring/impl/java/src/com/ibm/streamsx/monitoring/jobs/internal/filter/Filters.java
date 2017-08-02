@@ -5,7 +5,7 @@
 // ****************************************************************************
 //
 
-package com.ibm.streamsx.monitoring.notification.filter;
+package com.ibm.streamsx.monitoring.jobs.internal.filter;
 
 import java.io.File;
 import java.io.IOException;

@@ -34,14 +34,14 @@ import com.ibm.streams.operator.model.OutputPortSet;
 import com.ibm.streams.operator.model.OutputPortSet.WindowPunctuationOutputMode;
 import com.ibm.streams.operator.model.OutputPorts;
 import com.ibm.streams.operator.model.PrimitiveOperator;
-import com.ibm.streamsx.monitoring.notification.OperatorConfiguration;
-import com.ibm.streamsx.monitoring.notification.TupleContainer;
-import com.ibm.streamsx.monitoring.notification.filter.Filters;
-import com.ibm.streamsx.monitoring.notification.DomainHandler;
 import com.ibm.streams.operator.model.Parameter;
 import com.ibm.streams.operator.compile.OperatorContextChecker;
 import com.ibm.streams.operator.control.patterns.NotificationTupleSubmitter;
 import com.ibm.streams.operator.state.ConsistentRegionContext;
+import com.ibm.streamsx.monitoring.jobs.internal.DomainHandler;
+import com.ibm.streamsx.monitoring.jobs.internal.OperatorConfiguration;
+import com.ibm.streamsx.monitoring.jobs.internal.TupleContainer;
+import com.ibm.streamsx.monitoring.jobs.internal.filter.Filters;
 import com.ibm.streamsx.monitoring.messages.Messages;
 
 /**

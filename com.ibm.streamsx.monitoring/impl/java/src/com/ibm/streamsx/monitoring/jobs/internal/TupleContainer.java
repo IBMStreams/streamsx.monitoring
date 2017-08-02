@@ -5,7 +5,7 @@
 // ****************************************************************************
 //
 
-package com.ibm.streamsx.monitoring.notification;
+package com.ibm.streamsx.monitoring.jobs.internal;
 
 import java.math.BigInteger;
 import java.util.HashMap;

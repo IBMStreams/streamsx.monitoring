@@ -5,12 +5,12 @@
 // ****************************************************************************
 //
 
-package com.ibm.streamsx.monitoring.notification;
+package com.ibm.streamsx.monitoring.jobs.internal;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 
-import com.ibm.streamsx.monitoring.notification.filter.Filters;
+import com.ibm.streamsx.monitoring.jobs.internal.filter.Filters;
 
 /**
  * 

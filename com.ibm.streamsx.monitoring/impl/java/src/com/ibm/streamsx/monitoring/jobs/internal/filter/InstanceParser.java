@@ -5,7 +5,7 @@
 // ****************************************************************************
 //
 
-package com.ibm.streamsx.monitoring.notification.filter;
+package com.ibm.streamsx.monitoring.jobs.internal.filter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,22 +15,22 @@ import org.apache.log4j.Logger;
 import com.ibm.json.java.JSONArtifact;
 import com.ibm.json.java.JSONObject;
 
-public class DomainParser extends AbstractParser {
+public class InstanceParser extends AbstractParser {
 	
-	private static Logger _logger = Logger.getLogger(DomainParser.class.getName());
+	private static Logger _logger = Logger.getLogger(InstanceParser.class.getName());
 
-	private static final String DOMAIN_ID_PATTERNS = "domainIdPatterns";
+	private static final String INSTANCE_ID_PATTERNS = "instanceIdPatterns";
 	
-	private static final String INSTANCES = "instances";
-	
-	private InstanceParser _instanceParser = new InstanceParser();
-	
-	protected DomainParser() {
+	private static final String JOBS = "jobs";
 
-		setMandatoryItem(DOMAIN_ID_PATTERNS);
-		setMandatoryItem(INSTANCES);
+	private JobParser _jobParser = new JobParser();
+	
+	protected InstanceParser() {
 
-		setValidationRule(DOMAIN_ID_PATTERNS, new IValidator() {
+		setMandatoryItem(INSTANCE_ID_PATTERNS);
+		setMandatoryItem(JOBS);
+
+		setValidationRule(INSTANCE_ID_PATTERNS, new IValidator() {
 
 			@Override
 			public boolean validate(String key, Object object) {
@@ -39,13 +39,13 @@ public class DomainParser extends AbstractParser {
 			
 		});
 
-		setValidationRule(INSTANCES, new IValidator() {
+		setValidationRule(JOBS, new IValidator() {
 
 			@Override
 			public boolean validate(String key, Object object) {
 				boolean result = true;
 				if (object instanceof JSONArtifact) {
-					result = _instanceParser.validate((JSONArtifact)object);
+					result = _jobParser.validate((JSONArtifact)object);
 				}
 				else {
 					result = false;
@@ -64,14 +64,14 @@ public class DomainParser extends AbstractParser {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected Set<DomainFilter> buildFilters(JSONObject json) {
-//		logger().error("Domain.JSON=" + json);
-		Set<String> patterns = buildPatternList(json.get(DOMAIN_ID_PATTERNS));
-		Set<InstanceFilter> filters = _instanceParser.buildFilters((JSONArtifact)json.get(INSTANCES));
-		Set<DomainFilter> result = new HashSet<>();
+	protected Set<InstanceFilter> buildFilters(JSONObject json) {
+//		logger().error("Instance.JSON=" + json);
+		Set<String> patterns = buildPatternList(json.get(INSTANCE_ID_PATTERNS));
+		Set<JobFilter> filters = _jobParser.buildFilters((JSONArtifact)json.get(JOBS));
+		Set<InstanceFilter> result = new HashSet<>();
 		for (String pattern : patterns) {
-//			logger().error("create domain filter, pattern=" + pattern);
-			result.add(new DomainFilter(pattern, filters));
+//			logger().error("create instance filter, pattern=" + pattern);
+			result.add(new InstanceFilter(pattern, filters));
 		}
 		return result;
 	}

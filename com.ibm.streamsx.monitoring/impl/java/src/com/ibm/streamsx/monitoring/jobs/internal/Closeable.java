@@ -1,4 +1,4 @@
-package com.ibm.streamsx.monitoring.notification;
+package com.ibm.streamsx.monitoring.jobs.internal;
 
 public interface Closeable {
 
