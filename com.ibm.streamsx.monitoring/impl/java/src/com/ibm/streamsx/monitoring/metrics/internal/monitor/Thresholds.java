@@ -16,8 +16,8 @@ import com.ibm.streams.operator.OperatorContext;
 import com.ibm.streams.operator.Tuple;
 
 /**
- * Thresholds is a container for the thresholds inside a ThresholdObject. 
- * There can be many Thresholds defined inside a ThresholdObject (eg. value, 
+ * Thresholds is a container for the thresholds inside a threshold rule. 
+ * There can be many thresholds defined inside a threshold rule (eg. value, 
  * rollingAverage, rate, etc.).
  */
 public class Thresholds {
@@ -34,7 +34,7 @@ public class Thresholds {
 	protected Map<String /*thresholdType*/, Threshold /*thresholdValue*/> thresholds = new HashMap<String /*thresholdType*/, Threshold /*threshold*/>();
 	
 	/**
-	 * Store new Threshold.
+	 * Store new threshold.
 	 * 
 	 */
 	public void putThreshold(String thresholdType, Threshold threshold) {
@@ -42,7 +42,7 @@ public class Thresholds {
 	}
 	
 	/**
-	 * Check if defined thresholds have been reached. If so, create and submit alerts 
+	 * Check if defined thresholds have been violated. If so, create and submit alerts 
 	 * for those thresholds.
 	 */
 	public void checkAndSubmitAlerts(List<Tuple> metricTuples, long parsedTime, OperatorContext context) {
@@ -111,14 +111,16 @@ public class Thresholds {
 				
 				if (operator == null && currentValue == thresholdValue) {
 					return true;
-				} else if (operator.equals(">=") && currentValue >= thresholdValue) {
-					return true;
-				} else if (operator.equals("<=") && currentValue <= thresholdValue) {
-					return true;
-				} else if (operator.equals(">") && currentValue > thresholdValue) {
-					return true;
-				} else if (operator.equals("<") && currentValue < thresholdValue) {
-					return true;
+				} else if (operator != null) {
+					if (operator.equals(">=") && currentValue >= thresholdValue) {
+						return true;
+					} else if (operator.equals("<=") && currentValue <= thresholdValue) {
+						return true;
+					} else if (operator.equals(">") && currentValue > thresholdValue) {
+						return true;
+					} else if (operator.equals("<") && currentValue < thresholdValue) {
+						return true;
+					}
 				}
 			}
 		}

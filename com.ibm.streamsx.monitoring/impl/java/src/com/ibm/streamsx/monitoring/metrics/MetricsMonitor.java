@@ -31,8 +31,7 @@ import com.ibm.streams.operator.model.PrimitiveOperator;
 @PrimitiveOperator(
 		name="MetricsMonitor",
 		namespace="com.ibm.streamsx.monitoring.metrics",
-		description="The MetricsMonitor operator compares the metric tuple values against the threshold rules defined in the application configuration's thresholdDocument property.\\n"
-		+ "It outputs an alert whenever any threshold rules are violated."
+		description=MetricsMonitor.DESC_OPERATOR
 		)
 @InputPorts({
 	@InputPortSet(
@@ -51,6 +50,99 @@ import com.ibm.streams.operator.model.PrimitiveOperator;
 })
 public class MetricsMonitor extends AbstractOperator {
 
+	// ------------------------------------------------------------------------
+	// Documentation.
+	// Attention: To add a newline, use \\n instead of \n.
+	// ------------------------------------------------------------------------
+	
+	static final String DESC_OPERATOR = 
+			"The MetricsMonitor operator connects to the MetricsSource operator "
+			+ "and receives incoming metric tuples. It compares the metric values "
+			+ "against threshold rules that the user defines. As a result, if any "
+			+ "threshold rules are violated, alert tuples are outputted with "
+			+ "details about the violated threshold rule, the current metric value, "
+			+ "and additional information about the retrieved metric.\\n"
+			+ "\\n"
+			+ "As an application developer, you provide the so-called threshold "
+			+ "document. The threshold document accepts a list of threshold rules "
+			+ "that are evaluated at a set interval (defined by the scanPeriod "
+			+ "parameter from the MetricsSource operator).\\n"
+			+ "\\n"
+			+ "The threshold document is, by default, empty. In other words, "
+			+ "nothing is being monitored.\\n"
+			+ "\\n"
+			+ "+ Threshold document\\n"
+			+ "\\n"
+			+ "The threshold document contains a list of threshold rules. Each "
+			+ "threshold rule is defined as a JSON object. This JSON object "
+			+ "contains 3 properties:\\n"
+			+ "\\n"
+			+ "**metricName**: String specifying which metric to monitor.\\n"
+			+ "\\n"
+			+ "**thresholds (optional)**: JSON object specifying 1 or more "
+			+ "thresholds (example format below). There are 4 supported threshold "
+			+ "types the user can select from:\\n"
+			+ "\\n"
+			+ "* **value**: A value to evaluate incoming metric values against.\\n"
+			+ "\\n"
+			+ "* **rate**: The rate of incoming metric values, given a timeframe.\\n"
+			+ "\\n"
+			+ "* **rollingAverage**: The rolling average of incoming metric values, "
+			+ "given a timeframe.\\n"
+			+ "\\n"
+			+ "* **increasePercentage**: The percentage that incoming metric values "
+			+ "are increasing/decreasing, given a timeframe.\\n"
+			+ "\\n"
+			+ "Note that you may choose to add an operator (\\\">\\\", \\\">=\\\", "
+			+ "\\\"<\\\", or \\\"<=\\\") in front of the threshold value to "
+			+ "indicate whether you want to monitor for values above or below "
+			+ "a certain threshold.\\n"
+			+ "\\n"
+			+ "**filters (optional)**: JSON object specifying 1 or more filters. "
+			+ "Filters give users the option to further filter which metrics they "
+			+ "want monitored. Simply provide an attribute of the incoming metric "
+			+ "tuples as a key, and a regular expression as the value (example "
+			+ "format below).\\n"
+			+ "\\n"
+			+ "The following threshold document monitors the **com.ibm.streamsx."
+			+ "monitoring.sample.MetricsSource.MemoryMetrics** sample application "
+			+ "for when its nResidentMemoryConsumption goes above 10000KB:\\n"
+			+ "\\n"			
+			+ "    [\\n"
+			+ "      {\\n"
+			+ "        \\\"metricname\\\":\\\"nResidentMemoryConsumption\\\",\\n"
+			+ "        \\\"thresholds\\\":\\n"
+			+ "        {\\n"
+			+ "          \\\"value\\\":\\\">10000\\\",\\n"
+			+ "        },\\n"
+			+ "        \\\"filters\\\":\\n"
+			+ "        {\\n"
+			+ "          \\\"jobName\\\":\\\"com.ibm.streamsx.sample.MetricsSource"
+			+ ".MemoryMetrics.*\\\"\\n"
+			+ "        }\\n"
+			+ "    ]\\n"
+			+ "\\n"
+			+ "The following threshold document monitors the **com.ibm.streamsx."
+			+ "monitoring.sample.MetricsMonitor.HighCongestion** sample application "
+			+ "for when its congestionFactor has a rolling average greater than 80 "
+			+ "over a timeframe of 20s:\\n"
+			+ "\\n"			
+			+ "    [\\n"
+			+ "      {\\n"
+			+ "        \\\"metricname\\\":\\\"congestionFactor\\\",\\n"
+			+ "        \\\"thresholds\\\":\\n"
+			+ "        {\\n"
+			+ "          \\\"value\\\":\\\">=80,20000\\\",\\n"
+			+ "        },\\n"
+			+ "        \\\"filters\\\":\\n"
+			+ "        {\\n"
+			+ "          \\\"jobName\\\":\\\"com.ibm.streamsx.sample.MetricsMonitor"
+			+ ".HighCongestion.*\\\"\\n"
+			+ "        }\\n"
+			+ "    ]\\n"
+			+ "\\n"
+			;
+	
 	// ------------------------------------------------------------------------
 	// Operator Parameters
 	// ------------------------------------------------------------------------
