@@ -84,7 +84,7 @@ public class ThresholdDocument {
 	/**
 	 * Time thresholdDocument was parsed (used to determine whether threshold timeframes have elapsed).
 	 */
-	protected long parsedTime;
+	protected Long parsedTime;
 	
 	/**
 	 * Set thresholdDocument file from given file path.
@@ -119,10 +119,13 @@ public class ThresholdDocument {
 	 * Throws IOException if file is not found.
 	 */
     private Boolean thresholdFileChanged() throws IOException {
-		if(thresholdFile != null && lastModified < thresholdFile.lastModified()) {
+    	if (thresholdFile != null && parsedTime == null) {
+    		return true;
+    	} else if (thresholdFile != null && lastModified < thresholdFile.lastModified()) {
 			lastModified = thresholdFile.lastModified();
 			return true;
 		} else if (thresholdFile == null){
+			// Should never get to this point.
 			throw new IOException("Expected threshold document file to be defined.");
 		}
 		
