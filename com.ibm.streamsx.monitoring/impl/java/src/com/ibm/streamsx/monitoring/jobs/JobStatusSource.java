@@ -430,7 +430,9 @@ public class JobStatusSource extends AbstractOperator {
 						}
 					}, 3000l, Double.valueOf(_operatorConfiguration.get_scanPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);
 		}
-		createAvoidCompletionThread();
+		else {
+			createAvoidCompletionThread();
+		}
 	}
 
 	/**

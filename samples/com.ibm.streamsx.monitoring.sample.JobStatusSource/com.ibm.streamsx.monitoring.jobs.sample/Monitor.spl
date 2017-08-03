@@ -23,8 +23,8 @@ composite Monitor {
 		 */
 		stream<JobStatusNotification> ChangeNotifications as O = JobStatusSource() {
 			param
+//				applicationConfigurationName: "com.ibm.streamsx.monitoring.JobStatusSource.ApplicationConfiguration";
 				connectionURL: getSubmissionTimeValue("connectionURL");
-//				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
 				user: getSubmissionTimeValue("user");
 				password: getSubmissionTimeValue("password");
 				filterDocument: getThisToolkitDir()+"/etc" + "/JobStatusSource_MonitorEverything.json";
