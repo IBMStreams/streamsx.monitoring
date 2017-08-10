@@ -7,15 +7,18 @@
 
 package com.ibm.streamsx.monitoring.jmx;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
@@ -23,26 +26,15 @@ import org.apache.log4j.Logger;
 
 import com.ibm.streams.operator.AbstractOperator;
 import com.ibm.streams.operator.OperatorContext;
-import com.ibm.streams.operator.OperatorContext.ContextCheck;
 import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.ProcessingElement;
-import com.ibm.streams.operator.StreamingData.Punctuation;
 import com.ibm.streams.operator.StreamingOutput;
-import com.ibm.streams.operator.model.Icons;
-import com.ibm.streams.operator.model.OutputPortSet;
-import com.ibm.streams.operator.model.OutputPortSet.WindowPunctuationOutputMode;
-import com.ibm.streams.operator.model.OutputPorts;
-import com.ibm.streams.operator.model.PrimitiveOperator;
 import com.ibm.streams.operator.model.Parameter;
-import com.ibm.streams.operator.compile.OperatorContextChecker;
-import com.ibm.streams.operator.state.ConsistentRegionContext;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 import com.ibm.streamsx.monitoring.jmx.internal.DomainHandler;
-import com.ibm.streamsx.monitoring.jmx.internal.EmitMetricTupleMode;
 import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.MetricsTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.filters.Filters;
-import com.ibm.streamsx.monitoring.messages.Messages;
 
 /**
  * Abstract class for the JMX operators.
@@ -64,7 +56,10 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			"Specifies the connection URL as returned by the `streamtool "
 			+ "getjmxconnect` command. If the **applicationConfigurationName** "
 			+ "parameter is specified, the application configuration can "
-			+ "override this parameter value.";
+			+ "override this parameter value."
+			+ "If not specified and the domainId parameter value equals the domain "
+			+ "id under which this operator is running, then the operator uses the "
+			+ "`streamtool getjmxconnect` command to get the value.";
 	
 	protected static final String DESC_PARAM_USER = 
 			"Specifies the user that is required for the JMX connection. If "
@@ -79,7 +74,10 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	protected static final String DESC_PARAM_SSL_OPTION = 
 			"Specifies the sslOption that is required for the JMX connection. If "
 			+ "the **applicationConfigurationName** parameter is specified, "
-			+ "the application configuration can override this parameter value.";	
+			+ "the application configuration can override this parameter value."
+			+ "If not specified and the domainId parameter value equals the domain "
+			+ "id under which this operator is running, then the operator uses the "
+			+ "`streamtool getdomainproperty` command to get the value.";
 	
 	protected static final String DESC_PARAM_DOMAIN_ID = 
 			"Specifies the domain id that is monitored. If no domain id is "
@@ -113,6 +111,8 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	protected OperatorConfiguration _operatorConfiguration = new OperatorConfiguration();
 	
 	protected DomainHandler _domainHandler = null;
+	
+	private String _domainId = null; // domainId for this PE
 	
 	/**
 	 * If the application configuration is used (applicationConfigurationName
@@ -197,6 +197,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			_operatorConfiguration.set_domainId(context.getPE().getDomainId());
 			_trace.info("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
 		}
+		_domainId = context.getPE().getDomainId();
 
 		/*
 		 * Establish connections or resources to communicate an external system
@@ -273,7 +274,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		String connectionURL = _operatorConfiguration.get_connectionURL();
 		String user = _operatorConfiguration.get_user();
 		String password = _operatorConfiguration.get_password();
-		String sslOption = "";
+		String sslOption = _operatorConfiguration.get_sslOption();
 		// Override defaults if the application configuration is specified
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {
@@ -293,7 +294,11 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		}
 		// Ensure a valid configuration.
 		if (connectionURL == null) {
-			throw new Exception(MISSING_VALUE + PARAMETER_CONNECTION_URL);
+			// not configured via parameter or application configuration
+			connectionURL = autoDetectJmxConnect();
+			if (connectionURL == null) {
+				throw new Exception(MISSING_VALUE + PARAMETER_CONNECTION_URL);
+			}
 		}
 		if (user == null) {
 			throw new Exception(MISSING_VALUE + PARAMETER_USER);
@@ -313,14 +318,33 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		 * Code taken from:
 		 * http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/jmxapi-lgop.html
 		 */
-		if (sslOption != "") {
+		if (sslOption != null) {
 			env.put("jmx.remote.tls.enabled.protocols", sslOption);
+		}
+		else {
+			// not configured via parameter or application configuration
+			sslOption = autoDetectJmxSslOption(user, password);
+			if (sslOption != null) {
+				env.put("jmx.remote.tls.enabled.protocols", sslOption);
+			}
 		}
 
 		/*
 		 * Setup the JMX connector and MBean connection.
 		 */
-		_operatorConfiguration.set_jmxConnector(JMXConnectorFactory.connect(new JMXServiceURL(connectionURL), env));
+		String[] urls = connectionURL.split(","); // comma separated list of JMX servers is supported 
+		for (int i=0; i<urls.length; i++) {
+			try {
+				_trace.info("Connect to : " + urls[i]);
+				_operatorConfiguration.set_jmxConnector(JMXConnectorFactory.connect(new JMXServiceURL(urls[i]), env));
+				break; // exit loop here since a valid connection is established, otherwise exception is thrown.
+			} catch (IOException e) {
+				_trace.warn("Exception: " + e.getMessage());
+				if (i == urls.length-1) {
+					throw e;
+				}
+			}
+		}
 		_operatorConfiguration.set_mbeanServerConnection(_operatorConfiguration.get_jmxConnector().getMBeanServerConnection());
 	}
 
@@ -417,5 +441,63 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		}
 		return properties;
 	}
+	
+	private String autoDetectJmxConnect() {
+		String result = null;
+		if (_operatorConfiguration.get_domainId() == _domainId) { // running in same domain as configured
+			_trace.debug("get connectionURL with streamtool getjmxconnect");
+			String cmd = "streamtool getjmxconnect -d "+ _domainId;
+
+			StringBuffer output = new StringBuffer();
+			Process p;
+			try {
+				p = Runtime.getRuntime().exec(cmd);
+				p.waitFor();
+				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	            String line = "";
+				while ((line = br.readLine())!= null) {
+					output.append(line).append(",");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			result = output.toString();
+
+			_trace.info("connectionURL=[" + result + "]");
+			_operatorConfiguration.set_connectionURL(result);
+		}
+		return result;
+	}	
+
+	private String autoDetectJmxSslOption(String user, String password) {		
+		String sslOption = null;
+		if (_operatorConfiguration.get_domainId() == _domainId) { // running in same domain as configured
+			_trace.debug("get jmx.sslOption with streamtool getdomainproperty");
+	
+			String[] cmd = { "/bin/sh", "-c", "echo "+password+" | streamtool getdomainproperty -d "+ _domainId + " -U "+user+" jmx.sslOption" };
+			
+			StringBuffer output = new StringBuffer();
+			Process p;
+			try {
+				p = Runtime.getRuntime().exec(cmd);
+				p.waitFor();
+				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	            String line = "";
+				while ((line = br.readLine())!= null) {
+					output.append(line);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			String cmdResult = output.toString();
+			_trace.debug("cmdResult: " + cmdResult);
+			int idx = cmdResult.indexOf("=");
+			if (idx >=0) {
+				sslOption = cmdResult.substring(idx+1, cmdResult.length());
+				_trace.info("sslOption=[" + sslOption + "]");
+			}
+		}
+		return sslOption;
+	}	
 	
 }
