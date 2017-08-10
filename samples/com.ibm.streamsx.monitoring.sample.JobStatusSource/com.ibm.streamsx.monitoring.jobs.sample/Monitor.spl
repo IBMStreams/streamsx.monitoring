@@ -24,10 +24,13 @@ composite Monitor {
 		stream<JobStatusNotification> ChangeNotifications as O = JobStatusSource() {
 			param
 //				applicationConfigurationName: "com.ibm.streamsx.monitoring.JobStatusSource.ApplicationConfiguration";
-				connectionURL: getSubmissionTimeValue("connectionURL");
 				user: getSubmissionTimeValue("user");
 				password: getSubmissionTimeValue("password");
 				filterDocument: getThisToolkitDir()+"/etc" + "/JobStatusSource_MonitorEverything.json";
+				// the following parameters are optional, if not set, then domain settings are used, where the PE is running.
+//				connectionURL: getSubmissionTimeValue("connectionURL");
+//				domainId: getSubmissionTimeValue("domainId");
+//				sslOption: "TLSv1.2";				
 		}
 		
 		/*
