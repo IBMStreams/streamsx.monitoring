@@ -17,6 +17,7 @@ import com.ibm.streamsx.monitoring.jmx.internal.PeriodicMetricEvaluator;
 import com.ibm.streamsx.monitoring.jmx.internal.filters.Filters;
 import com.ibm.streamsx.monitoring.jmx.internal.MetricsTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
+import com.ibm.streamsx.monitoring.jmx.internal.LogTupleContainer;
 
 /**
  * 
@@ -77,6 +78,8 @@ public class OperatorConfiguration {
 	private MetricsTupleContainer _tupleContainerMetricsSource = null;
 	
 	private JobStatusTupleContainer _tupleContainerJobStatusSource = null;
+	
+	private LogTupleContainer _tupleContainerLogSource = null;
 
 	private EmitMetricTupleMode _emitMetricTuple = EmitMetricTupleMode.onChangedValue;
 	
@@ -84,7 +87,8 @@ public class OperatorConfiguration {
 
 	public enum OpType {
 		METRICS_SOURCE,
-		JOB_STATUS_SOURCE
+		JOB_STATUS_SOURCE,
+		LOG_SOURCE
 	}
 	public OpType get_OperatorType() {
 		return _opType;
@@ -189,6 +193,14 @@ public class OperatorConfiguration {
 	public void set_tupleContainerMetricsSource(MetricsTupleContainer tupleContainer) {
 		_tupleContainerMetricsSource = tupleContainer;
 		
+	}
+	
+	public LogTupleContainer get_tupleContainerLogSource() {
+		return _tupleContainerLogSource;
+	}
+
+	public void set_tupleContainerLogSource(LogTupleContainer tupleContainer) {
+		_tupleContainerLogSource = tupleContainer;
 	}
 	
 	public JobStatusTupleContainer get_tupleContainerJobStatusSource() {

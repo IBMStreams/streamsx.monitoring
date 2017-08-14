@@ -1,0 +1,42 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+namespace com.ibm.streamsx.monitoring.sample.logs;
+
+use com.ibm.streamsx.monitoring.system::LogSource;
+use com.ibm.streamsx.monitoring.system::*;
+
+/**
+ * This sample application demonstrates the usage of the [com.ibm.streamsx.monitoring::LogSource]
+ * operator and monitors log events.
+ */
+composite Monitor {
+
+	graph
+
+		/*
+		 * The LogSource generates a tuple for each notified log event.
+		 */
+		stream<LogNotification> Logs as O = LogSource() {
+			param
+				user: getSubmissionTimeValue("user");
+				password: getSubmissionTimeValue("password");
+		}
+		
+		/*
+		 * The Custom traces the received notifications.
+		 */
+		() as EventsTracer = Custom(Logs as I) {
+			logic
+			onTuple I: {
+				printStringLn((rstring)I);
+			}
+		}
+
+
+
+}

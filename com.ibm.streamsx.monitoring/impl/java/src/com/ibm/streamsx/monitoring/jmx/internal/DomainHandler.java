@@ -23,7 +23,9 @@ import javax.management.ObjectName;
 import com.ibm.streams.management.Notifications;
 import com.ibm.streams.management.ObjectNameBuilder;
 import com.ibm.streams.management.domain.DomainMXBean;
+import com.ibm.streams.operator.Tuple;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration;
+import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 
 /**
  * Listen for the following domain notifications:
@@ -76,8 +78,14 @@ public class DomainHandler implements NotificationListener, Closeable {
 		 * Register to get domain-related notifications.
 		 */
 		NotificationFilterSupport filter = new NotificationFilterSupport();
-		filter.enableType(Notifications.INSTANCE_CREATED);
-		filter.enableType(Notifications.INSTANCE_DELETED);
+		if (OpType.LOG_SOURCE == _operatorConfiguration.get_OperatorType()) {
+			filter.enableType("com.ibm.streams.management.log.application.error");
+			filter.enableType("com.ibm.streams.management.log.application.warning");		
+		}
+		else {
+			filter.enableType(Notifications.INSTANCE_CREATED);
+			filter.enableType(Notifications.INSTANCE_DELETED);
+		}
 		try {
 			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(_objName, this, filter, null);
 		} catch (InstanceNotFoundException e) {
@@ -87,11 +95,13 @@ public class DomainHandler implements NotificationListener, Closeable {
 		}
 //	TODO      jmxc.addConnectionNotificationListener(this, null, null); // listen for potential lost notifications
 		
-		/*
-		 * Register existing instances.
-		 */
-		for(String instanceId : _domain.getInstances()) {
-			addValidInstance(instanceId);
+		if (OpType.LOG_SOURCE != _operatorConfiguration.get_OperatorType()) {
+			/*
+			 * Register existing instances.
+			 */
+			for(String instanceId : _domain.getInstances()) {
+				addValidInstance(instanceId);
+			}
 		}
 		
 	}
@@ -131,7 +141,17 @@ public class DomainHandler implements NotificationListener, Closeable {
 			}
 		}
 		else {
-			_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+			if ((OpType.LOG_SOURCE == _operatorConfiguration.get_OperatorType()) &&
+				(notification.getType().contains("com.ibm.streams.management.log.application"))) {
+				// emit tuple
+				_trace.error("notification: " + notification);
+				final Tuple tuple = _operatorConfiguration.get_tupleContainerLogSource().getTuple(notification, _domainId);
+				_operatorConfiguration.get_tupleContainerLogSource().submit(tuple);
+				
+			}
+			else {
+				_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+			}
 		}
 	}
 
