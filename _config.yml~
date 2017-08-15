@@ -7,7 +7,7 @@
 
 # Site Settings
 locale                   : "en"
-title                    : &toolkit "toolkit.xyz"
+title                    : "toolkit.xyz"
 title_separator          : "-"
 name                     : &name "Michael Rose" # &name is a YAML anchor which can be *referenced later
 description              : &description "toolkit site description."
@@ -165,10 +165,10 @@ kramdown:
   enable_coderay: false
 
 # Collections
-collections:
-  docs:
-    output: true
-    permalink: /:collection/:path/
+#collections:
+#  docs:
+#    output: true
+#    permalink: /:collection/:path/
 #  recipes:
 #    output: true
 #    permalink: /:collection/:path/

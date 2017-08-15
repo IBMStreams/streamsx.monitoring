@@ -1,0 +1,39 @@
+---
+layout: splash
+permalink: /
+toolkitname: &toolkit "toolkit.xyz.home"
+header:
+  overlay_color: "#5e616c"
+  overlay_image: /assets/images/mm-home-page-feature.jpg
+  cta_label: "<i class='fa fa-download'></i> Install Now"
+  cta_url: "/docs/quick-start-guide/"
+  caption:
+excerpt: 'A toolkit providing great features you already missed when developing Streams applications. Features as "a miracle" or "like a wonder" or "unbelievable"<br /> <small><a href="https://github.com/mmistakes/minimal-mistakes/releases/tag/4.5.0">Latest release v4.5.0</a></small><br /><br /> {::nomarkdown}<iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=mmistakes&repo=minimal-mistakes&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=mmistakes&repo=minimal-mistakes&type=fork&count=true&size=large" frameborder="0" scrolling="0" width="158px" height="30px"></iframe>{:/nomarkdown}'
+feature_row:
+  - image_path: /assets/images/mm-customizable-feature.png
+    alt: "usage domain"
+    title: "When to use the toolkit"
+    excerpt: "Explains the use case when you would need this toolkit. Gives you domain specific background if necessary."
+    url: "/docs/knowledge/overview/"
+    btn_label: "Learn More"
+  - image_path: /assets/images/mm-responsive-feature.png
+    alt: {{site.title}}
+    title: "How to use the toolkit"
+    excerpt: "Everything around building Streams applications with the help of this toolkit."
+    url: "/docs/user/overview/"
+    btn_label: "Learn More"
+  - image_path: /assets/images/mm-free-feature.png
+    alt: "Extend the toolkit"
+    title: "How to contribute"
+    excerpt: "Everything necessary to contribute in the process of extending this toolkits: requirements, design, implementation, test and docu."
+    url: "/docs/developer/overview/"
+    btn_label: "Learn More"
+# github:
+#   - excerpt: '{::nomarkdown}<iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=mmistakes&repo=minimal-mistakes&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=mmistakes&repo=minimal-mistakes&type=fork&count=true&size=large" frameborder="0" scrolling="0" width="158px" height="30px"></iframe>{:/nomarkdown}'
+# intro:
+#   - excerpt: 'Get notified when I add new stuff &nbsp; [<i class="fa fa-twitter"></i> @mmistakes](https://twitter.com/mmistakes){: .btn .btn--twitter} [<i class="fa fa-paypal"></i> Tip Me](https://www.paypal.me/mmistakes){: .btn}'
+---
+
+{% include feature_row id="intro" type="center" %}
+
+{% include feature_row %}

@@ -60,7 +60,7 @@ userdocs:
 
 # developer documentation links
 developerdocs:
-  - title: Developer documentation
+  - title: User documentation
     children:
       - title: "General Toolkit development"
         url: /docs/development/overview
