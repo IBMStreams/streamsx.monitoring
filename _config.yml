@@ -9,11 +9,11 @@
 locale                   : "en"
 title                    : &toolkit "toolkit.xyz"
 title_separator          : "-"
-name                     : &name "Michael Rose" # &name is a YAML anchor which can be *referenced later
+name                     : &name "Ronald Nordhausen" # &name is a YAML anchor which can be *referenced later
 description              : &description "toolkit site description."
-url                      : https://rnostreams.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+url                      : https://rnostream.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "/minimal-mistakes" # the subpath of your site, e.g. "/blog"
-repository               : "rnostreams/minimal-mistakes" # GitHub username/repo-name
+repository               : "rnostream/minimal-mistakes" # GitHub username/repo-name
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 # breadcrumbs            : false # true, false (default)
 words_per_minute         : 200
@@ -35,7 +35,7 @@ staticman:
   filename               : comment-{@timestamp}
   format                 : "yml"
   moderation             : true
-  path                   : "docs/_data/comments/{options.slug}" # "/_data/comments/{options.slug}" (default)
+  path                   : "_data/comments/{options.slug}" # "/_data/comments/{options.slug}" (default)
   requiredFields         : ['name', 'email', 'message']
   transforms:
     email                : "md5"
@@ -136,8 +136,6 @@ exclude:
   - Rakefile
   - README
   - tmp
-  - /docs # ignore Minimal Mistakes /docs
-  - /test # ignore Minimal Mistakes /test
 keep_files:
   - .git
   - .svn
@@ -183,7 +181,7 @@ collections:
 
 # Defaults
 # original defaults
-#defaults:
+# defaults:
 #  # _posts
 #  - scope:
 #      path: ""
@@ -270,7 +268,7 @@ timezone: # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
 
 # Plugins
-gems:
+plugins:
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-gist
