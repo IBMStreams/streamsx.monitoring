@@ -9,22 +9,26 @@ sidebar:
    nav: "userdocs"
 ---
 {% include toc %}
-This toolkit provides the functionality XYZ.
-
 {%include editme %}
-## Overview Heading level 2
 
-Some textIf you're running Jekyll v3.3+ and self-hosting you can quickly install the theme as Ruby gem.
-If you're hosting with GitHub Pages you'll have to use the old "repo fork" method or directly copy all of the theme files[^structure] into your site.
 
-[^structure]: See [**Structure** page]({{ "/docs/structure/" | absolute_url }}) for a list of theme files and what they do.
+Place here an overview about the functionality of the toolkit.
+Don't repeat work by explaining things which are available in SPLDOC.
+SPLDOC shall be linked in this page 
+
+
+## Overview Sample header level 2
+
+Your text related to this topic 
+This is a sample for a footnote.
+If you want to be a toolkit [^developer]: See [**Developer** page]({{ "/docs/developer/overview/" | absolute_url }}) you should read the documentation first.
 
 **ProTip:** This is a Pro-Tip
 {: .notice--info}
 
-### Overview Heading level 3
+### Overview Sample header level 3
 
-Some text
+Some text in this level
 
 Some shell command description
 
@@ -32,7 +36,7 @@ Some shell command description
 bundle install
 ```
 
-### Overview Another level 3 Heading
+### Overview Another Sample header level 3 
 
 **Note:** This is a Notize.
 {: .notice--warning}

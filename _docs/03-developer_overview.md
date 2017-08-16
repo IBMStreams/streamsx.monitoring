@@ -9,14 +9,14 @@ sidebar:
    nav: "developerdocs"
 ---
 {% include toc %}
-This toolkit provides the functionality XYZ.
+{% include editme %}
+
+ Describe in this page the general development process. Refer for build setup and test setup to the appropriate pages
+
 
 ## Development Heading level 2
 
-Some textIf you're running Jekyll v3.3+ and self-hosting you can quickly install the theme as Ruby gem.
-If you're hosting with GitHub Pages you'll have to use the old "repo fork" method or directly copy all of the theme files[^structure] into your site.
-
-[^structure]: See [**Structure** page]({{ "/docs/structure/" | absolute_url }}) for a list of theme files and what they do.
+Your text
 
 **ProTip:** This is a Pro-Tip
 {: .notice--info}
