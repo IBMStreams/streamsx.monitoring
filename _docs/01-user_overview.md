@@ -11,6 +11,7 @@ sidebar:
 {% include toc %}
 This toolkit provides the functionality XYZ.
 
+{%include editme %}
 ## Overview Heading level 2
 
 Some textIf you're running Jekyll v3.3+ and self-hosting you can quickly install the theme as Ruby gem.
