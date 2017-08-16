@@ -20,8 +20,6 @@ SPLDOC shall be linked in this page
 ## Overview Sample header level 2
 
 Your text related to this topic 
-This is a sample for a footnote.
-If you want to be a toolkit [^developer]: See [**Developer** page]({{ "/docs/developer/overview/" | absolute_url }}) you should read the documentation first.
 
 **ProTip:** This is a Pro-Tip
 {: .notice--info}
