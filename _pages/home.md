@@ -13,13 +13,13 @@ feature_row:
   - image_path: # /assets/images/123.png
     # alt: "usage domain"
     title: "When to use the toolkit"
-    excerpt: "Explains the use case when you would need this toolkit. Gives you domain specific background if necessary."
+    excerpt: "Explains the use case when you would need this toolkit. Gives you domain specific background if necessary.<br />"
     url: "/docs/knowledge/overview/"
     btn_label: "Learn More"
   - image_path: # /assets/images/123.png
     # alt: "How to use"
     title: "How to use the toolkit"
-    excerpt: "Everything around building Streams applications with the help of this toolkit."
+    excerpt: "Everything around building Streams applications with the help of this toolkit. <br /><br />"
     url: "/docs/user/overview/"
     btn_label: "Learn More"
   - image_path: # /assets/images/123.png
