@@ -45,3 +45,40 @@ type SystemStatus = tuple<
 	int32 memUsed
 >;
 
+/**
+ * The LogNotification type specifies all attributes that are filled by the 
+ * [com.ibm.streamsx.monitoring.system::LogSource|LogSource] operator
+ * 
+ * * **notifyType**
+ * 
+ *   The notification type com.ibm.streams.management.log.application.error or
+ *   com.ibm.streams.management.log.application.warning.
+ * 
+ * * **domainId**
+ * 
+ *   The domain ID.
+ * 
+ * * **source**
+ * 
+ *   The notification source.
+ * 
+ * * **sequence**
+ * 
+ *   The notification sequence number.
+ * 
+ * * **eventTimestamp**
+ * 
+ *   The notification timestamp.
+ * 
+ * * **message**
+ * 
+ *   The notification message.
+ */
+type LogNotification = tuple<
+	rstring notifyType,
+	rstring domainId,
+	rstring source,
+	int64 sequence,
+	timestamp eventTimestamp,
+	rstring message
+>;
