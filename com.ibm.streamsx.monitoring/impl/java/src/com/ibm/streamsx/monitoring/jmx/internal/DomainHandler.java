@@ -13,7 +13,6 @@ import javax.management.NotificationListener;
 
 import org.apache.log4j.Logger;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,31 +102,36 @@ public class DomainHandler implements NotificationListener, Closeable {
 	 */
 	@Override
 	public void handleNotification(Notification notification, Object handback) {
-//		if (notification.getSequenceNumber())
+		if (_trace.isDebugEnabled()) {
+			_trace.debug("notification: " + notification + ", userData=" + notification.getUserData());
+		}
 		if (notification.getType().equals(Notifications.INSTANCE_CREATED)) {
-			if(notification.getUserData() instanceof BigInteger) {
+			String instanceId = getInstanceFromUserData(notification.getUserData());
+			if (instanceId != "") {
 				/*
 				 * Register instance.
 				 */
-				String instanceId = (String)notification.getUserData();
 				addValidInstance(instanceId);
 			}
 			else {
-				_trace.error("received INSTANCE_CREATED notification: user data is not an instance of String");
+				_trace.error("received INSTANCE_CREATED notification: user data does not contain instance name");
 			}
 		}
 		else if (notification.getType().equals(Notifications.INSTANCE_DELETED)) {
-			if(notification.getUserData() instanceof String) {
+			String instanceId = getInstanceFromUserData(notification.getUserData());
+			if (instanceId != "") {
 				/*
 				 * Unregister existing instance.
 				 */
-				String instanceId = (String)notification.getUserData();
 				if(_instanceHandlers.containsKey(instanceId)) {
 					_instanceHandlers.remove(instanceId);
+					if (_trace.isInfoEnabled()) {
+						_trace.info("The following instance is deleted: domain=" + _domainId + ", instance=" + instanceId);
+					}
 				}
 			}
 			else {
-				_trace.error("received INSTANCE_DELETED notification: user data is not an instance of String");
+				_trace.error("received INSTANCE_DELETED notification: user data does not contain instance name");
 			}
 		}
 		else {
@@ -135,6 +139,19 @@ public class DomainHandler implements NotificationListener, Closeable {
 		}
 	}
 
+	private String getInstanceFromUserData(Object userDataObj) {		
+		String result = "";
+		if (null != userDataObj) {
+			String userData = userDataObj.toString();
+			// com.ibm.streams.management:type=domain.instance,domain="xxx",name="yyy"
+			int idx = userData.lastIndexOf("name=");
+			if ((idx > -1) && (idx+6 < userData.length())) {
+				result = userData.substring(idx+6, userData.length()-1);
+			}
+		}
+		return result;
+	}
+	
 	protected void addValidInstance(String instanceId) {
 		boolean matches = _operatorConfiguration.get_filters().matchesInstanceId(_domainId, instanceId);
 		if (_trace.isInfoEnabled()) {
