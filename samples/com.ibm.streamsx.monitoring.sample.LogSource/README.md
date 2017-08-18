@@ -10,7 +10,7 @@ Build Monitor and SampleJob applications:
 
 Run:
 
-Launch the Monitor application in distributed mode first.
+Launch the Monitor application in distributed mode first and provide the `user` and `password` submission parameters.
 `./output/monitor/com.ibm.streamsx.monitoring.sample.logs.Monitor.sab`
 
 Afterwards launch the Sample application to be monitored.
