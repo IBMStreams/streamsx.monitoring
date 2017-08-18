@@ -30,7 +30,7 @@ public composite SampleJob
 					count++;
 					appLog(Log.error, "This is error log #."+(rstring)count);
 					block((float64)1ul);
-					appLog(Log.error, "This is warning log #."+(rstring)count);
+					appLog(Log.warn, "This is warning log #."+(rstring)count);
 				}			
 		}
 
