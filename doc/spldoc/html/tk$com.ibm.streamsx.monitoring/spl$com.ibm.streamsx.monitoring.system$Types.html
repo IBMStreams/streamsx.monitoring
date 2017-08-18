@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.3.3</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.system.html">com.ibm.streamsx.monitoring.system</a> &gt; Types.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.4.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.system.html">com.ibm.streamsx.monitoring.system</a> &gt; Types.spl</p>
 
 </div>
 
@@ -44,6 +44,9 @@
 
       <dd class="dd">
 <ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.system$Types.html#spldoc_compilationunit__type__LogNotification">LogNotification</a></strong>: The LogNotification type specifies all attributes that are filled by the  <a class="xref" href="op$com.ibm.streamsx.monitoring.system$LogSource.html">LogSource</a> operator 
+</li>
+
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.system$Types.html#spldoc_compilationunit__type__SystemStatus">SystemStatus</a></strong>: The SystemStatus type specifies all attributes that are filled by the  <a class="xref" href="op$com.ibm.streamsx.monitoring.system$SystemMonitorSource.html">SystemMonitorSource</a> operator 
 </li>
 
@@ -116,6 +119,106 @@
 <div class="section">
    <p class="p">
 <tt class="ph tt">SystemStatus = tuple&lt;rstring status, float32 cpuUsage, float32 memUsage, int32 memTotal, int32 memUsed&gt;;</tt>
+   </p>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__type__LogNotification"><h2 class="title sectiontitle splpart">LogNotification</h2>
+  
+</div>
+<div class="section">
+
+<p class="p">The LogNotification type specifies all attributes that are filled by the  <a class="xref" href="op$com.ibm.streamsx.monitoring.system$LogSource.html">LogSource</a> operator
+</p>
+
+<div class="p">
+<ul class="ul">
+<li class="li"> <strong class="ph b">notifyType</strong>
+<p class="p">  The notification type com.ibm.streams.management.log.application.error or   com.ibm.streams.management.log.application.warning.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">domainId</strong>
+</p>
+
+<p class="p">  The domain ID.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">instanceId</strong>
+</p>
+
+<p class="p">  The <strong class="ph b">instanceId</strong> attribute specifies the unique instance   id for the domain.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">jobId</strong>
+</p>
+
+<p class="p">  Each job in an instances has a unique job id. See   <a class="xref" href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/jobids.html">IBM Knowledge Center</a>   for more details.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">resource</strong>
+</p>
+
+<p class="p">  The identifier of the resource on which the PE containing the operator is   running. This is typically the host name. See   <a class="xref" href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.jmxapi.doc/api/com/ibm/streams/management/job/OperatorMXBean.html?view=kc#getResource--">IBM Knowledge Center</a>   for more details.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">peId</strong>
+</p>
+
+<p class="p">  IBM Streams runs operators in processing elements (PE), which is an   operating system process that includes the operators and streams that   are defined in a data flow graph or subgraph of a stream processing   application. Each PE has a unique id that is assigned to the <strong class="ph b">peId</strong>   attribute. 
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">operatorName</strong>
+</p>
+
+<p class="p">  The name of the operator sending the log message.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">sequence</strong>
+</p>
+
+<p class="p">  The notification sequence number.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">eventTimestamp</strong>
+</p>
+
+<p class="p">  The notification timestamp.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">message</strong>
+</p>
+
+<p class="p">  The notification message. 
+</p>
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="section">
+   <p class="p">
+<tt class="ph tt">LogNotification = tuple&lt;rstring notifyType, rstring domainId, rstring instanceId, int64 jobId, rstring resource, int64 peId, rstring operatorName, int64 sequence, timestamp eventTimestamp, rstring message&gt;;</tt>
    </p>
 
 </div>
