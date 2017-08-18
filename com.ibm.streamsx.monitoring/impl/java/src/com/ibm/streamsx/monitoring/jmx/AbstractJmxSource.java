@@ -256,7 +256,8 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		String[] libraries = {
 				STREAMS_INSTALL + "/lib/com.ibm.streams.management.jmxmp.jar",
 				STREAMS_INSTALL + "/lib/com.ibm.streams.management.mx.jar",
-				STREAMS_INSTALL + "/ext/lib/jmxremote_optional.jar"
+				STREAMS_INSTALL + "/ext/lib/jmxremote_optional.jar",
+				STREAMS_INSTALL + "/ext/lib/JSON4J.jar"
 		};
 		try {
 			context.addClassLibraries(libraries);

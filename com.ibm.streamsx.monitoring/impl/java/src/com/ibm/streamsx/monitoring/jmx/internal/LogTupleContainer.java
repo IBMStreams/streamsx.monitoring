@@ -7,11 +7,11 @@
 
 package com.ibm.streamsx.monitoring.jmx.internal;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import javax.management.ObjectName;
 import javax.management.Notification;
 import com.ibm.streams.operator.Attribute;
 import com.ibm.streams.operator.OperatorContext;
@@ -38,6 +38,31 @@ public class LogTupleContainer {
 	private Integer _domainIdAttributeIndex = null;
 	
 	/**
+	 * Index of the instanceId attribute.
+	 */
+	private Integer _instanceIdAttributeIndex = null;
+
+	/**
+	 * Index of the jobId attribute.
+	 */
+	private Integer _jobIdAttributeIndex = null;
+
+	/**
+	 * Index of the resource attribute.
+	 */
+	private Integer _resourceAttributeIndex = null;
+
+	/**
+	 * Index of the peId attribute.
+	 */
+	private Integer _peIdAttributeIndex = null;		
+
+	/**
+	 * Index of the operatorName attribute.
+	 */
+	private Integer _operatorNameAttributeIndex = null;		
+	
+	/**
 	 * Index of the eventTimestamp attribute.
 	 */
 	private Integer _eventTimestampAttributeIndex = null;	
@@ -46,11 +71,6 @@ public class LogTupleContainer {
 	 * Index of the notifyType attribute.
 	 */
 	private Integer _notifyTypeAttributeIndex = null;	
-
-	/**
-	 * Index of the source attribute.
-	 */
-	private Integer _sourceAttributeIndex = null;
 	
 	/**
 	 * Index of the message attribute.
@@ -77,27 +97,46 @@ public class LogTupleContainer {
 		// Domain-related attributes.
 		if (_domainIdAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("domainId");
-			_domainIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+			_domainIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1);
+		}
+		// Instance-related attributes.
+		if (_instanceIdAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("instanceId");
+			_instanceIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1);
+		}
+		// Job-related attributes.
+		if (_jobIdAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("jobId");
+			_jobIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1);
+		}
+		// PE-related attributes.
+		if (_resourceAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("resource");
+			_resourceAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1);
+		}
+		if (_peIdAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("peId");
+			_peIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1);
+		}
+		if (_operatorNameAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("operatorName");
+			_operatorNameAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1);
 		}
 		if (_eventTimestampAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("eventTimestamp");
-			_eventTimestampAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.TIMESTAMP ? attribute.getIndex() : -1) ;
+			_eventTimestampAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.TIMESTAMP ? attribute.getIndex() : -1);
 		}
 		if (_notifyTypeAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("notifyType");
-			_notifyTypeAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+			_notifyTypeAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1);
 		}
-		if (_sourceAttributeIndex == null) {
-			Attribute attribute = schema.getAttribute("source");
-			_sourceAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
-		}		
 		if (_messageAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("message");
-			_messageAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
+			_messageAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1);
 		}
 		if (_sequenceAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("sequence");
-			_sequenceAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1) ;
+			_sequenceAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1);
 		}		
 	}
 	
@@ -114,10 +153,21 @@ public class LogTupleContainer {
 	 */
 	public Tuple getTuple(
 			final Notification notification,
-			final String domainId) {
+			final String domainId,
+			final String instance,
+			final String resource,
+			final BigInteger pe,
+			final BigInteger job,
+			final String operator) {
 		return _port.getStreamSchema().getTuple(getAttributes(
 				notification,
-				domainId));
+				domainId,
+				instance,
+				resource,
+				pe,
+				job,
+				operator				
+				));
 	}
 	
 	/**
@@ -128,7 +178,13 @@ public class LogTupleContainer {
 	 */
 	protected Map<String, Object> getAttributes(
 			final Notification notification,
-			final String domainId) {
+			final String domainId,
+			final String instanceId,
+			final String resource,
+			final BigInteger peId,
+			final BigInteger jobId,
+			final String operator
+			) {
 		
 		final Map<String, Object> attributes = new HashMap<String, Object>();
 		
@@ -137,7 +193,31 @@ public class LogTupleContainer {
 				attributes.put("domainId", new RString(domainId));
 			}
 		}
-
+		if (_instanceIdAttributeIndex != -1) {
+			if (instanceId != null) {
+				attributes.put("instanceId", new RString(instanceId));
+			}
+		}
+		if (_jobIdAttributeIndex != -1) {
+			if (jobId != null) {
+				attributes.put("jobId", jobId.longValue());
+			}
+		}
+		if (_resourceAttributeIndex != -1) {
+			if (resource != null) {
+				attributes.put("resource", new RString(resource));
+			}
+		}
+		if (_peIdAttributeIndex != -1) {
+			if (peId != null) {
+				attributes.put("peId", peId.longValue());
+			}
+		}
+		if (_operatorNameAttributeIndex != -1) {
+			if (operator != null) {
+				attributes.put("operatorName", new RString(operator));
+			}
+		}
 		if (_eventTimestampAttributeIndex != -1) {
 			attributes.put("eventTimestamp", Timestamp.getTimestamp(notification.getTimeStamp()));
 		}
@@ -147,17 +227,7 @@ public class LogTupleContainer {
 		if (_sequenceAttributeIndex != -1) {
 			attributes.put("sequence", notification.getSequenceNumber());
 		}
-		if (_sourceAttributeIndex != -1) {
-			Object source = notification.getSource();
-			String ssource;
-			if (source instanceof ObjectName) {
-				ssource = ((ObjectName) source).getCanonicalName();
-			}
-			else {
-				ssource = source.toString();
-			}
-			attributes.put("source", new RString(ssource));
-		}
+
 		if (_messageAttributeIndex != -1) {
 			if (notification.getMessage() != null) {
 				attributes.put("message", new RString(notification.getMessage()));
