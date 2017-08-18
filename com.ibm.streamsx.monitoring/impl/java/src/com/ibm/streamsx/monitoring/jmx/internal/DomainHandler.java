@@ -13,16 +13,22 @@ import javax.management.NotificationListener;
 
 import org.apache.log4j.Logger;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.JMX;
 import javax.management.ObjectName;
+
+import com.ibm.json.java.JSON;
+import com.ibm.json.java.JSONObject;
 import com.ibm.streams.management.Notifications;
 import com.ibm.streams.management.ObjectNameBuilder;
 import com.ibm.streams.management.domain.DomainMXBean;
+import com.ibm.streams.operator.Tuple;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration;
+import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 
 /**
  * Listen for the following domain notifications:
@@ -75,8 +81,14 @@ public class DomainHandler implements NotificationListener, Closeable {
 		 * Register to get domain-related notifications.
 		 */
 		NotificationFilterSupport filter = new NotificationFilterSupport();
-		filter.enableType(Notifications.INSTANCE_CREATED);
-		filter.enableType(Notifications.INSTANCE_DELETED);
+		if (OpType.LOG_SOURCE == _operatorConfiguration.get_OperatorType()) {
+			filter.enableType("com.ibm.streams.management.log.application.error");
+			filter.enableType("com.ibm.streams.management.log.application.warning");		
+		}
+		else {
+			filter.enableType(Notifications.INSTANCE_CREATED);
+			filter.enableType(Notifications.INSTANCE_DELETED);
+		}
 		try {
 			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(_objName, this, filter, null);
 		} catch (InstanceNotFoundException e) {
@@ -86,11 +98,13 @@ public class DomainHandler implements NotificationListener, Closeable {
 		}
 //	TODO      jmxc.addConnectionNotificationListener(this, null, null); // listen for potential lost notifications
 		
-		/*
-		 * Register existing instances.
-		 */
-		for(String instanceId : _domain.getInstances()) {
-			addValidInstance(instanceId);
+		if (OpType.LOG_SOURCE != _operatorConfiguration.get_OperatorType()) {
+			/*
+			 * Register existing instances.
+			 */
+			for(String instanceId : _domain.getInstances()) {
+				addValidInstance(instanceId);
+			}
 		}
 		
 	}
@@ -135,7 +149,27 @@ public class DomainHandler implements NotificationListener, Closeable {
 			}
 		}
 		else {
-			_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+			if ((OpType.LOG_SOURCE == _operatorConfiguration.get_OperatorType()) &&
+				(notification.getType().contains("com.ibm.streams.management.log.application"))) {
+				// emit tuple
+				try {
+					JSONObject obj = (JSONObject)JSON.parse(notification.getUserData().toString());
+					String instance = obj.get("instance").toString();
+					String resource = obj.get("resource").toString();
+					BigInteger pe = new BigInteger(obj.get("pe").toString());
+					BigInteger job = new BigInteger(obj.get("job").toString());
+					String operator = obj.get("operator").toString();
+
+					final Tuple tuple = _operatorConfiguration.get_tupleContainerLogSource().getTuple(notification, _domainId, instance, resource, pe, job, operator);
+					_operatorConfiguration.get_tupleContainerLogSource().submit(tuple);
+				}
+				catch (Exception e) {
+					_trace.error("Error in parsing userData: " + e);
+				}
+			}
+			else {
+				_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+			}
 		}
 	}
 

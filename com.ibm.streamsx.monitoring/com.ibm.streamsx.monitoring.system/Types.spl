@@ -45,3 +45,70 @@ type SystemStatus = tuple<
 	int32 memUsed
 >;
 
+/**
+ * The LogNotification type specifies all attributes that are filled by the 
+ * [com.ibm.streamsx.monitoring.system::LogSource|LogSource] operator
+ * 
+ * * **notifyType**
+ * 
+ *   The notification type com.ibm.streams.management.log.application.error or
+ *   com.ibm.streams.management.log.application.warning.
+ * 
+ * * **domainId**
+ * 
+ *   The domain ID.
+ * 
+ * * **instanceId**
+ * 
+ *   The **instanceId** attribute specifies the unique instance
+ *   id for the domain.
+ * 
+ * * **jobId**
+ * 
+ *   Each job in an instances has a unique job id. See
+ *   [http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/jobids.html|IBM Knowledge Center]
+ *   for more details.
+ * 
+ * * **resource**
+ * 
+ *   The identifier of the resource on which the PE containing the operator is
+ *   running. This is typically the host name. See
+ *   [http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.jmxapi.doc/api/com/ibm/streams/management/job/OperatorMXBean.html?view=kc#getResource--|IBM Knowledge Center]
+ *   for more details.
+ * 
+ * * **peId**
+ * 
+ *   IBM Streams runs operators in processing elements (PE), which is an
+ *   operating system process that includes the operators and streams that
+ *   are defined in a data flow graph or subgraph of a stream processing
+ *   application. Each PE has a unique id that is assigned to the **peId**
+ *   attribute. 
+ *
+ * * **operatorName**
+ * 
+ *   The name of the operator sending the log message.
+ *  
+ * * **sequence**
+ * 
+ *   The notification sequence number.
+ * 
+ * * **eventTimestamp**
+ * 
+ *   The notification timestamp.
+ * 
+ * * **message**
+ * 
+ *   The notification message.
+ */
+type LogNotification = tuple<
+	rstring notifyType,
+	rstring domainId,	
+	rstring instanceId,
+	int64 jobId,
+	rstring resource,
+	int64 peId,
+	rstring operatorName,
+	int64 sequence,
+	timestamp eventTimestamp,
+	rstring message
+>;

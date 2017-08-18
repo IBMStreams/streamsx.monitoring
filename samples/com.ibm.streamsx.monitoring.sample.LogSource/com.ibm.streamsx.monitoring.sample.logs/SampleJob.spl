@@ -1,0 +1,37 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+namespace com.ibm.streamsx.monitoring.sample.logs;
+
+/**
+ * This application is monitored by the Monitor application creates application logs
+ */
+
+public composite SampleJob
+{
+
+	graph
+
+		stream<boolean dummy> Triggers as O = Beacon() {
+			param
+				period: 1.0;
+		}
+		
+		() as Logger = Custom(Triggers as I) {
+			logic
+				state: {
+					mutable int64 count = 0l;
+				}
+				onTuple I: {
+					count++;
+					appLog(Log.error, "This is error log #."+(rstring)count);
+					block((float64)1ul);
+					appLog(Log.warn, "This is warning log #."+(rstring)count);
+				}			
+		}
+
+}

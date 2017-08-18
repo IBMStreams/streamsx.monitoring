@@ -33,6 +33,7 @@ import com.ibm.streams.operator.model.Parameter;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 import com.ibm.streamsx.monitoring.jmx.internal.DomainHandler;
 import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
+import com.ibm.streamsx.monitoring.jmx.internal.LogTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.MetricsTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.filters.Filters;
 
@@ -205,18 +206,22 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		 * parameters supplied to the operator invocation, or external
 		 * configuration files or a combination of the two. 
 		 */
-
-		setupFilters();
-		boolean isValidDomain = _operatorConfiguration.get_filters().matchesDomainId(_operatorConfiguration.get_domainId());
-		if (!isValidDomain) {
-			throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domainId() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
-		}
+		if (OpType.LOG_SOURCE != _operatorConfiguration.get_OperatorType()) {
+			setupFilters();
+			boolean isValidDomain = _operatorConfiguration.get_filters().matchesDomainId(_operatorConfiguration.get_domainId());
+			if (!isValidDomain) {
+				throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domainId() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
+			}
+		}		
 		
 		setupJMXConnection();
 
 		final StreamingOutput<OutputTuple> port = getOutput(0);
 		if (OpType.JOB_STATUS_SOURCE == _operatorConfiguration.get_OperatorType()) {
 			_operatorConfiguration.set_tupleContainerJobStatusSource(new JobStatusTupleContainer(getOperatorContext(), port));
+		}
+		if (OpType.LOG_SOURCE == _operatorConfiguration.get_OperatorType()) {
+			_operatorConfiguration.set_tupleContainerLogSource(new LogTupleContainer(getOperatorContext(), port));
 		}
 		if (OpType.METRICS_SOURCE == _operatorConfiguration.get_OperatorType()) {			
 			_operatorConfiguration.set_tupleContainerMetricsSource(new MetricsTupleContainer(port));
@@ -251,7 +256,8 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		String[] libraries = {
 				STREAMS_INSTALL + "/lib/com.ibm.streams.management.jmxmp.jar",
 				STREAMS_INSTALL + "/lib/com.ibm.streams.management.mx.jar",
-				STREAMS_INSTALL + "/ext/lib/jmxremote_optional.jar"
+				STREAMS_INSTALL + "/ext/lib/jmxremote_optional.jar",
+				STREAMS_INSTALL + "/ext/lib/JSON4J.jar"
 		};
 		try {
 			context.addClassLibraries(libraries);
