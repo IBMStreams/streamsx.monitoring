@@ -338,15 +338,16 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		/*
 		 * Setup the JMX connector and MBean connection.
 		 */
-		String[] urls = connectionURL.split(","); // comma separated list of JMX servers is supported 
-		for (int i=0; i<urls.length; i++) {
+		String[] urls = connectionURL.split(","); // comma separated list of JMX servers is supported
+		// In Streaming Analytics service the variable urls contains 3 JMX servers. The third JMX is the prefered one. 
+		for (int i=urls.length-1; i>=0; i--) {
 			try {
 				_trace.info("Connect to : " + urls[i]);
 				_operatorConfiguration.set_jmxConnector(JMXConnectorFactory.connect(new JMXServiceURL(urls[i]), env));
 				break; // exit loop here since a valid connection is established, otherwise exception is thrown.
 			} catch (IOException e) {
 				_trace.warn("Exception: " + e.getMessage());
-				if (i == urls.length-1) {
+				if (i == 0) {
 					throw e;
 				}
 			}
