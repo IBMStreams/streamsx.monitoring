@@ -14,6 +14,7 @@ description              : &description "toolkit site description."
 url                      : https://rnostream.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "/toolkit-theme-2" # the subpath of your site, e.g. "/blog"
 repository               : "rnostream/toolkit-theme-2" # GitHub username/repo-name
+github_base_url          : "https://github.com" # your github server, will differ when enterprise github
 github_editme_path       : https://github.com/rnostream/toolkit-theme-2/blob/master
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 # breadcrumbs            : false # true, false (default)
