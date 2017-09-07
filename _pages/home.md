@@ -7,7 +7,7 @@ header:
   # cta_label: "<i class='fa fa-download'></i> Install Now"
   # cta_url: "/docs/quick-start-guide/"
   caption:
-excerpt: 'A toolkit providing great features you already missed when developing Streams applications. Features as "a miracle" or "like a wonder" or "unbelievable"<br />' # '<small><a href="https://github.com/mmistakes/minimal-mistakes/releases/tag/4.5.0">Latest release v4.5.0</a></small><br /><br />'
+# excerpt: 'A toolkit providing great features you already missed when developing Streams applications. Features as "a miracle" or "like a wonder" or "unbelievable"<br />'
 feature_row:
   - image_path: # /assets/images/123.png
     # alt: "usage domain"
