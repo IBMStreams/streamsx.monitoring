@@ -2,9 +2,9 @@
 main:
   - title: "Domain Knowledge"
     url: /docs/knowledge/overview/
-  - title: "User Docu"
+  - title: "User Documentation"
     url: /docs/user/overview
-  - title: "Developer Docu"
+  - title: "Developer Documentation"
     url: /docs/developer/overview
   # - title: "Sample Collections"
   #   url: /collection-archive/
