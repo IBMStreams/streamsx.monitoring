@@ -192,8 +192,9 @@ defaults:
     values:
       layout: single
       author_profile: true
-      header.cta_url: *default_cta_url
-      header.cta_label: "SPLDOC"
+      header:
+        cta_url: *default_cta_url
+        cta_label: "SPLDOC"
       excerpt: *default_excerpt
   # _docs
   - scope:
