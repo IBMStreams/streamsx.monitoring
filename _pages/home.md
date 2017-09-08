@@ -12,19 +12,25 @@ feature_row:
   - image_path: # /assets/images/123.png
     # alt: "usage domain"
     title: "When to use the toolkit"
-    excerpt: "Explains the use case when you would need this toolkit. Gives you domain specific background if necessary.<br /><small><a href='/docs/knowledge/overview/'>read more</a></small>"
+    excerpt: "Explains the use case when you would need this toolkit. Gives you domain specific background if necessary."
+    link_url: "/docs/knowledge/overview/"
+    link_label: "Learn More"
     # url: "/docs/knowledge/overview/"
     # btn_label: "Learn More"
   - image_path: # /assets/images/123.png
     # alt: "How to use"
     title: "How to use the toolkit"
-    excerpt: "Everything around building Streams applications with the help of this toolkit. <br /><small><a href='/docs/user/overview/'>read more</a></small>"
+    excerpt: "Everything around building Streams applications with the help of this toolkit."
+    link_url: "/docs/user/overview/"
+    link_label: "Learn More"
     # url: "/docs/user/overview/"
     # btn_label: "Learn More"
   - image_path: # /assets/images/123.png
     # alt: "Extend the toolkit"
     title: "How to contribute"
-    excerpt: "Everything necessary to contribute in the process of extending this toolkits: requirements, design, implementation, test and docu.<br/><small><a href='/docs/developer/overview/'>read more</a></small>"
+    excerpt: "Everything necessary to contribute in the process of extending this toolkits: requirements, design, implementation, test and docu."
+    link_url: "/docs/developer/overview/"
+    link_label: "Learn More"
     # url: "/docs/developer/overview/"
     # btn_label: "Learn More"
 ---
