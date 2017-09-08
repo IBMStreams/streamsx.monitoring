@@ -14,6 +14,12 @@
       {% capture f_url %}{{ f.url | absolute_url }}{% endcapture %}
     {% endif %}
 
+    {% if f.link_url contains "://" %}
+      {% capture f_linkurl %}{{ f.link_url }}{% endcapture %}
+    {% else %}
+      {% capture f_linkurl %}{{ f.link_url | absolute_url }}{% endcapture %}
+    {% endif %}
+
     <div class="feature__item{% if include.type %}--{{ include.type }}{% endif %}">
       <div class="archive__item">
         {% if f.image_path %}
@@ -37,6 +43,10 @@
             <div class="archive__item-excerpt">
               {{ f.excerpt | markdownify }}
             </div>
+          {% endif %}
+
+          {% if f.link_url %}
+            <p><a href="{{ f_linkurl }}">{{ f.link_label | default: site.data.ui-text[site.locale].more_label | default: "Learn More" }}</a></p>
           {% endif %}
 
           {% if f.url %}
