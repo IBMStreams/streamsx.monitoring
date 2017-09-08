@@ -46,7 +46,7 @@
           {% endif %}
 
           {% if f.link_url %}
-            <p><a href="{{ f_linkurl }}">{{ f.link_label | default: site.data.ui-text[site.locale].more_label | default: "Learn More" }}</a></p>
+            <small><a href="{{ f_linkurl }}">{{ f.link_label | default: site.data.ui-text[site.locale].more_label | default: "Learn More" }}</a></small>
           {% endif %}
 
           {% if f.url %}
