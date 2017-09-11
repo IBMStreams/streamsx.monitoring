@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="SPL File Types.spl"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_compilationunit"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>SPL File Types.spl</title>
+</head>
+<body id="spldoc_compilationunit">
+
+
+<h1 class="title topictitle1">SPL File <tt class="ph tt">Types.spl</tt></h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.4.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.metrics.html">com.ibm.streamsx.monitoring.metrics</a> &gt; Types.spl</p>
+
+</div>
+
+<div class="section">
+
+<p class="p">Some useful type definitions for use with the <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">com.ibm.streamsx.monitoring.metrics::MetricsSource</a> operator. 
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Content</h2>
+  
+  <dl class="dl">
+    <dt class="dt dlterm"/>
+<dd class="dd"/>
+
+    
+      <dt class="dt dlterm splhead-2">Types</dt>
+
+      <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__type__Notification">Notification</a></strong>: The notification type specifies all attributes that can be used to uniquely identify a changed metric value, starting with the domain and instance ids, job and other information, and finally the metric name and its value.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__composite_type__Origin.Type">Origin.Type</a></strong>: The origin type specifies the metric owner, which can be following: 
+</li>
+
+</ul>
+
+      </dd>
+
+    
+  </dl>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Composites</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__Origin"><h2 class="title sectiontitle splpart">composite Origin</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">The Origin composite wraps the contained Type enumeration to prevent name clashes. 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Static Types</h2>
+  
+</div>
+
+   <div class="section" id="spldoc_compilationunit__composite_type__Origin.Type">
+     <dl class="dl">
+       
+         <dt class="dt dlterm">Origin.Type = enum { Operator, OperatorInputPort, OperatorOutputPort, Pe, PeInputPort, PeOutputPort, PeConnection };</dt>
+
+         <dd class="dd">
+<p class="p">The origin type specifies the metric owner, which can be following:
+</p>
+
+<div class="p">
+<ul class="ul">
+<li class="li"> <strong class="ph b">Operator</strong>
+<p class="p">  The operator that is specified with the operatorName attribute, owns   custom metrics.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">OperatorInputPort</strong>
+</p>
+
+<p class="p">  An operator's input port owns metrics that describe, for example, the   number of processed, dropped, or queued tuples. The portIndex attribute   specifies the index of the port.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">OperatorOutputPort</strong>
+</p>
+
+<p class="p">  An operator's output port owns metrics that describe, for example, the   number of submitted tuples or markers. The portIndex attribute   specifies the index of the port.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">Pe</strong>
+</p>
+
+<p class="p">  The PE that is specified with the peId attribute, owns   system metrics.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">PeInputPort</strong>
+</p>
+
+<p class="p">  A PE's input port owns metrics that describe, for example, the   number of processed, dropped, or queued tuples. The portIndex attribute   specifies the index of the port.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">PeOutputPort</strong>
+</p>
+
+<p class="p">  A PE's output port owns metrics that describe, for example, the   number of submitted tuples or markers. The portIndex attribute   specifies the index of the port.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">PeConnection</strong>
+</p>
+
+<div class="p">  A PE's output port has connection metrics that describe, for 
+<pre class="pre codeblock">
+ example, the congestionFactor or nTuplesFilteredOut. The connectionId 
+</pre>
+
+  attribute specifies the ID of the PE connection.
+</div>
+</li>
+
+</ul>
+
+</div>
+
+<p class="p">See <a class="xref" href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/metricaccess.html">Metrics Access</a> in IBM's Knowledge Center for further details. 
+</p>
+</dd>
+
+       
+     </dl>
+
+   </div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Types</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__type__Notification"><h2 class="title sectiontitle splpart">Notification</h2>
+  
+</div>
+<div class="section">
+
+<p class="p">The notification type specifies all attributes that can be used to uniquely identify a changed metric value, starting with the domain and instance ids, job and other information, and finally the metric name and its value.
+</p>
+
+<p class="p">The attribute names are fixed but if you are not interested in all information, create your own type with a subset of attributes. The <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">MetricsSource</a> operator takes care to set existing attributes only.
+</p>
+
+<div class="p">
+<ul class="ul">
+<li class="li"> <strong class="ph b">domainId</strong>
+<p class="p">  The metric belongs to a job that is running in a domain. The <strong class="ph b">domainId</strong>   attribute specifies the unique domain id.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">instanceId</strong>
+</p>
+
+<p class="p">  The metric belongs to a job that is running in an instance that belongs   to a domain. The <strong class="ph b">instanceId</strong> attribute specifies the unique instance   id for the domain.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">jobId</strong>
+</p>
+
+<p class="p">  Each job in an instances has a unique job id. See   <a class="xref" href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/jobids.html">IBM Knowledge Center</a>   for more details.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">jobName</strong>
+</p>
+
+<p class="p">  Each job in an instances has a unique name that is either specifies by the   user, or automatically assigned during submission-time. See   <a class="xref" href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/jobids.html">IBM Knowledge Center</a>   for more details.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">resource</strong>
+</p>
+
+<p class="p">  The identifier of the resource on which the PE containing the operator is   running. This is typically the host name. See   <a class="xref" href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.jmxapi.doc/api/com/ibm/streams/management/job/OperatorMXBean.html?view=kc#getResource--">IBM Knowledge Center</a>   for more details.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">peId</strong>
+</p>
+
+<p class="p">  IBM Streams runs operators in processing elements (PE), which is an   operating system process that includes the operators and streams that   are defined in a data flow graph or subgraph of a stream processing   application. Each PE has a unique id that is assigned to the <strong class="ph b">peId</strong>   attribute.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">origin</strong>
+</p>
+
+<p class="p">  A unique id that specifies the origin of a metric. See <a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__composite_operator__Origin">com.ibm.streamsx.monitoring.metrics::Origin</a>   for more details.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">operatorName</strong>
+</p>
+
+<p class="p">  If the metric belongs to an operator or its input or output ports, the   <strong class="ph b">operatorName</strong> attribute is set to the name of the operator. The   <strong class="ph b">origin</strong> attribute is set to either Operator, OperatorInputPort, or   OperatorOutputPort. For other origins, the attribute value is an empty   string.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">channel</strong>
+</p>
+
+<p class="p">  If the metric belongs to an @parallel-annotated operator or its input or   output ports, the <strong class="ph b">channel</strong> attribute holds to the channel of the   operator. Else, the attribute value is set to -1.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">portIndex</strong>
+</p>
+
+<p class="p">  If the metric belongs to an input or output port, the attribute holds the   index of this port. Else, the attribute is set to 0.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">connectionId</strong>
+</p>
+
+<p class="p">  If the metric belongs to a connection, the attribute holds the   ID of this connection.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">metricType</strong>
+</p>
+
+<p class="p">  A string that identifies the type of metric. Some possible values for this   property include system, custom, and unknown.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">metricKind</strong>
+</p>
+
+<p class="p">  A string that identifies the kind of metric. Some possible values for this   property include counter, gauge, time, and unknown
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">metricName</strong>
+</p>
+
+<p class="p">  The name of the metric.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">metricValue</strong>
+</p>
+
+<p class="p">  The current value of the metric.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">lastTimeRetrieved</strong>
+</p>
+
+<p class="p">  The time when the metric information was retrieved as milliseconds since   the epoch or zero if metrics have never been retrieved from the PE.
+</p>
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="section">
+   <p class="p">
+<tt class="ph tt">Notification = tuple&lt;rstring domainId, rstring instanceId, int64 jobId, rstring jobName, rstring resource, int64 peId, Origin.Type origin, rstring operatorName, int32 channel, int32 portIndex, rstring connectionId, rstring metricType, rstring metricKind, rstring metricName, int64 metricValue, int64 lastTimeRetrieved&gt;;</tt>
+   </p>
+
+</div>
+
+</div>
+
+
+</body>
+</html>

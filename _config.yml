@@ -7,17 +7,17 @@
 
 # Site Settings
 locale                   : "en"
-title                    : &toolkit "toolkit.xyz"
+title                    : &toolkit "streamsx.monitoring"
 title_separator          : "-"
-name                     : &name "Ronald Nordhausen" # &name is a YAML anchor which can be *referenced later
+name                     : &name "IBM Streams" # &name is a YAML anchor which can be *referenced later
 description              : &description "toolkit site description."
-url                      : https://rnostream.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
-baseurl                  : "/toolkit-theme-2" # the subpath of your site, e.g. "/blog"
-repository               : "rnostream/toolkit-theme-2" # GitHub username/repo-name
+url                      : https://ibmstreams.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+baseurl                  : "/streamsx.monitoring" # the subpath of your site, e.g. "/blog"
+repository               : "IBMStreams/streamsx.monitoring" # GitHub username/repo-name
 github_base_url          : "https://github.com" # your github server, will differ when enterprise github
-github_editme_path       : https://github.com/rnostream/toolkit-theme-2/blob/master
+github_editme_path       : https://github.com/IBMStreams/streamsx.monitoring/blob/gh-pages
 spldoc_path              : &default_cta_url "/doc/spldoc/html"
-toolkit_excerpt          : &default_excerpt "This is a short excert about the toolkit"
+toolkit_excerpt          : &default_excerpt "The com.ibm.streamsx.monitoring toolkit provides capabilities to create applications that monitor IBM Streams and its applications."
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 # breadcrumbs            : false # true, false (default)
 words_per_minute         : 200
