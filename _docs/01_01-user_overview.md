@@ -16,5 +16,7 @@ sidebar:
 
 [SPLDoc for the com.ibm.streamsx.monitoring toolkit](https://ibmstreams.github.io/streamsx.monitoring/doc/spldoc/html/index.html)
 
+## Getting Started
 
-
+Follow the instructions [Building the toolkit](https://ibmstreams.github.io/streamsx.monitoring/docs/developer/overview/) if you like to build the toolkit.
+Otherwise download and extract a [release](https://github.com/IBMStreams/streamsx.monitoring/releases).
