@@ -18,6 +18,7 @@ use com.ibm.streamsx.monitoring.metrics::MetricsSource;
 use com.ibm.streamsx.monitoring.metrics::Notification;
 
 composite Main {
+
 	type
 		MemoryMetric = tuple<
 			rstring metricName,
@@ -36,13 +37,11 @@ composite Main {
 		 */
 		stream<MemoryMetric> ChangeNotifications as O = MetricsSource() {
 			param
-				connectionURL: getSubmissionTimeValue("connectionURL");
-				user: getSubmissionTimeValue("user");
-				password: getSubmissionTimeValue("password");
-				domainId: getSubmissionTimeValue("domainId");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
 				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorMemoryMetrics.json";
 				emitMetricTuple: onChangedValue;
+				user: getSubmissionTimeValue("user");
+				password: getSubmissionTimeValue("password");
 		}
 		
 		/*

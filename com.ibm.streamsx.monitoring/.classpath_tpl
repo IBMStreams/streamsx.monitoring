@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="@STREAMS_INSTALL@/lib/com.ibm.streams.management.jmxmp.jar"/>
 	<classpathentry kind="lib" path="@STREAMS_INSTALL@/lib/com.ibm.streams.management.mx.jar"/>
 	<classpathentry kind="lib" path="@STREAMS_INSTALL@/ext/lib/jmxremote_optional.jar"/>
+	<classpathentry kind="lib" path="@STREAMS_INSTALL@/ext/lib/JSON4J.jar"/>
 	<classpathentry kind="output" path="impl/java/build"/>
 </classpath>

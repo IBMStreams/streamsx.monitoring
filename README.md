@@ -5,10 +5,7 @@ The **com.ibm.streamsx.monitoring** provides capabilities to create applications
 The toolkit contains operators that uses the **JMX API** to monitor applications:
 * **com.ibm.streamsx.monitoring.metrics::MetricsSource** retrieves metrics from one or more jobs and provides them as tuple stream.
 * **com.ibm.streamsx.monitoring.jobs::JobStatusSource** receives notifications of PE status changes from one or more jobs and provides them as tuple stream.
-
-## Getting Started
-
-https://github.com/IBMStreams/streamsx.monitoring/wiki/Getting-Started
+* **com.ibm.streamsx.monitoring.system::LogSource** receives notifications of application error and warning logs and provides them as tuple stream.
 
 ## Documentation
 
