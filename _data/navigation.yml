@@ -20,6 +20,10 @@ userdocs:
     children:
       - title: "Overview"
         url: /docs/user/overview
+      - title: "Build and launch sample application"
+        url: /docs/user/sample
+      - title: "Migration Document"
+        url: /docs/user/migration
 
 # developer documentation links
 developerdocs:
