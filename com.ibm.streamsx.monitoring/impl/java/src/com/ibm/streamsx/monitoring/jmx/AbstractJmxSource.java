@@ -97,6 +97,8 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	protected static final Object PARAMETER_SSL_OPTION = "sslOption";
 
 	protected static final Object PARAMETER_FILTER_DOCUMENT = "filterDocument";
+	
+	protected static final Object PARAMETER_DOMAIN_ID = "domainId";
 
 	protected static final String MISSING_VALUE = "The following value must be specified as parameter or in the application configuration: ";
 
@@ -195,8 +197,15 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			if (context.getPE().isStandalone()) {
 				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id.");
 			}
-			_operatorConfiguration.set_domainId(context.getPE().getDomainId());
-			_trace.info("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
+			String domainId = getApplicationConfigurationDomainId();
+			if (domainId != "") {
+				_operatorConfiguration.set_domainId(domainId);
+				_trace.info("The " + context.getName() + " operator connects to the " + _operatorConfiguration.get_domainId() + " domain specified by application configuration.");				
+			}
+			else {
+				_operatorConfiguration.set_domainId(context.getPE().getDomainId());
+				_trace.info("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
+			}
 		}
 		_domainId = context.getPE().getDomainId();
 
@@ -266,6 +275,18 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			_trace.error("problem while adding class libraries: " + String.join(",", libraries), e);
 			throw e;
 		}
+	}
+	
+	protected String getApplicationConfigurationDomainId() {
+		String result = "";
+		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+		if (applicationConfigurationName != null) {
+			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
+			if (properties.containsKey(PARAMETER_DOMAIN_ID)) {
+				result = properties.get(PARAMETER_DOMAIN_ID);
+			}
+		}
+		return result;
 	}
 
 	/**
