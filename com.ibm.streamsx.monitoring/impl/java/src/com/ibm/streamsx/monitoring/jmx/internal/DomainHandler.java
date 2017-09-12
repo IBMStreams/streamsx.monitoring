@@ -108,6 +108,16 @@ public class DomainHandler implements NotificationListener, Closeable {
 		}
 		
 	}
+	
+	public void healthCheck() {
+		if (_trace.isDebugEnabled()) {
+			_trace.debug("healthCheck");
+		}
+		com.ibm.streams.management.domain.DomainMXBean.Status status = _domain.getStatus();
+		if (_trace.isDebugEnabled()) {
+			_trace.debug("DomainMXBean.Status="+status.toString());
+		}
+	}
 
 	/**
 	 * {@inheritDoc}

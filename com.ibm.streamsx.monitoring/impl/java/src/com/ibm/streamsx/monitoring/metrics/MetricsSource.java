@@ -7,12 +7,11 @@
 
 package com.ibm.streamsx.monitoring.metrics;
 
+
 import org.apache.log4j.Logger;
 import com.ibm.streams.operator.OperatorContext;
 import com.ibm.streams.operator.OperatorContext.ContextCheck;
-import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.StreamingData.Punctuation;
-import com.ibm.streams.operator.StreamingOutput;
 import com.ibm.streams.operator.model.Icons;
 import com.ibm.streams.operator.model.OutputPortSet;
 import com.ibm.streams.operator.model.OutputPortSet.WindowPunctuationOutputMode;
@@ -25,7 +24,6 @@ import com.ibm.streamsx.monitoring.messages.Messages;
 import com.ibm.streamsx.monitoring.jmx.AbstractJmxSource;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 import com.ibm.streamsx.monitoring.jmx.internal.EmitMetricTupleMode;
-import com.ibm.streamsx.monitoring.jmx.internal.MetricsTupleContainer;
 
 /**
  * A source operator that does not receive any input streams and produces new tuples. 
@@ -374,11 +372,30 @@ public class MetricsSource extends AbstractJmxSource {
 	 */
 	private void produceTuples() throws Exception  {
 		boolean quit = false;
+		boolean connected = true;
 		while(!quit) {
-			detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
 			
-			_domainHandler.captureMetrics();
-			
+			try {
+				if (!connected) {
+					_trace.warn("Reconnect");
+					setupJMXConnection();
+					connected = true;
+					scanDomain(); // create new DomainHandler
+				}
+
+				detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
+
+				if (connected) {
+					_domainHandler.healthCheck();					
+					_domainHandler.captureMetrics();
+				}
+			}
+			catch (Exception e) {
+				_trace.error("JMX connection error ", e);
+				connected = false;
+				closeDomainHandler();
+				setupFilters();
+			}
 			/*
 			 * Emit a window marker after each scan cycle.
 			 */

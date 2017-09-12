@@ -8,12 +8,10 @@
 package com.ibm.streamsx.monitoring.jmx;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -367,7 +365,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				_operatorConfiguration.set_jmxConnector(JMXConnectorFactory.connect(new JMXServiceURL(urls[i]), env));
 				break; // exit loop here since a valid connection is established, otherwise exception is thrown.
 			} catch (IOException e) {
-				_trace.warn("Exception: " + e.getMessage());
+				_trace.error("connect failed: " + e.getMessage());
 				if (i == 0) {
 					throw e;
 				}
@@ -527,5 +525,15 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		}
 		return sslOption;
 	}	
+
+	protected void closeDomainHandler() {
+		try {
+			_domainHandler.close();
+		}
+		catch (Exception ignore) {
+		}
+		_domainHandler = null;
+	}
+	
 	
 }
