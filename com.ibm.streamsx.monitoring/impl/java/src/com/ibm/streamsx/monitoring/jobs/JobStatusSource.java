@@ -21,7 +21,6 @@ import com.ibm.streams.operator.compile.OperatorContextChecker;
 import com.ibm.streams.operator.state.ConsistentRegionContext;
 import com.ibm.streamsx.monitoring.jmx.AbstractJmxSource;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
-import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
 import com.ibm.streamsx.monitoring.messages.Messages;
 import java.util.concurrent.TimeUnit;
 
@@ -206,6 +205,8 @@ public class JobStatusSource extends AbstractJmxSource {
 	 */
 	private static Logger _trace = Logger.getLogger(JobStatusSource.class.getName());
 	
+	private boolean _connected = true;
+	
 	@Parameter(
 			optional=true,
 			description=JobStatusSource.DESC_PARAM_FILTER_DOCUMENT
@@ -247,26 +248,37 @@ public class JobStatusSource extends AbstractJmxSource {
 		super.initialize(context);
 
 		/*
-		 * Enable scheduled service for checking application configuration updates,
-		 * if application configuration is configured.
-		 */		
-		if (_operatorConfiguration.get_applicationConfigurationName() != null) {
-			java.util.concurrent.ScheduledExecutorService scheduler = getOperatorContext().getScheduledExecutorService();
-			scheduler.scheduleWithFixedDelay(
-					new Runnable() {
-						@Override
-						public void run() {
-							try {
-								detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
-							} catch (Exception e) {
-								_trace.error("Operator error", e);
-							}                    
+		 * Enable scheduled service for checking application configuration updates
+		 * and for JMX connection health check
+		 */				
+		java.util.concurrent.ScheduledExecutorService scheduler = getOperatorContext().getScheduledExecutorService();
+		scheduler.scheduleWithFixedDelay(
+				new Runnable() {
+					@Override
+					public void run() {
+						try {
+							if (!_connected) {
+								_trace.warn("Reconnect");
+								setupJMXConnection();
+								_connected = true;
+								scanDomain(); // create new DomainHandler
+							}
+
+							if (_connected) {
+								_domainHandler.healthCheck();
+								
+								if (_operatorConfiguration.get_applicationConfigurationName() != null) {
+									detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
+								}
+							}
 						}
-					}, 3000l, Double.valueOf(_operatorConfiguration.get_scanPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);
-		}
-		else {
-			createAvoidCompletionThread();
-		}
+						catch (Exception e) {
+							_trace.error("JMX connection error ", e);
+							_connected = false;
+							closeDomainHandler();
+						}							
+					}
+				}, 3000l, Double.valueOf(_operatorConfiguration.get_scanPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);
 	}
 
 	/**

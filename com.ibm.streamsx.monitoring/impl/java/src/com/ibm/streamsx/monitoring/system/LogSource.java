@@ -91,7 +91,8 @@ public class LogSource extends AbstractJmxSource {
 	// ------------------------------------------------------------------------
 	// Implementation.
 	// ------------------------------------------------------------------------
-	
+	private boolean _connected = true;
+
 	/**
 	 * Logger for tracing.
 	 */
@@ -122,7 +123,32 @@ public class LogSource extends AbstractJmxSource {
 		_operatorConfiguration.set_OperatorType(OpType.LOG_SOURCE);
 		super.initialize(context);
 
-		createAvoidCompletionThread();
+		/*
+		 * Enable scheduled service for JMX connection health check
+		 */				
+		java.util.concurrent.ScheduledExecutorService scheduler = getOperatorContext().getScheduledExecutorService();
+		scheduler.scheduleWithFixedDelay(
+				new Runnable() {
+					@Override
+					public void run() {
+						try {
+							if (!_connected) {
+								_trace.warn("Reconnect");
+								setupJMXConnection();
+								_connected = true;
+								scanDomain(); // create new DomainHandler
+							}
+							if (_connected) {
+								_domainHandler.healthCheck();
+							}
+						}
+						catch (Exception e) {
+							_trace.error("JMX connection error ", e);
+							_connected = false;
+							closeDomainHandler();
+						}							
+					}
+				}, 3000l, Double.valueOf(5 * 1000.0).longValue(), TimeUnit.MILLISECONDS);
 	}
 
 	/**
