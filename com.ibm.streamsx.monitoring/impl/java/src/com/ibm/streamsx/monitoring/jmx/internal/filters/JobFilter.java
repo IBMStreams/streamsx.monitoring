@@ -40,8 +40,10 @@ final class JobFilter extends PatternMatcher {
 	public JobFilter(String regularExpression, Set<OperatorFilter> operatorFilters, Set<PeFilter> peFilters, OpType aType) throws PatternSyntaxException {
 		super(regularExpression);
 		_type = aType;
-		for(OperatorFilter operatorFilter : operatorFilters) {
-			_operatorFilters.put(operatorFilter.getRegularExpression(), operatorFilter);
+		if (_type == OpType.METRICS_SOURCE) {
+			for(OperatorFilter operatorFilter : operatorFilters) {
+				_operatorFilters.put(operatorFilter.getRegularExpression(), operatorFilter);
+			}
 		}
 		for(PeFilter peFilter : peFilters) {
 			_peFilters.add(peFilter);

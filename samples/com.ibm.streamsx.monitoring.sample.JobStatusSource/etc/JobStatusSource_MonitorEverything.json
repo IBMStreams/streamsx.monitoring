@@ -9,12 +9,6 @@
 				[
 					{
 						"jobNamePatterns":".*",
-						"operators":
-						[
-							{
-								"operatorNamePatterns":".*"
-							}
-						]
 					}
 				]
 			}

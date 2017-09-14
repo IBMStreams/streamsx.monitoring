@@ -34,7 +34,9 @@ public class JobParser extends AbstractParser {
 	
 	protected JobParser(OpType aType) {
 		_type = aType;
-		_operatorParser = new OperatorParser(aType);
+		if (_type == OpType.METRICS_SOURCE) {
+			_operatorParser = new OperatorParser(aType);
+		}
 		_peParser = new PeParser(aType);
 
 		setMandatoryItem(JOB_NAME_PATTERNS);
@@ -48,22 +50,24 @@ public class JobParser extends AbstractParser {
 			
 		});
 
-		setValidationRule(OPERATORS, new IValidator() {
-
-			@Override
-			public boolean validate(String key, Object object) {
-				boolean result = true;
-				if (object instanceof JSONArtifact) {
-					result = _operatorParser.validate((JSONArtifact)object);
+		if (_type == OpType.METRICS_SOURCE) {
+			setValidationRule(OPERATORS, new IValidator() {
+	
+				@Override
+				public boolean validate(String key, Object object) {
+					boolean result = true;
+					if (object instanceof JSONArtifact) {
+						result = _operatorParser.validate((JSONArtifact)object);
+					}
+					else {
+						result = false;
+						logger().error("filterDocument: The parsed object must be a JSONArtifact. Details: key=" + key + ", object=" + object);
+					}
+					return result;
 				}
-				else {
-					result = false;
-					logger().error("filterDocument: The parsed object must be a JSONArtifact. Details: key=" + key + ", object=" + object);
-				}
-				return result;
-			}
-			
-		});
+				
+			});
+		}
 
 		setValidationRule(PES, new IValidator() {
 
@@ -93,7 +97,10 @@ public class JobParser extends AbstractParser {
 	protected Set<JobFilter> buildFilters(JSONObject json) {
 //		logger().error("Job.JSON=" + json);
 		Set<String> patterns = buildPatternList(json.get(JOB_NAME_PATTERNS));
-		Set<OperatorFilter> operatorFilters = _operatorParser.buildFilters((JSONArtifact)json.get(OPERATORS));
+		Set<OperatorFilter> operatorFilters = null;
+		if (_type == OpType.METRICS_SOURCE) {
+			operatorFilters = _operatorParser.buildFilters((JSONArtifact)json.get(OPERATORS));
+		}
 		Set<PeFilter> peFilters = _peParser.buildFilters((JSONArtifact)json.get(PES));
 		Set<JobFilter> result = new HashSet<>();
 		for (String pattern : patterns) {
