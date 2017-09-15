@@ -97,13 +97,13 @@ composite Main {
 		 */
 		stream<Notification> ChangeNotifications as O = MetricsSource() {
 			param
-				connectionURL: getSubmissionTimeValue("connectionURL");
+//				connectionURL: getSubmissionTimeValue("connectionURL");
 //				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
 				user: getSubmissionTimeValue("user");
 				password: getSubmissionTimeValue("password");
-				domainId: getSubmissionTimeValue("domainId");
+//				domainId: getSubmissionTimeValue("domainId");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
-				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorEverything.json";
+//				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorEverything.json";
 				emitMetricTuple: onChangedValue;
 		}
 		
@@ -126,11 +126,11 @@ composite Main {
 		 */
 		stream<Notification> PeriodicNotifications as O = MetricsSource() {
 			param
-				connectionURL: getSubmissionTimeValue("connectionURL");
+//				connectionURL: getSubmissionTimeValue("connectionURL");
 //				connectionURL: "service:jmx:jmxmp://" + getHostName() + ":9975";
 				user: getSubmissionTimeValue("user");
 				password: getSubmissionTimeValue("password");
-				domainId: getSubmissionTimeValue("domainId");
+//				domainId: getSubmissionTimeValue("domainId");
 				scanPeriod: (float64)getSubmissionTimeValue("scanPeriod", "5.0");
 				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorSomeCustomMetrics.json";
 				emitMetricTuple: periodic;

@@ -75,6 +75,10 @@ public class OperatorConfiguration {
 
 	private Filters _filters = new Filters();
 
+	private String _defaultFilterInstance = null;
+	
+	private String _defaultFilterDomain = null;	
+	
 	private MetricsTupleContainer _tupleContainerMetricsSource = null;
 	
 	private JobStatusTupleContainer _tupleContainerJobStatusSource = null;
@@ -237,6 +241,35 @@ public class OperatorConfiguration {
 		default:
 			return null;
 		}
+	}
+	
+	public void set_defaultFilterInstance(String instance) {
+		_defaultFilterInstance = instance;
+	}
+
+	public void set_defaultFilterDomain(String domain) {
+		_defaultFilterDomain = domain;
+	}
+	
+	public String get_defaultFilterDocument() {
+		String result = null;
+		if (_opType.equals(OpType.METRICS_SOURCE)) {
+			result = "[{\"domainIdPatterns\":\""
+					+ _defaultFilterDomain
+					+ "\",\"instances\":[{\"instanceIdPatterns\":\""
+					+ _defaultFilterInstance
+					+ "\",\"jobs\":[{\"jobNamePatterns\":\".*\","
+					+ "\"pes\":[{\"metricNamePatterns\":\".*\",\"inputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"outputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"connections\":[{\"connectionIdPatterns\":\".*\",\"metricNamePatterns\":\".*\"}]}],"
+					+ "\"operators\":[{\"operatorNamePatterns\":\".*\",\"metricNamePatterns\":\".*\",\"inputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"outputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}]}]}]}]}]";
+		}
+		else if (_opType.equals(OpType.JOB_STATUS_SOURCE)) {
+			result = "[{\"domainIdPatterns\":\""
+					+ _defaultFilterDomain
+					+ "\",\"instances\":[{\"instanceIdPatterns\":\""
+					+ _defaultFilterInstance
+					+ "\",\"jobs\":[{\"jobNamePatterns\":\".*\",}]}]}]";	
+		}
+		return result;
 	}
 	
 }

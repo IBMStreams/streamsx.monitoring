@@ -9,6 +9,7 @@ package com.ibm.streamsx.monitoring.jmx;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -180,7 +181,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			throws Exception {
 		// Must call super.initialize(context) to correctly setup an operator.
 		super.initialize(context);
-
+		
 		// Dynamic registration of additional class libraries to get rid of
 		// the @Libraries annotation and its compile-time evaluation of
 		// environment variables.
@@ -192,6 +193,13 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' or 'applicationConfigurationName' be applied.");
 			}
 		}
+		else {
+			if (context.getPE().isStandalone()) {
+				if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password())) {
+					throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' and 'domainId' applied, when running in standalone mode. Application configuration is supported in distributed mode only.");
+				}				
+			}
+		}
 
 		/*
 		 * The domainId parameter is optional. If the application developer does
@@ -200,20 +208,26 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		 */
 		if (_operatorConfiguration.get_domainId() == null) {
 			if (context.getPE().isStandalone()) {
-				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id.");
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id. The following value must be specified as parameter: domainId");
 			}
 			String domainId = getApplicationConfigurationDomainId();
-			if (domainId != "") {
-				_operatorConfiguration.set_domainId(domainId);
-				_trace.info("The " + context.getName() + " operator connects to the " + _operatorConfiguration.get_domainId() + " domain specified by application configuration.");				
-			}
-			else {
+			if ("".equals(domainId)) {
 				_operatorConfiguration.set_domainId(context.getPE().getDomainId());
 				_trace.info("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
 			}
+			else {
+				_operatorConfiguration.set_domainId(domainId);
+				_trace.info("The " + context.getName() + " operator connects to the " + _operatorConfiguration.get_domainId() + " domain specified by application configuration.");
+			}
 		}
-		_domainId = context.getPE().getDomainId();
+		// used to determine if configured domain is the domain where the PE runs
+		// if is running in standalone, then the domainId parameter/application configuration is used 
+		_domainId = ((context.getPE().isStandalone()) ? _operatorConfiguration.get_domainId() : context.getPE().getDomainId());
 
+		_operatorConfiguration.set_defaultFilterInstance((context.getPE().isStandalone()) ? ".*" : context.getPE().getInstanceId());
+		_operatorConfiguration.set_defaultFilterDomain(_domainId);
+		
+		
 		/*
 		 * Establish connections or resources to communicate an external system
 		 * or data store. The configuration information for this comes from
@@ -446,9 +460,19 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			// The filters are not specified in the application configuration.
 			String filterDocument = _operatorConfiguration.get_filterDocument();
 			if (filterDocument == null) {
-				throw new Exception(MISSING_VALUE + PARAMETER_FILTER_DOCUMENT);
+				filterDocument = _operatorConfiguration.get_defaultFilterDocument();
+				_trace.info("filterDocument is not specified, use default: " + filterDocument);
 			}
-			_operatorConfiguration.set_filters(Filters.setupFilters(filterDocument, _operatorConfiguration.get_OperatorType()));
+			File fdoc = new File(filterDocument);
+			if (fdoc.exists()) {
+				_operatorConfiguration.set_filters(Filters.setupFilters(filterDocument, _operatorConfiguration.get_OperatorType()));
+			}
+			else {
+				String filterDoc = filterDocument.replaceAll("\\\\t", ""); // remove tabs
+				try(InputStream inputStream = new ByteArrayInputStream(filterDoc.getBytes())) {
+					_operatorConfiguration.set_filters(Filters.setupFilters(inputStream, _operatorConfiguration.get_OperatorType()));
+				}				
+			}
 		}
 	}
 
@@ -477,7 +501,9 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	
 	private String autoDetectJmxConnect() {
 		String result = null;
-		if (_operatorConfiguration.get_domainId() == _domainId) { // running in same domain as configured
+		_trace.debug("_domainId=[" + _domainId + "]");
+		_trace.debug("_operatorConfiguration.get_domainId()=[" + _operatorConfiguration.get_domainId() + "]");
+		if (_operatorConfiguration.get_domainId().equals(_domainId)) { // running in same domain as configured
 			_trace.debug("get connectionURL with streamtool getjmxconnect");
 			String cmd = "streamtool getjmxconnect -d "+ _domainId;
 
@@ -504,7 +530,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 
 	private String autoDetectJmxSslOption(String user, String password) {		
 		String sslOption = null;
-		if (_operatorConfiguration.get_domainId() == _domainId) { // running in same domain as configured
+		if (_operatorConfiguration.get_domainId().equals(_domainId)) { // running in same domain as configured
 			_trace.debug("get jmx.sslOption with streamtool getdomainproperty");
 	
 			String[] cmd = { "/bin/sh", "-c", "echo "+password+" | streamtool getdomainproperty -d "+ _domainId + " -U "+user+" jmx.sslOption" };
