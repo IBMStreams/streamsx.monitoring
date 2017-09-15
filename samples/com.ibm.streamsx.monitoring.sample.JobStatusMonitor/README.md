@@ -1,6 +1,6 @@
-## com.ibm.streamsx.monitoring.sample.JobStatusSource
+## com.ibm.streamsx.monitoring.sample.JobStatusMonitor
 
-This sample SPL application demonstrates the use of JobStatusSource operator to get the notification of PE status changes and added/removed jobs.
+This sample SPL application demonstrates the use of JobStatusMonitor operator to get the notification of PE status changes and added/removed jobs.
 
 Use
 

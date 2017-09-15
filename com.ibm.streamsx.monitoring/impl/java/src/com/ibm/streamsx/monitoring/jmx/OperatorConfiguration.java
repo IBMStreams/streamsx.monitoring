@@ -103,7 +103,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_connectionURL(String connectionURL) {
-		this._connectionURL = connectionURL;
+		if (!("".equals(connectionURL))) {
+			this._connectionURL = connectionURL;
+		}
 	}
 
 	public String get_user() {
@@ -111,7 +113,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_user(String user) {
-		this._user = user;
+		if (!("".equals(user))) {
+			this._user = user;
+		}
 	}
 
 	public String get_password() {
@@ -119,7 +123,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_password(String password) {
-		this._password = password;
+		if (!("".equals(password))) {
+			this._password = password;
+		}
 	}
 
 	public String get_sslOption() {
@@ -127,7 +133,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_sslOption(String sslOption) {
-		this._sslOption = sslOption;
+		if (!("".equals(sslOption))) {
+			this._sslOption = sslOption;
+		}
 	}	
 	
 	public String get_domainId() {
@@ -135,7 +143,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_domainId(String domainId) {
-		this._domainId = domainId;
+		if (!("".equals(domainId))) {
+			this._domainId = domainId;
+		}
 	}
 
 	public String get_applicationConfigurationName() {
@@ -143,7 +153,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_applicationConfigurationName(String applicationConfigurationName) {
-		this._applicationConfigurationName = applicationConfigurationName;
+		if (!("".equals(applicationConfigurationName))) {
+			this._applicationConfigurationName = applicationConfigurationName;
+		}
 	}
 
 	public String get_filterDocument() {
@@ -151,7 +163,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_filterDocument(String filterDocument) {
-		this._filterDocument = filterDocument;
+		if (!("".equals(filterDocument))) {
+			this._filterDocument = filterDocument;
+		}
 	}
 
 	public Double get_scanPeriod() {
@@ -192,7 +206,6 @@ public class OperatorConfiguration {
 
 	public void set_tupleContainerMetricsSource(MetricsTupleContainer tupleContainer) {
 		_tupleContainerMetricsSource = tupleContainer;
-		
 	}
 	
 	public LogTupleContainer get_tupleContainerLogSource() {
@@ -209,7 +222,6 @@ public class OperatorConfiguration {
 
 	public void set_tupleContainerJobStatusSource(JobStatusTupleContainer tupleContainer) {
 		_tupleContainerJobStatusSource = tupleContainer;
-		
 	}	
 
 	public void set_emitMetricTuple(EmitMetricTupleMode mode) {

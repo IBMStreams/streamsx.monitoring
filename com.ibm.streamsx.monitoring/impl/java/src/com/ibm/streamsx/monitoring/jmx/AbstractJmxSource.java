@@ -47,7 +47,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	
 	protected static final String DESC_PARAM_APPLICATION_CONFIGURATION_NAME = 
 			"Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] "
-			+ "that can contain connectionURL, user, password, and filterDocument "
+			+ "that can contain domainId, connectionURL, user, password, and filterDocument "
 			+ "properties. The application configuration overrides values that "
 			+ "are specified with the corresponding parameters.";
 	
@@ -185,6 +185,13 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		// the @Libraries annotation and its compile-time evaluation of
 		// environment variables.
 		setupClassPaths(context);
+
+		// check required parameters
+		if (null == _operatorConfiguration.get_applicationConfigurationName()) {
+			if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password())) {
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' or 'applicationConfigurationName' be applied.");
+			}
+		}
 
 		/*
 		 * The domainId parameter is optional. If the application developer does
