@@ -16,12 +16,10 @@ import com.ibm.streams.operator.model.OutputPortSet;
 import com.ibm.streams.operator.model.OutputPortSet.WindowPunctuationOutputMode;
 import com.ibm.streams.operator.model.OutputPorts;
 import com.ibm.streams.operator.model.PrimitiveOperator;
-import com.ibm.streams.operator.model.Parameter;
 import com.ibm.streams.operator.compile.OperatorContextChecker;
 import com.ibm.streams.operator.state.ConsistentRegionContext;
 import com.ibm.streamsx.monitoring.jmx.AbstractJmxSource;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
-import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
 import com.ibm.streamsx.monitoring.messages.Messages;
 import java.util.concurrent.TimeUnit;
 
