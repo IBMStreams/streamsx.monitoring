@@ -29,6 +29,9 @@ import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.ProcessingElement;
 import com.ibm.streams.operator.StreamingOutput;
 import com.ibm.streams.operator.model.Parameter;
+import com.ibm.streams.operator.metrics.Metric;
+import com.ibm.streams.operator.metrics.Metric.Kind;
+import com.ibm.streams.operator.model.CustomMetric;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 import com.ibm.streamsx.monitoring.jmx.internal.DomainHandler;
 import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
@@ -116,6 +119,37 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	
 	private String _domainId = null; // domainId for this PE
 	
+	private Metric _isConnectedToJMX;
+	private Metric _nJMXConnectionAttempts;
+	private Metric _nBrokenJMXConnections;
+
+    public Metric get_nJMXConnectionAttempts() {
+        return _nJMXConnectionAttempts;
+    }
+	
+    public Metric get_isConnectedToJMX() {
+        return _isConnectedToJMX;
+    }
+
+    public Metric get_nBrokenJMXConnections() {
+        return _nBrokenJMXConnections;
+    }
+    
+    @CustomMetric(name="nBrokenJMXConnections", kind = Kind.COUNTER, description = "Number of broken JMX connections that have occurred. Notifications may have been lost.")
+    public void set_nConnectionLosts(Metric nBrokenJMXConnections) {
+        this._nBrokenJMXConnections = nBrokenJMXConnections;
+    }
+    
+    @CustomMetric(name="nJMXConnectionAttempts", kind = Kind.COUNTER, description = "Number of connection attempts to JMX service.")
+    public void set_nJMXConnectionAttempts(Metric nConnectionAttempts) {
+        this._nJMXConnectionAttempts = nConnectionAttempts;
+    }
+    
+    @CustomMetric(name="isConnectedToJMX", kind = Kind.GAUGE, description = "Value 1 indicates, that this operator is connected to JMX service. Otherwise value 0 is set, if no connection is established.")
+    public void set_isConnectedToJMX(Metric isConnectedToJMX) {
+        this._isConnectedToJMX = isConnectedToJMX;
+    }
+
 	/**
 	 * If the application configuration is used (applicationConfigurationName
 	 * parameter is set), save the active filterDocument (as JSON string) to
@@ -226,8 +260,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 
 		_operatorConfiguration.set_defaultFilterInstance((context.getPE().isStandalone()) ? ".*" : context.getPE().getInstanceId());
 		_operatorConfiguration.set_defaultFilterDomain(_domainId);
-		
-		
+
 		/*
 		 * Establish connections or resources to communicate an external system
 		 * or data store. The configuration information for this comes from
@@ -382,12 +415,15 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		// In Streaming Analytics service the variable urls contains 3 JMX servers. The third JMX is the prefered one. 
 		for (int i=urls.length-1; i>=0; i--) {
 			try {
+				get_nJMXConnectionAttempts().increment(); // update metric
 				_trace.info("Connect to : " + urls[i]);
 				_operatorConfiguration.set_jmxConnector(JMXConnectorFactory.connect(new JMXServiceURL(urls[i]), env));
+				get_isConnectedToJMX().setValue(1);
 				break; // exit loop here since a valid connection is established, otherwise exception is thrown.
 			} catch (IOException e) {
 				_trace.error("connect failed: " + e.getMessage());
 				if (i == 0) {
+					get_isConnectedToJMX().setValue(0);
 					throw e;
 				}
 			}
@@ -566,6 +602,12 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		catch (Exception ignore) {
 		}
 		_domainHandler = null;
+		if (1 == get_isConnectedToJMX().getValue()) {
+			// update metric to indicate connection is broken
+			get_nBrokenJMXConnections().increment();
+			// update metric to indicate that we are not connected
+			get_isConnectedToJMX().setValue(0);
+		}
 	}
 	
 	
