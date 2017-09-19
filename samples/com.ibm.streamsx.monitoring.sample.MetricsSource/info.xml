@@ -2,10 +2,14 @@
 <info:toolkitInfoModel xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common"
  xmlns:info="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo">
  <info:identity>
-   <info:name>streamsx.monitoring.metrics.sample.test</info:name>
-   <info:description></info:description>
+   <info:name>com.ibm.streamsx.monitoring.sample.MetricsSource</info:name>
+   <info:description><![CDATA[
+This sample application demonstrate how to use the MetricsSource operator.
+
+Application Configuration requires Streams 4.2 or later.
+   ]]></info:description>
    <info:version>1.0.0</info:version>
-   <info:requiredProductVersion>4.1.0.0</info:requiredProductVersion>
+   <info:requiredProductVersion>4.2.0.0</info:requiredProductVersion>
  </info:identity>
  <info:dependencies>
    <info:toolkit>

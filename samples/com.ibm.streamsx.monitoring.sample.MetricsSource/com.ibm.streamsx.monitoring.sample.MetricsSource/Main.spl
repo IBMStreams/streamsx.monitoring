@@ -1,21 +1,18 @@
-/*
-** Copyright (C) 2017  International Business Machines Corporation
-** All Rights Reserved
-*/
-namespace com.ibm.streamsx.monitoring.jobs;
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
 
+namespace com.ibm.streamsx.monitoring.sample.MetricsSource;
+
+use com.ibm.streamsx.monitoring.metrics::MetricsSource;
+use com.ibm.streamsx.monitoring.metrics::Notification;
 use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
 
 /**
- * This operator uses JobStatusSource and prevents near duplicate notifications being emitted.
- *
- * @output OutStream
- * The notification tuples on output port 0.
- * The schema is defined by the JobStatusNotification type.
- *
- * @output ConnectionNotificationStream
- * The JMX connection notification tuples on output port 1.
- * The schema is defined by the ConnectionNotification type.
+ * This sample application demonstrate how to use the MetricsSource operator
  *
  * @param applicationConfigurationName
  * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
@@ -28,7 +25,7 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  *
  * @param filterDocument
  * Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the domain, instance and job filters as regular expressions. Each regular expression must follow the rules that are specified for Java [https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
- * If parameter is not set, then all jobs in current domain and instance are monitored.
+ * If parameter is not set, then all metrics from all jobs in current domain and instance are monitored.
  *
  * @param connectionURL
  * Specifies the connection URL as returned by the `streamtool getjmxconnect` command. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getjmxconnect` command to get the value.
@@ -38,27 +35,25 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  *
  * @param sslOption
  * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getdomainproperty` command to get the value.
- * 
+ *
  */
-public composite JobStatusMonitor (output stream<JobStatusNotification> OutStream, stream<ConnectionNotification> ConnectionNotificationStream) {
-
+composite Main {
 	param
-		expression<rstring> $applicationConfigurationName: ""; // optional, if user and password are set
-		expression<rstring> $user: ""; // optional, if set in application configuration
-		expression<rstring> $password: ""; // optional, if set in application configuration
-		expression<rstring> $filterDocument; // optional, uses default filter to monitor all in current domain and instance
-		expression<rstring> $connectionURL: ""; // optional, if not set, then domain settings are used, where the PE is running
-		expression<rstring> $domainId: ""; // optional, if not set, then domain settings are used, where the PE is running
-		expression<rstring> $sslOption: ""; // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $applicationConfigurationName: getSubmissionTimeValue("applicationConfigurationName", ""); // optional, if user and password are set
+		expression<rstring> $user: getSubmissionTimeValue("user", ""); // optional, if set in application configuration
+		expression<rstring> $password: getSubmissionTimeValue("password", ""); // optional, if set in application configuration
+		expression<rstring> $filterDocument: getSubmissionTimeValue("filterDocument", ""); // uses default, if not set
+		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $domainId: getSubmissionTimeValue("domainId", ""); // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then domain settings are used, where the PE is running
 
 	graph
-	
 		/*
-		 * The JobStatusSource generates a tuple for each notified PE status change.
+		 * The MetricsSource generates tuple for the specified metrics.
 		 */
-		(stream<JobStatusNotification> Notifications;
-		 stream<ConnectionNotification> ConnectionNotificationStream
-		) = JobStatusSource() {
+		(stream<Notification> MetricNotifications;
+		 stream<ConnectionNotification> ConnectionNotifications // optional output port
+		) = MetricsSource() {
 			param
 				applicationConfigurationName: $applicationConfigurationName;
 				user: $user;
@@ -66,13 +61,31 @@ public composite JobStatusMonitor (output stream<JobStatusNotification> OutStrea
 				filterDocument: $filterDocument;
 				connectionURL: $connectionURL;
 				domainId: $domainId;
-				sslOption: $sslOption;				
+				sslOption: $sslOption;
+				emitMetricTuple: onChangedValue;
 		}
 		
-		stream<I> OutStream = DeDuplicate(Notifications as I) {
-			param
- 				timeOut: 5.0;                                                                          
-				key: notifyType, domainId, instanceId, jobId, jobName, resource, peId, peHealth, peStatus;
+		/*
+		 * The Custom traces the received metric value notifications.
+		 */
+		() as NotificationTracer = Custom(MetricNotifications as I; ConnectionNotifications as C) {
+			logic
+			onTuple I: {
+				printStringLn("MetricNotification: " + (rstring)I);
+			}
+			onTuple C: {
+				printStringLn("ConnectionNotification: " + (rstring)C);
+			}
+			onPunct I: {
+				printStringLn("MetricNotifications: " + (rstring)currentPunct());
+			}
 		}
-
+		
+		/*
+		 * A @parallel-annotated source.
+		 */
+		@parallel(width=3)
+		(stream<rstring dummy> Data) as AnnotatedSource = Beacon() {
+			param period: 3.0; 
+		}
 }

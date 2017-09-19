@@ -59,6 +59,13 @@ import java.util.concurrent.TimeUnit;
 			windowPunctuationOutputMode=WindowPunctuationOutputMode.Free,
 			description=JobStatusSource.DESC_OUTPUT_PORT
 			)
+	,
+	@OutputPortSet(
+			cardinality=1,
+			optional=true,
+			windowPunctuationOutputMode=WindowPunctuationOutputMode.Free,
+			description=AbstractJmxSource.DESC_OUTPUT_PORT_1
+			)
 })
 public class JobStatusSource extends AbstractJmxSource {
 

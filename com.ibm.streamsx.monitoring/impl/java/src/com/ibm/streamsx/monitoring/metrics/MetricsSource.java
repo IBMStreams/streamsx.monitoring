@@ -60,6 +60,13 @@ import com.ibm.streamsx.monitoring.jmx.internal.EmitMetricTupleMode;
 			windowPunctuationOutputMode=WindowPunctuationOutputMode.Generating,
 			description=MetricsSource.DESC_OUTPUT_PORT
 			)
+	,
+	@OutputPortSet(
+			cardinality=1,
+			optional=true,
+			windowPunctuationOutputMode=WindowPunctuationOutputMode.Free,
+			description=AbstractJmxSource.DESC_OUTPUT_PORT_1
+			)
 })
 @Icons(
 		location16 = "icons/MetricsSource_16.gif", 

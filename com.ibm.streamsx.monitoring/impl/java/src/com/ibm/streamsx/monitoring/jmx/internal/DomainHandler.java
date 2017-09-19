@@ -90,14 +90,28 @@ public class DomainHandler implements NotificationListener, Closeable {
 			filter.enableType(Notifications.INSTANCE_DELETED);
 		}
 		try {
+			if (_trace.isDebugEnabled()) {
+				_trace.debug("MBeanServerConnection.addNotificationListener()");
+			}			
 			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(_objName, this, filter, null);
 		} catch (InstanceNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//	TODO      jmxc.addConnectionNotificationListener(this, null, null); // listen for potential lost notifications
-		
+
+		if (null != _operatorConfiguration.get_tupleContainerConnectionNotification()) {
+			try {
+				if (_trace.isDebugEnabled()) {
+					_trace.debug("JMXConnector.addConnectionNotificationListener()");
+				}
+				// listen for potential lost notifications
+				operatorConfiguration.get_jmxConnector().addConnectionNotificationListener(this, null, null);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		if (OpType.LOG_SOURCE != _operatorConfiguration.get_OperatorType()) {
 			/*
 			 * Register existing instances.
@@ -129,6 +143,7 @@ public class DomainHandler implements NotificationListener, Closeable {
 		if (_trace.isDebugEnabled()) {
 			_trace.debug("notification: " + notification + ", userData=" + notification.getUserData());
 		}
+		
 		if (notification.getType().equals(Notifications.INSTANCE_CREATED)) {
 			String instanceId = getInstanceFromUserData(notification.getUserData());
 			if (instanceId != "") {
@@ -178,7 +193,15 @@ public class DomainHandler implements NotificationListener, Closeable {
 				}
 			}
 			else {
-				_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+				if ((null != _operatorConfiguration.get_tupleContainerConnectionNotification()) &&
+					(notification.getType().contains("jmx.remote.connection"))) {
+					// Notification emitted when a client connection has failed unexpectedly or when client connection has potentially lost notifications.
+					final Tuple tuple = _operatorConfiguration.get_tupleContainerConnectionNotification().getTuple(notification);
+					_operatorConfiguration.get_tupleContainerConnectionNotification().submit(tuple);
+				}
+				else {
+					_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+				}
 			}
 		}
 	}

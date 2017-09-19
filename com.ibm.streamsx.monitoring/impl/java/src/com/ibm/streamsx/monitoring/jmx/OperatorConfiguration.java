@@ -10,6 +10,7 @@ package com.ibm.streamsx.monitoring.jmx;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 
+import com.ibm.streamsx.monitoring.jmx.internal.ConnectionNotificationTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.DeltaMetricEvaluator;
 import com.ibm.streamsx.monitoring.jmx.internal.EmitMetricTupleMode;
 import com.ibm.streamsx.monitoring.jmx.internal.IMetricEvaluator;
@@ -84,6 +85,8 @@ public class OperatorConfiguration {
 	private JobStatusTupleContainer _tupleContainerJobStatusSource = null;
 	
 	private LogTupleContainer _tupleContainerLogSource = null;
+	
+	private ConnectionNotificationTupleContainer _tupleContainerConnectionNotification = null;
 
 	private EmitMetricTupleMode _emitMetricTuple = EmitMetricTupleMode.onChangedValue;
 	
@@ -228,6 +231,14 @@ public class OperatorConfiguration {
 		_tupleContainerJobStatusSource = tupleContainer;
 	}	
 
+	public void set_tupleContainerConnectionNotification(ConnectionNotificationTupleContainer tupleContainer) {
+		_tupleContainerConnectionNotification = tupleContainer;
+	}
+	
+	public ConnectionNotificationTupleContainer get_tupleContainerConnectionNotification() {
+		return _tupleContainerConnectionNotification;
+	}
+	
 	public void set_emitMetricTuple(EmitMetricTupleMode mode) {
 		_emitMetricTuple = mode;
 	}
@@ -271,5 +282,5 @@ public class OperatorConfiguration {
 		}
 		return result;
 	}
-	
+
 }

@@ -1,0 +1,52 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+
+namespace com.ibm.streamsx.monitoring.jmx;
+
+/**
+ * Tuple type for JMX connection notifications.
+ *
+ * The ConnectionNotification type specifies attributes that are filled by the operators
+ * * [com.ibm.streamsx.monitoring.metrics::MetricsSource|MetricsSource]
+ * * [com.ibm.streamsx.monitoring.jobs::JobStatusSource|JobStatusSource]
+ * * [com.ibm.streamsx.monitoring.system::LogSource|LogSource]
+ * on the optional second output port.
+ * 
+ * The attribute names are fixed but if you are not interested in all
+ * information, create your own type with a subset of attributes.
+ * The operators takes care to set existing attributes only.
+ * 
+ * * **notifyType**
+ * 
+ *   The notification type, like *jmx.remote.connection.opened*, 
+ *   *jmx.remote.connection.closed*, *jmx.remote.connection.failed* and *jmx.remote.connection.notifs.lost*.
+ *
+ * * **source**
+ * 
+ *   The notification source.
+ *
+ * * **sequence**
+ * 
+ *   The notification sequence number.
+ *
+ * * **eventTimestamp**
+ * 
+ *   The timestamp of the notification.
+ *
+ * * **message**
+ * 
+ *   The message of the notification.
+ */
+type ConnectionNotification = tuple<
+	rstring notifyType,
+	rstring source,
+	int64 sequence,
+	timestamp eventTimestamp,
+	rstring message
+>;
+

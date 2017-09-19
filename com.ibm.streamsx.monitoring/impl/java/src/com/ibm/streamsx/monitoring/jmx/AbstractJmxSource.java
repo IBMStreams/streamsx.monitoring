@@ -33,6 +33,7 @@ import com.ibm.streams.operator.metrics.Metric;
 import com.ibm.streams.operator.metrics.Metric.Kind;
 import com.ibm.streams.operator.model.CustomMetric;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
+import com.ibm.streamsx.monitoring.jmx.internal.ConnectionNotificationTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.DomainHandler;
 import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.LogTupleContainer;
@@ -89,6 +90,21 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			+ "it raises an exception and aborts. If "
 			+ "the **applicationConfigurationName** parameter is specified, "
 			+ "the application configuration can override this parameter value.";
+	
+	public static final String DESC_OUTPUT_PORT_1 = 
+			"Emits tuples containing JMX connection notifications.\\n"
+			+ "The notification type is one of the following:\\n"
+			+ "\\n"
+			+ "* jmx.remote.connection.opened\\n"
+			+ "* jmx.remote.connection.closed\\n"
+			+ "* jmx.remote.connection.failed\\n"
+			+ "* jmx.remote.connection.notifs.lost\\n"
+			+ "\\n"
+			+ "You can use the "
+			+ "[type:com.ibm.streamsx.monitoring.jmx::ConnectionNotification|ConnectionNotification] "
+			+ "tuple type, or any subset of the attributes specified for this "
+			+ "type."
+			;
 	
 	protected static final Object PARAMETER_CONNECTION_URL = "connectionURL";
 	
@@ -275,8 +291,6 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			}
 		}		
 		
-		setupJMXConnection();
-
 		final StreamingOutput<OutputTuple> port = getOutput(0);
 		if (OpType.JOB_STATUS_SOURCE == _operatorConfiguration.get_OperatorType()) {
 			_operatorConfiguration.set_tupleContainerJobStatusSource(new JobStatusTupleContainer(getOperatorContext(), port));
@@ -287,6 +301,14 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		if (OpType.METRICS_SOURCE == _operatorConfiguration.get_OperatorType()) {			
 			_operatorConfiguration.set_tupleContainerMetricsSource(new MetricsTupleContainer(port));
 		}
+		// check if second output port is present
+		if (1 < context.getNumberOfStreamingOutputs()) {
+			final StreamingOutput<OutputTuple> port1 = getOutput(1);
+			_operatorConfiguration.set_tupleContainerConnectionNotification(new ConnectionNotificationTupleContainer(getOperatorContext(), port1));
+		}
+		
+		setupJMXConnection();
+
 		/*
 		 * Further actions are handled in the domain handler that manages
 		 * instances that manages jobs, etc.
