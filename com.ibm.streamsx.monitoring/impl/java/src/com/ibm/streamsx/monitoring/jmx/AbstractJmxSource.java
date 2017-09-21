@@ -557,7 +557,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		return properties;
 	}
 	
-	private String autoDetectJmxConnect() {
+	private String autoDetectJmxConnect() throws Exception {
 		String result = null;
 		_trace.debug("_domainId=[" + _domainId + "]");
 		_trace.debug("_operatorConfiguration.get_domainId()=[" + _operatorConfiguration.get_domainId() + "]");
@@ -579,9 +579,18 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				e.printStackTrace();
 			}
 			result = output.toString();
-
-			_trace.info("connectionURL=[" + result + "]");
-			_operatorConfiguration.set_connectionURL(result);
+			// Service URL must start with 
+			if (result.startsWith("service:jmx:")) {
+				_trace.info("connectionURL=[" + result + "]");
+				_operatorConfiguration.set_connectionURL(result);
+			}
+			else {
+				if (result.endsWith(",")) {
+					result = result.substring(0, result.length()-1);
+				}
+				_trace.error("Unable to determine "+PARAMETER_CONNECTION_URL+": " + result);
+				throw new Exception("Unable to determine "+PARAMETER_CONNECTION_URL);
+			}
 		}
 		return result;
 	}	
