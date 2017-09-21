@@ -22,19 +22,19 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.4.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; <a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.html">JobStatusSource</a> &gt; Filter document</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.5.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; <a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.html">JobStatusSource</a> &gt; Filter document</p>
 
 </div>
 
 
 <div class="section">
-<p class="p">The filter document specifies patterns for domain, instance, job and operator names, and their relations.
+<p class="p">The filter document specifies patterns for domain, instance and job and their relations.
 </p>
 
 <p class="p">It also specifies which name patterns are related, for example: For a domain X monitor all instances, whereas in each instance only jobs with a Y in their names shall be evaluated. For another domain Z, only jobs with a name ending with XYZ, are monitored, etc.
 </p>
 
-<p class="p">The filter document is a JSON-encoded text file that is configured with the <strong class="ph b">filterDocument</strong> parameter.
+<p class="p">The filter document is a JSON-encoded text file or JSON-encoded String that is configured with the <strong class="ph b">filterDocument</strong> parameter.
 </p>
 
 <p class="p">If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override the <strong class="ph b">filterDocument</strong> parameter value. The JSON-formatted document specifies filters as regular expressions. Each regular expression must follow the rules that are specified for Java <a class="xref" href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Pattern</a>.
@@ -56,12 +56,6 @@
         [
           {
             "jobNamePatterns":".*",
-            "operators":
-            [
-              {
-                "operatorNamePatterns":".*"
-              }
-            ]
           }
         ]
       }
@@ -73,7 +67,7 @@
 
 </div>
 
-<p class="p">The following filter document example selects events from the <em class="ph i">Storage</em> operator in the <em class="ph i">StreamsInstance</em> instance and <em class="ph i">StreamsDomain</em> domain only:
+<p class="p">The following filter document example selects events from jobs in the <em class="ph i">StreamsInstance</em> instance and <em class="ph i">StreamsDomain</em> domain only:
 </p>
 
 <div class="p">
@@ -89,12 +83,6 @@
         [
           {
             "jobNamePatterns":".*",
-            "operators":
-            [
-              {
-                "operatorNamePatterns":"Storage",
-              }
-            ]
           }
         ]
       }

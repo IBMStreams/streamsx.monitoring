@@ -28,14 +28,23 @@
     /></g
     ><rect width="17.7" x="38.8" height="12.0" id="sdt1" y="77.0" style="stroke-opacity:0; fill-opacity:0;"
     /><g style="fill:rgb(236,131,101); font-size:9; font-weight:bold; font-family:sans-serif; stroke:rgb(236,131,101);"
-    ><rect x="146" y="42" width="16" style="stroke:none;" rx="1" ry="1" height="16"
-      /><rect x="148" y="44" width="12" style="fill:rgb(255,247,142); stroke:none;" rx="0.75" ry="0.75" height="12"
+    ><rect x="146" y="26" width="16" style="stroke:none;" rx="1" ry="1" height="16"
+      /><rect x="148" y="28" width="12" style="fill:rgb(255,247,142); stroke:none;" rx="0.75" ry="0.75" height="12"
     /></g
     ><g style="font-family:sans-serif;"
-    ><path style="stroke:none;" d="M151.8125 55 L151.8125 54.125 L153.5469 54.125 L153.5469 47.2812 L151.8125 47.7188 L151.8125 46.8281 L154.7031 46.1094 L154.7031 54.125 L156.4375 54.125 L156.4375 55 L151.8125 55 Z"
-      /><path style="stroke:none;" d="M153.3125 40.5 L153.3125 35.6719 L154.6094 35.6719 L154.6094 40.5 L153.3125 40.5 ZM153.3125 34.8594 L153.3125 33.7812 L154.6094 33.7812 L154.6094 34.8594 L153.3125 34.8594 Z"
+    ><path style="stroke:none;" d="M151.8125 39 L151.8125 38.125 L153.5469 38.125 L153.5469 31.2812 L151.8125 31.7188 L151.8125 30.8281 L154.7031 30.1094 L154.7031 38.125 L156.4375 38.125 L156.4375 39 L151.8125 39 Z"
+      /><path style="stroke:none;" d="M153.3125 24.5 L153.3125 19.6719 L154.6094 19.6719 L154.6094 24.5 L153.3125 24.5 ZM153.3125 18.8594 L153.3125 17.7812 L154.6094 17.7812 L154.6094 18.8594 L153.3125 18.8594 Z"
     /></g
-    ><rect width="16.0" x="146.0" height="11.0" id="sdt2" y="31.0" style="stroke-opacity:0; fill-opacity:0;"
+    ><rect width="16.0" x="146.0" height="11.0" id="sdt2" y="15.0" style="stroke-opacity:0; fill-opacity:0;"
+    /><g style="fill:rgb(236,131,101); font-size:9; font-weight:bold; font-family:sans-serif; stroke:rgb(236,131,101);"
+    ><rect x="146" y="58" width="16" style="stroke:none;" rx="1" ry="1" height="16"
+      /><rect x="148" y="60" width="12" style="fill:gray; stroke:none;" rx="0.75" ry="0.75" height="12"
+    /></g
+    ><g style="font-family:sans-serif;"
+    ><path style="stroke:none;" d="M151.8125 71 L151.8125 70.125 L153.5469 70.125 L153.5469 63.2812 L151.8125 63.7188 L151.8125 62.8281 L154.7031 62.1094 L154.7031 70.125 L156.4375 70.125 L156.4375 71 L151.8125 71 Z"
+      /><path style="stroke:none;" d="M153.3125 56.5 L153.3125 51.6719 L154.6094 51.6719 L154.6094 56.5 L153.3125 56.5 ZM153.3125 50.8594 L153.3125 49.7812 L154.6094 49.7812 L154.6094 50.8594 L153.3125 50.8594 Z"
+    /></g
+    ><rect width="16.0" x="146.0" height="11.0" id="sdt3" y="47.0" style="stroke-opacity:0; fill-opacity:0;"
     /><g visibility="hidden" style="stroke:none;font-style:italic;font-size:12px;font-family:&apos;Helvetica&apos;,&apos;SansSerif&apos;;"
     ><rect x="130.25" y="88.0" width="379.36" style="fill:rgb(230,230,255);stroke:rgb(0,0,80);" rx="2.0" ry="2.0" height="17.0"
       /><text x="131.25" y="101.0"
@@ -51,10 +60,16 @@
       ><set attributeName="visibility" from="hidden" end="sdt1.mouseout" to="visible" begin="sdt1.mouseover"
     /></g
     ><g visibility="hidden" style="stroke:none;font-style:italic;font-size:12px;font-family:&apos;Helvetica&apos;,&apos;SansSerif&apos;;"
-    ><rect x="164.0" y="31.0" width="66.659996" style="fill:rgb(230,230,255);stroke:rgb(0,0,80);" rx="2.0" ry="2.0" height="17.0"
-      /><text x="165.0" y="44.0"
+    ><rect x="164.0" y="15.0" width="66.659996" style="fill:rgb(230,230,255);stroke:rgb(0,0,80);" rx="2.0" ry="2.0" height="17.0"
+      /><text x="165.0" y="28.0"
       >immutable</text
       ><set attributeName="visibility" from="hidden" end="sdt2.mouseout" to="visible" begin="sdt2.mouseover"
+    /></g
+    ><g visibility="hidden" style="stroke:none;font-style:italic;font-size:12px;font-family:&apos;Helvetica&apos;,&apos;SansSerif&apos;;"
+    ><rect x="164.0" y="47.0" width="66.659996" style="fill:rgb(230,230,255);stroke:rgb(0,0,80);" rx="2.0" ry="2.0" height="17.0"
+      /><text x="165.0" y="60.0"
+      >immutable</text
+      ><set attributeName="visibility" from="hidden" end="sdt3.mouseout" to="visible" begin="sdt3.mouseover"
     /></g
   ></g
 ></svg

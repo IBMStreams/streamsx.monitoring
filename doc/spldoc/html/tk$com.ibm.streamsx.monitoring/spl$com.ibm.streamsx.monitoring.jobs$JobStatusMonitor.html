@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="SPL File JobStatusMonitor.spl"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_compilationunit"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>SPL File JobStatusMonitor.spl</title>
+</head>
+<body id="spldoc_compilationunit">
+
+
+<h1 class="title topictitle1">SPL File <tt class="ph tt">JobStatusMonitor.spl</tt></h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.5.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; JobStatusMonitor.spl</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Content</h2>
+  
+  <dl class="dl">
+    <dt class="dt dlterm"/>
+<dd class="dd"/>
+
+    
+      <dt class="dt dlterm splhead-2">Operators</dt>
+
+      <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.jobs$JobStatusMonitor.html#spldoc_compilationunit__composite_operator__JobStatusMonitor">JobStatusMonitor</a></strong>: This operator uses JobStatusSource and prevents near duplicate notifications being emitted.
+</li>
+
+</ul>
+
+      </dd>
+
+    
+  </dl>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Composites</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__JobStatusMonitor"><h2 class="title sectiontitle splpart">composite JobStatusMonitor(output stream&lt;JobStatusNotification&gt; OutStream, stream&lt;ConnectionNotification&gt; ConnectionNotificationStream)</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.jobs$JobStatusMonitor.svg" width="252" height="116"/>
+</div>
+
+<div class="section">
+
+<p class="p">This operator uses JobStatusSource and prevents near duplicate notifications being emitted.
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">applicationConfigurationName</strong>: Specifies the name of <a class="xref" href="https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html">application configuration object</a> that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters. 
+</li>
+
+<li class="sli"><strong class="ph b">user</strong>: Specifies the user that is required for the JMX connection. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value. 
+</li>
+
+<li class="sli"><strong class="ph b">password</strong>: Specifies the password that is required for the JMX connection. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value. 
+</li>
+
+<li class="sli"><strong class="ph b">filterDocument</strong>: Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the domain, instance and job filters as regular expressions. Each regular expression must follow the rules that are specified for Java <a class="xref" href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Pattern</a>. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value. If parameter is not set, then all jobs in current domain and instance are monitored. 
+</li>
+
+<li class="sli"><strong class="ph b">connectionURL</strong>: Specifies the connection URL as returned by the <tt class="ph tt">streamtool getjmxconnect</tt> command. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value.If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the <tt class="ph tt">streamtool getjmxconnect</tt> command to get the value. 
+</li>
+
+<li class="sli"><strong class="ph b">domainId</strong>: Specifies the domain id that is monitored. If no domain id is specified, the domain id under which this operator is running is used. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value. 
+</li>
+
+<li class="sli"><strong class="ph b">sslOption</strong>: Specifies the sslOption that is required for the JMX connection. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the <tt class="ph tt">streamtool getdomainproperty</tt> command to get the value. 
+</li>
+
+</ul>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Output Ports</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">OutStream</strong>: The notification tuples on output port 0. The schema is defined by the JobStatusNotification type. 
+</li>
+
+<li class="sli"><strong class="ph b">ConnectionNotificationStream</strong>: The JMX connection notification tuples on output port 1. The schema is defined by the ConnectionNotification type. 
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+
+</body>
+</html>
