@@ -178,13 +178,19 @@ public class DomainHandler implements NotificationListener, Closeable {
 				(notification.getType().contains("com.ibm.streams.management.log.application"))) {
 				// emit tuple
 				try {
-					JSONObject obj = (JSONObject)JSON.parse(notification.getUserData().toString());
-					String instance = obj.get("instance").toString();
-					String resource = obj.get("resource").toString();
-					BigInteger pe = new BigInteger(obj.get("pe").toString());
-					BigInteger job = new BigInteger(obj.get("job").toString());
-					String operator = obj.get("operator").toString();
-
+					String instance = null;
+					String resource = null;
+					BigInteger pe = null;
+					BigInteger job = null;
+					String operator = null;
+					if (null != notification.getUserData()) {
+						JSONObject obj = (JSONObject)JSON.parse(notification.getUserData().toString());
+						instance = obj.get("instance").toString();
+						resource = obj.get("resource").toString();
+						pe = new BigInteger(obj.get("pe").toString());
+						job = new BigInteger(obj.get("job").toString());
+						operator = obj.get("operator").toString();
+					}
 					final Tuple tuple = _operatorConfiguration.get_tupleContainerLogSource().getTuple(notification, _domainId, instance, resource, pe, job, operator);
 					_operatorConfiguration.get_tupleContainerLogSource().submit(tuple);
 				}
