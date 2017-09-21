@@ -94,15 +94,3 @@ type JobStatusNotification = tuple<
 	rstring peStatus,
 	timestamp eventTimestamp
 >;
-
-
-type NotificationBasic = tuple<
-	rstring notifyType,
-	rstring source,
-	int64 sequence,
-	timestamp eventTimestamp,
-	rstring message,
-	rstring userData,
-	rstring handback
->;
-

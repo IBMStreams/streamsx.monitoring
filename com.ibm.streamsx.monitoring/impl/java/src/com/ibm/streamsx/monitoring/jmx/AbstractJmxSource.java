@@ -9,6 +9,7 @@ package com.ibm.streamsx.monitoring.jmx;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,7 +29,11 @@ import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.ProcessingElement;
 import com.ibm.streams.operator.StreamingOutput;
 import com.ibm.streams.operator.model.Parameter;
+import com.ibm.streams.operator.metrics.Metric;
+import com.ibm.streams.operator.metrics.Metric.Kind;
+import com.ibm.streams.operator.model.CustomMetric;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
+import com.ibm.streamsx.monitoring.jmx.internal.ConnectionNotificationTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.DomainHandler;
 import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.LogTupleContainer;
@@ -47,7 +52,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	
 	protected static final String DESC_PARAM_APPLICATION_CONFIGURATION_NAME = 
 			"Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] "
-			+ "that can contain connectionURL, user, password, and filterDocument "
+			+ "that can contain domainId, connectionURL, user, password, and filterDocument "
 			+ "properties. The application configuration overrides values that "
 			+ "are specified with the corresponding parameters.";
 	
@@ -86,6 +91,21 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			+ "the **applicationConfigurationName** parameter is specified, "
 			+ "the application configuration can override this parameter value.";
 	
+	public static final String DESC_OUTPUT_PORT_1 = 
+			"Emits tuples containing JMX connection notifications.\\n"
+			+ "The notification type is one of the following:\\n"
+			+ "\\n"
+			+ "* jmx.remote.connection.opened\\n"
+			+ "* jmx.remote.connection.closed\\n"
+			+ "* jmx.remote.connection.failed\\n"
+			+ "* jmx.remote.connection.notifs.lost\\n"
+			+ "\\n"
+			+ "You can use the "
+			+ "[type:com.ibm.streamsx.monitoring.jmx::ConnectionNotification|ConnectionNotification] "
+			+ "tuple type, or any subset of the attributes specified for this "
+			+ "type."
+			;
+	
 	protected static final Object PARAMETER_CONNECTION_URL = "connectionURL";
 	
 	protected static final Object PARAMETER_USER = "user";
@@ -115,6 +135,37 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	
 	private String _domainId = null; // domainId for this PE
 	
+	private Metric _isConnectedToJMX;
+	private Metric _nJMXConnectionAttempts;
+	private Metric _nBrokenJMXConnections;
+
+    public Metric get_nJMXConnectionAttempts() {
+        return _nJMXConnectionAttempts;
+    }
+	
+    public Metric get_isConnectedToJMX() {
+        return _isConnectedToJMX;
+    }
+
+    public Metric get_nBrokenJMXConnections() {
+        return _nBrokenJMXConnections;
+    }
+    
+    @CustomMetric(name="nBrokenJMXConnections", kind = Kind.COUNTER, description = "Number of broken JMX connections that have occurred. Notifications may have been lost.")
+    public void set_nConnectionLosts(Metric nBrokenJMXConnections) {
+        this._nBrokenJMXConnections = nBrokenJMXConnections;
+    }
+    
+    @CustomMetric(name="nJMXConnectionAttempts", kind = Kind.COUNTER, description = "Number of connection attempts to JMX service.")
+    public void set_nJMXConnectionAttempts(Metric nConnectionAttempts) {
+        this._nJMXConnectionAttempts = nConnectionAttempts;
+    }
+    
+    @CustomMetric(name="isConnectedToJMX", kind = Kind.GAUGE, description = "Value 1 indicates, that this operator is connected to JMX service. Otherwise value 0 is set, if no connection is established.")
+    public void set_isConnectedToJMX(Metric isConnectedToJMX) {
+        this._isConnectedToJMX = isConnectedToJMX;
+    }
+
 	/**
 	 * If the application configuration is used (applicationConfigurationName
 	 * parameter is set), save the active filterDocument (as JSON string) to
@@ -180,11 +231,25 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			throws Exception {
 		// Must call super.initialize(context) to correctly setup an operator.
 		super.initialize(context);
-
+		
 		// Dynamic registration of additional class libraries to get rid of
 		// the @Libraries annotation and its compile-time evaluation of
 		// environment variables.
 		setupClassPaths(context);
+
+		// check required parameters
+		if (null == _operatorConfiguration.get_applicationConfigurationName()) {
+			if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password())) {
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' or 'applicationConfigurationName' be applied.");
+			}
+		}
+		else {
+			if (context.getPE().isStandalone()) {
+				if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password())) {
+					throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' and 'domainId' applied, when running in standalone mode. Application configuration is supported in distributed mode only.");
+				}				
+			}
+		}
 
 		/*
 		 * The domainId parameter is optional. If the application developer does
@@ -193,19 +258,24 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		 */
 		if (_operatorConfiguration.get_domainId() == null) {
 			if (context.getPE().isStandalone()) {
-				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id.");
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id. The following value must be specified as parameter: domainId");
 			}
 			String domainId = getApplicationConfigurationDomainId();
-			if (domainId != "") {
-				_operatorConfiguration.set_domainId(domainId);
-				_trace.info("The " + context.getName() + " operator connects to the " + _operatorConfiguration.get_domainId() + " domain specified by application configuration.");				
-			}
-			else {
+			if ("".equals(domainId)) {
 				_operatorConfiguration.set_domainId(context.getPE().getDomainId());
 				_trace.info("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
 			}
+			else {
+				_operatorConfiguration.set_domainId(domainId);
+				_trace.info("The " + context.getName() + " operator connects to the " + _operatorConfiguration.get_domainId() + " domain specified by application configuration.");
+			}
 		}
-		_domainId = context.getPE().getDomainId();
+		// used to determine if configured domain is the domain where the PE runs
+		// if is running in standalone, then the domainId parameter/application configuration is used 
+		_domainId = ((context.getPE().isStandalone()) ? _operatorConfiguration.get_domainId() : context.getPE().getDomainId());
+
+		_operatorConfiguration.set_defaultFilterInstance((context.getPE().isStandalone()) ? ".*" : context.getPE().getInstanceId());
+		_operatorConfiguration.set_defaultFilterDomain(_domainId);
 
 		/*
 		 * Establish connections or resources to communicate an external system
@@ -221,8 +291,6 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			}
 		}		
 		
-		setupJMXConnection();
-
 		final StreamingOutput<OutputTuple> port = getOutput(0);
 		if (OpType.JOB_STATUS_SOURCE == _operatorConfiguration.get_OperatorType()) {
 			_operatorConfiguration.set_tupleContainerJobStatusSource(new JobStatusTupleContainer(getOperatorContext(), port));
@@ -233,6 +301,14 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		if (OpType.METRICS_SOURCE == _operatorConfiguration.get_OperatorType()) {			
 			_operatorConfiguration.set_tupleContainerMetricsSource(new MetricsTupleContainer(port));
 		}
+		// check if second output port is present
+		if (1 < context.getNumberOfStreamingOutputs()) {
+			final StreamingOutput<OutputTuple> port1 = getOutput(1);
+			_operatorConfiguration.set_tupleContainerConnectionNotification(new ConnectionNotificationTupleContainer(getOperatorContext(), port1));
+		}
+		
+		setupJMXConnection();
+
 		/*
 		 * Further actions are handled in the domain handler that manages
 		 * instances that manages jobs, etc.
@@ -361,12 +437,15 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		// In Streaming Analytics service the variable urls contains 3 JMX servers. The third JMX is the prefered one. 
 		for (int i=urls.length-1; i>=0; i--) {
 			try {
+				get_nJMXConnectionAttempts().increment(); // update metric
 				_trace.info("Connect to : " + urls[i]);
 				_operatorConfiguration.set_jmxConnector(JMXConnectorFactory.connect(new JMXServiceURL(urls[i]), env));
+				get_isConnectedToJMX().setValue(1);
 				break; // exit loop here since a valid connection is established, otherwise exception is thrown.
 			} catch (IOException e) {
 				_trace.error("connect failed: " + e.getMessage());
 				if (i == 0) {
+					get_isConnectedToJMX().setValue(0);
 					throw e;
 				}
 			}
@@ -439,9 +518,19 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			// The filters are not specified in the application configuration.
 			String filterDocument = _operatorConfiguration.get_filterDocument();
 			if (filterDocument == null) {
-				throw new Exception(MISSING_VALUE + PARAMETER_FILTER_DOCUMENT);
+				filterDocument = _operatorConfiguration.get_defaultFilterDocument();
+				_trace.info("filterDocument is not specified, use default: " + filterDocument);
 			}
-			_operatorConfiguration.set_filters(Filters.setupFilters(filterDocument, _operatorConfiguration.get_OperatorType()));
+			File fdoc = new File(filterDocument);
+			if (fdoc.exists()) {
+				_operatorConfiguration.set_filters(Filters.setupFilters(filterDocument, _operatorConfiguration.get_OperatorType()));
+			}
+			else {
+				String filterDoc = filterDocument.replaceAll("\\\\t", ""); // remove tabs
+				try(InputStream inputStream = new ByteArrayInputStream(filterDoc.getBytes())) {
+					_operatorConfiguration.set_filters(Filters.setupFilters(inputStream, _operatorConfiguration.get_OperatorType()));
+				}				
+			}
 		}
 	}
 
@@ -468,9 +557,11 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		return properties;
 	}
 	
-	private String autoDetectJmxConnect() {
+	private String autoDetectJmxConnect() throws Exception {
 		String result = null;
-		if (_operatorConfiguration.get_domainId() == _domainId) { // running in same domain as configured
+		_trace.debug("_domainId=[" + _domainId + "]");
+		_trace.debug("_operatorConfiguration.get_domainId()=[" + _operatorConfiguration.get_domainId() + "]");
+		if (_operatorConfiguration.get_domainId().equals(_domainId)) { // running in same domain as configured
 			_trace.debug("get connectionURL with streamtool getjmxconnect");
 			String cmd = "streamtool getjmxconnect -d "+ _domainId;
 
@@ -488,16 +579,25 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				e.printStackTrace();
 			}
 			result = output.toString();
-
-			_trace.info("connectionURL=[" + result + "]");
-			_operatorConfiguration.set_connectionURL(result);
+			// Service URL must start with 
+			if (result.startsWith("service:jmx:")) {
+				_trace.info("connectionURL=[" + result + "]");
+				_operatorConfiguration.set_connectionURL(result);
+			}
+			else {
+				if (result.endsWith(",")) {
+					result = result.substring(0, result.length()-1);
+				}
+				_trace.error("Unable to determine "+PARAMETER_CONNECTION_URL+": " + result);
+				throw new Exception("Unable to determine "+PARAMETER_CONNECTION_URL);
+			}
 		}
 		return result;
 	}	
 
 	private String autoDetectJmxSslOption(String user, String password) {		
 		String sslOption = null;
-		if (_operatorConfiguration.get_domainId() == _domainId) { // running in same domain as configured
+		if (_operatorConfiguration.get_domainId().equals(_domainId)) { // running in same domain as configured
 			_trace.debug("get jmx.sslOption with streamtool getdomainproperty");
 	
 			String[] cmd = { "/bin/sh", "-c", "echo "+password+" | streamtool getdomainproperty -d "+ _domainId + " -U "+user+" jmx.sslOption" };
@@ -533,6 +633,12 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		catch (Exception ignore) {
 		}
 		_domainHandler = null;
+		if (1 == get_isConnectedToJMX().getValue()) {
+			// update metric to indicate connection is broken
+			get_nBrokenJMXConnections().increment();
+			// update metric to indicate that we are not connected
+			get_isConnectedToJMX().setValue(0);
+		}
 	}
 	
 	

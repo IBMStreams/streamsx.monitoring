@@ -1,0 +1,65 @@
+namespace com.ibm.streamsx.monitoring.system.sample.SystemMonitorSource;
+
+use com.ibm.streamsx.monitoring.system::* ;
+
+/** 
+* This sample SPL application demonstrates the use of SystemMonitorSource operator 
+* to get the CPU and Memory usage from the current running system.
+*
+* @param period
+* Specifies the time interval between two requests in seconds. 
+*
+* @param detail
+* The status attribute contains addtional information retrieved from top command if the detail parameter is set to true.
+* Otherwise the status attribute contains the date and time only.
+*/
+composite Monitor
+{
+    param
+        expression<int32> $period :(int32) getSubmissionTimeValue("period", "3") ;
+        expression<boolean> $detail :(boolean) getSubmissionTimeValue("detail", "false") ;
+
+    graph
+
+        /** 
+         * The SystemMonitor operator delivers the CPU and Memory usage 
+         * from the current running system.        
+         */
+        stream<SystemStatus> SysMon = SystemMonitorSource() {
+            param
+                period : $period;
+                detail : $detail;
+        }
+
+        /** 
+         * The Custom operator printLogs 
+         * Writes the results in the console log.
+         */
+        stream<rstring result2> printLogs = Custom(SysMon) {
+            logic
+                state : {
+                    mutable int32 i = 0;
+                    mutable rstring headerLine =
+                        "Date and time , CPU usage % , Memory usage (%) , Memory total (KB) , Memory used (KB)" ;
+                    mutable rstring result = "";
+                }
+
+                onTuple SysMon: {
+                   result = status + " , " +(rstring) cpuUsage + " , " +(rstring) memUsage 
+                                + " , " +(rstring)memTotal + " , " +(rstring) memUsed;
+                    if (i == 0) {
+                        result = headerLine + "\n" + result;
+                        // add header to result
+                    }
+                    // Dumps the results to the console log.
+                    printStringLn(result);
+                    i ++;
+                }
+        }
+
+}
+
+
+
+
+

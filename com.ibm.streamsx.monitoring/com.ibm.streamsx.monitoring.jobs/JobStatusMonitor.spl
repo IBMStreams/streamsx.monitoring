@@ -1,0 +1,78 @@
+/*
+** Copyright (C) 2017  International Business Machines Corporation
+** All Rights Reserved
+*/
+namespace com.ibm.streamsx.monitoring.jobs;
+
+use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
+
+/**
+ * This operator uses JobStatusSource and prevents near duplicate notifications being emitted.
+ *
+ * @output OutStream
+ * The notification tuples on output port 0.
+ * The schema is defined by the JobStatusNotification type.
+ *
+ * @output ConnectionNotificationStream
+ * The JMX connection notification tuples on output port 1.
+ * The schema is defined by the ConnectionNotification type.
+ *
+ * @param applicationConfigurationName
+ * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
+ *
+ * @param user
+ * Specifies the user that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ *
+ * @param password
+ * Specifies the password that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ *
+ * @param filterDocument
+ * Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the domain, instance and job filters as regular expressions. Each regular expression must follow the rules that are specified for Java [https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ * If parameter is not set, then all jobs in current domain and instance are monitored.
+ *
+ * @param connectionURL
+ * Specifies the connection URL as returned by the `streamtool getjmxconnect` command. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getjmxconnect` command to get the value.
+ *
+ * @param domainId
+ * Specifies the domain id that is monitored. If no domain id is specified, the domain id under which this operator is running is used. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ *
+ * @param sslOption
+ * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getdomainproperty` command to get the value.
+ * 
+ */
+public composite JobStatusMonitor (output stream<JobStatusNotification> OutStream, stream<ConnectionNotification> ConnectionNotificationStream) {
+
+	param
+		expression<rstring> $applicationConfigurationName: ""; // optional, if user and password are set
+		expression<rstring> $user: ""; // optional, if set in application configuration
+		expression<rstring> $password: ""; // optional, if set in application configuration
+		expression<rstring> $filterDocument; // optional, uses default filter to monitor all in current domain and instance
+		expression<rstring> $connectionURL: ""; // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $domainId: ""; // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $sslOption: ""; // optional, if not set, then domain settings are used, where the PE is running
+
+	graph
+	
+		/*
+		 * The JobStatusSource generates a tuple for each notified PE status change.
+		 */
+		(stream<JobStatusNotification> Notifications;
+		 stream<ConnectionNotification> ConnectionNotificationStream
+		) = JobStatusSource() {
+			param
+				applicationConfigurationName: $applicationConfigurationName;
+				user: $user;
+				password: $password;
+				filterDocument: $filterDocument;
+				connectionURL: $connectionURL;
+				domainId: $domainId;
+				sslOption: $sslOption;				
+		}
+		
+		stream<I> OutStream = DeDuplicate(Notifications as I) {
+			param
+ 				timeOut: 5.0;                                                                          
+				key: notifyType, domainId, instanceId, jobId, jobName, resource, peId, peHealth, peStatus;
+		}
+
+}

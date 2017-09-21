@@ -59,6 +59,13 @@ import java.util.concurrent.TimeUnit;
 			windowPunctuationOutputMode=WindowPunctuationOutputMode.Free,
 			description=JobStatusSource.DESC_OUTPUT_PORT
 			)
+	,
+	@OutputPortSet(
+			cardinality=1,
+			optional=true,
+			windowPunctuationOutputMode=WindowPunctuationOutputMode.Free,
+			description=AbstractJmxSource.DESC_OUTPUT_PORT_1
+			)
 })
 public class JobStatusSource extends AbstractJmxSource {
 
@@ -78,18 +85,8 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "* com.ibm.streams.management.job.removed\\n"
 			+ "* com.ibm.streams.management.pe.changed\\n"			
 			+ "\\n"
-			+ "As an application developer, you provide the so-called filter "
-			+ "document. The filter document specifies patterns for domain, "
-			+ "instance, job and operator names. It also specifies "
-			+ "which name patterns are related, for example: For a domain X "
-			+ "monitor all instances, whereas in each instance only jobs with "
-			+ "a Y in their names shall be evaluated. For another domain Z, "
-			+ "only jobs with a name ending with XYZ, are monitored, etc.\\n"
-			+ "\\n"
-			+ "Per default, the JobStatusSource operator monitors neither any "
-			+ "domain, nor any instances, nor job, nor any other Streams job-"
-			+ "related object. Only those objects (and their parents) that "
-			+ "match the specified filters, are monitored.\\n"
+			+ "Per default, the JobStatusSource operator monitors all jobs "
+			+ "in the current domain and instance, if filter document is not specified.\\n"
 			+ "\\n"
 			+ "The JobStatusSource operator monitors filter-matching domains, "
 			+ "instances, and jobs that are running while the application that "
@@ -101,8 +98,8 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "\\n"
 			+ "+ Filter document\\n"
 			+ "\\n"
-			+ "The filter document specifies patterns for domain, instance, "
-			+ "job and operator names, and their relations.\\n"
+			+ "The filter document specifies patterns for domain, instance and "
+			+ "job and their relations.\\n"
 			+ "\\n"
 			+ "It also specifies "
 			+ "which name patterns are related, for example: For a domain X "
@@ -110,7 +107,7 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "a Y in their names shall be evaluated. For another domain Z, "
 			+ "only jobs with a name ending with XYZ, are monitored, etc.\\n"
 			+ "\\n"	
-			+ "The filter document is a JSON-encoded text file that is "
+			+ "The filter document is a JSON-encoded text file or JSON-encoded String that is "
 			+ "configured with the **filterDocument** parameter.\\n"
 			+ "\\n"
 			+ "If the **applicationConfigurationName** parameter is specified, "
@@ -134,12 +131,6 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "            [\\n"
 			+ "              {\\n"
 			+ "                \\\"jobNamePatterns\\\":\\\".*\\\",\\n"
-			+ "                \\\"operators\\\":\\n"
-			+ "                [\\n"
-			+ "                  {\\n"
-			+ "                    \\\"operatorNamePatterns\\\":\\\".*\\\"\\n"
-			+ "                  }\\n"
-			+ "                ]\\n"
 			+ "              }\\n"
 			+ "            ]\\n"
 			+ "          }\\n"
@@ -147,7 +138,7 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "      }\\n"
 			+ "    ]\\n"
 			+ "\\n"			
-			+ "The following filter document example selects events from the *Storage* operator in the *StreamsInstance* instance and *StreamsDomain* domain only:\\n"
+			+ "The following filter document example selects events from jobs in the *StreamsInstance* instance and *StreamsDomain* domain only:\\n"
 			+ "\\n"			
 			+ "    [\\n"
 			+ "      {\\n"
@@ -160,12 +151,6 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "            [\\n"
 			+ "              {\\n"
 			+ "                \\\"jobNamePatterns\\\":\\\".*\\\",\\n"
-			+ "                \\\"operators\\\":\\n"
-			+ "                [\\n"
-			+ "                  {\\n"
-			+ "                    \\\"operatorNamePatterns\\\":\\\"Storage\\\",\\n"
-			+ "                  }\\n"
-			+ "                ]\\n"
 			+ "              }\\n"
 			+ "            ]\\n"
 			+ "          }\\n"
@@ -184,8 +169,8 @@ public class JobStatusSource extends AbstractJmxSource {
 			;
 
 	private static final String DESC_PARAM_FILTER_DOCUMENT = 
-			"Specifies the path to a JSON-formatted document that specifies "
-			+ "the domain, instance, job and operator filters as "
+			"Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies "
+			+ "the domain, instance and job as "
 			+ "regular expressions. Each regular expression must follow the "
 			+ "rules that are specified for Java "
 			+ "[https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. "

@@ -10,6 +10,7 @@ package com.ibm.streamsx.monitoring.jmx;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 
+import com.ibm.streamsx.monitoring.jmx.internal.ConnectionNotificationTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.DeltaMetricEvaluator;
 import com.ibm.streamsx.monitoring.jmx.internal.EmitMetricTupleMode;
 import com.ibm.streamsx.monitoring.jmx.internal.IMetricEvaluator;
@@ -75,11 +76,17 @@ public class OperatorConfiguration {
 
 	private Filters _filters = new Filters();
 
+	private String _defaultFilterInstance = null;
+	
+	private String _defaultFilterDomain = null;	
+	
 	private MetricsTupleContainer _tupleContainerMetricsSource = null;
 	
 	private JobStatusTupleContainer _tupleContainerJobStatusSource = null;
 	
 	private LogTupleContainer _tupleContainerLogSource = null;
+	
+	private ConnectionNotificationTupleContainer _tupleContainerConnectionNotification = null;
 
 	private EmitMetricTupleMode _emitMetricTuple = EmitMetricTupleMode.onChangedValue;
 	
@@ -103,7 +110,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_connectionURL(String connectionURL) {
-		this._connectionURL = connectionURL;
+		if (!("".equals(connectionURL))) {
+			this._connectionURL = connectionURL;
+		}
 	}
 
 	public String get_user() {
@@ -111,7 +120,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_user(String user) {
-		this._user = user;
+		if (!("".equals(user))) {
+			this._user = user;
+		}
 	}
 
 	public String get_password() {
@@ -119,7 +130,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_password(String password) {
-		this._password = password;
+		if (!("".equals(password))) {
+			this._password = password;
+		}
 	}
 
 	public String get_sslOption() {
@@ -127,7 +140,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_sslOption(String sslOption) {
-		this._sslOption = sslOption;
+		if (!("".equals(sslOption))) {
+			this._sslOption = sslOption;
+		}
 	}	
 	
 	public String get_domainId() {
@@ -135,7 +150,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_domainId(String domainId) {
-		this._domainId = domainId;
+		if (!("".equals(domainId))) {
+			this._domainId = domainId;
+		}
 	}
 
 	public String get_applicationConfigurationName() {
@@ -143,7 +160,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_applicationConfigurationName(String applicationConfigurationName) {
-		this._applicationConfigurationName = applicationConfigurationName;
+		if (!("".equals(applicationConfigurationName))) {
+			this._applicationConfigurationName = applicationConfigurationName;
+		}
 	}
 
 	public String get_filterDocument() {
@@ -151,7 +170,9 @@ public class OperatorConfiguration {
 	}
 
 	public void set_filterDocument(String filterDocument) {
-		this._filterDocument = filterDocument;
+		if (!("".equals(filterDocument))) {
+			this._filterDocument = filterDocument;
+		}
 	}
 
 	public Double get_scanPeriod() {
@@ -192,7 +213,6 @@ public class OperatorConfiguration {
 
 	public void set_tupleContainerMetricsSource(MetricsTupleContainer tupleContainer) {
 		_tupleContainerMetricsSource = tupleContainer;
-		
 	}
 	
 	public LogTupleContainer get_tupleContainerLogSource() {
@@ -209,9 +229,16 @@ public class OperatorConfiguration {
 
 	public void set_tupleContainerJobStatusSource(JobStatusTupleContainer tupleContainer) {
 		_tupleContainerJobStatusSource = tupleContainer;
-		
 	}	
 
+	public void set_tupleContainerConnectionNotification(ConnectionNotificationTupleContainer tupleContainer) {
+		_tupleContainerConnectionNotification = tupleContainer;
+	}
+	
+	public ConnectionNotificationTupleContainer get_tupleContainerConnectionNotification() {
+		return _tupleContainerConnectionNotification;
+	}
+	
 	public void set_emitMetricTuple(EmitMetricTupleMode mode) {
 		_emitMetricTuple = mode;
 	}
@@ -227,4 +254,33 @@ public class OperatorConfiguration {
 		}
 	}
 	
+	public void set_defaultFilterInstance(String instance) {
+		_defaultFilterInstance = instance;
+	}
+
+	public void set_defaultFilterDomain(String domain) {
+		_defaultFilterDomain = domain;
+	}
+	
+	public String get_defaultFilterDocument() {
+		String result = null;
+		if (_opType.equals(OpType.METRICS_SOURCE)) {
+			result = "[{\"domainIdPatterns\":\""
+					+ _defaultFilterDomain
+					+ "\",\"instances\":[{\"instanceIdPatterns\":\""
+					+ _defaultFilterInstance
+					+ "\",\"jobs\":[{\"jobNamePatterns\":\".*\","
+					+ "\"pes\":[{\"metricNamePatterns\":\".*\",\"inputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"outputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"connections\":[{\"connectionIdPatterns\":\".*\",\"metricNamePatterns\":\".*\"}]}],"
+					+ "\"operators\":[{\"operatorNamePatterns\":\".*\",\"metricNamePatterns\":\".*\",\"inputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"outputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}]}]}]}]}]";
+		}
+		else if (_opType.equals(OpType.JOB_STATUS_SOURCE)) {
+			result = "[{\"domainIdPatterns\":\""
+					+ _defaultFilterDomain
+					+ "\",\"instances\":[{\"instanceIdPatterns\":\""
+					+ _defaultFilterInstance
+					+ "\",\"jobs\":[{\"jobNamePatterns\":\".*\",}]}]}]";	
+		}
+		return result;
+	}
+
 }

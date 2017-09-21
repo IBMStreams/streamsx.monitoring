@@ -60,6 +60,13 @@ import com.ibm.streamsx.monitoring.jmx.internal.EmitMetricTupleMode;
 			windowPunctuationOutputMode=WindowPunctuationOutputMode.Generating,
 			description=MetricsSource.DESC_OUTPUT_PORT
 			)
+	,
+	@OutputPortSet(
+			cardinality=1,
+			optional=true,
+			windowPunctuationOutputMode=WindowPunctuationOutputMode.Free,
+			description=AbstractJmxSource.DESC_OUTPUT_PORT_1
+			)
 })
 @Icons(
 		location16 = "icons/MetricsSource_16.gif", 
@@ -93,10 +100,8 @@ public class MetricsSource extends AbstractJmxSource {
 			+ "these parts must match to the corresponding set of related name "
 			+ "patterns.\\n"
 			+ "\\n"
-			+ "Per default, the MetricsSource operator monitors neither any "
-			+ "domain, nor any instances, nor job, nor any other Streams job-"
-			+ "related object. Only those objects (and their parents) that "
-			+ "match the specified filters, are monitored.\\n"
+			+ "Per default, the MetricsSource operator monitors all metrics "
+			+ "in the current domain and instance, if filter document is not specified."
 			+ "\\n"
 			+ "The MetricsSource operator monitors filter-matching domains, "
 			+ "instances, and jobs that are running while the application that "
@@ -111,13 +116,16 @@ public class MetricsSource extends AbstractJmxSource {
 			+ "The filter document specifies patterns for domain, instance, "
 			+ "job, operator, and metric names, and their relations.\\n"
 			+ "\\n"
+			+ "Only those objects (and their parents) that "
+			+ "match the specified filters, are monitored.\\n"
+			+ "\\n"
 			+ "It also specifies "
 			+ "which name patterns are related, for example: For a domain X "
 			+ "monitor all instances, whereas in each instance only jobs with "
 			+ "a Y in their names shall be evaluated. For another domain Z, "
 			+ "only jobs with a name ending with XYZ, are monitored, etc.\\n"
 			+ "\\n"	
-			+ "The filter document is a JSON-encoded text file that is "
+			+ "The filter document is a JSON-encoded text file or JSON-encoded String that is "
 			+ "configured with the **filterDocument** parameter.\\n"
 			+ "\\n"
 			+ "If the **applicationConfigurationName** parameter is specified, "
@@ -240,7 +248,7 @@ public class MetricsSource extends AbstractJmxSource {
 			;
 	
 	private static final String DESC_PARAM_FILTER_DOCUMENT = 
-			"Specifies the path to a JSON-formatted document that specifies "
+			"Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies "
 			+ "the domain, instance, job, operator, and metric name filters as "
 			+ "regular expressions. Each regular expression must follow the "
 			+ "rules that are specified for Java "
