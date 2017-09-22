@@ -1,0 +1,70 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+
+/**
+ * Several numbers that are created by the Beacon and stored in metrics.
+ */
+type MetricNumbers = tuple<
+	int64 incrementingNumber,
+	int64 randomNumber
+>;
+
+/**
+ * Create the custom application metrics. The function is usable in the state
+ * logic of an operator.
+ */
+stateful boolean createMetrics() {
+	createCustomMetric("inc", "The incrementing number.", Sys.Counter, 0l);
+	createCustomMetric("rnd", "The random number.", Sys.Counter, 0l);
+	createCustomMetric("const", "The constant number.", Sys.Counter, 5l);
+	return true;
+}
+
+/**
+ * Set the custom application metrics.
+ * 
+ * @param numbers
+ * Specifies the numbers that are created by the Beacon operator.
+ */
+stateful void setMetrics(MetricNumbers numbers) {
+	setCustomMetricValue("inc", numbers.incrementingNumber);
+	setCustomMetricValue("rnd", numbers.randomNumber);
+}
+
+/**
+ * This application is monitored by the Monitor application.
+ * Custom metrics are created and incremented.
+ */
+public composite SampleJob
+{
+
+	graph
+		/*
+		 * The Beacon generates incrementing and random numbers.
+		 */
+		stream<MetricNumbers> Numbers as O = Beacon() {
+			param period: 5.0;
+			output O:
+				incrementingNumber = (int64)IterationCount(),
+				randomNumber = (int64)(random() * 1000.0);
+		}
+		
+		/*
+		 * The Custom stores the received numbers in metrics.
+		 */
+		() as Storage = Custom(Numbers as I) {
+			logic
+			state: {
+				boolean created = createMetrics();
+			}
+			onTuple I: {
+				setMetrics(I);
+			}
+		}
+
+}
