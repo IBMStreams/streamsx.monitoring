@@ -279,6 +279,8 @@ public class MetricsSource extends AbstractJmxSource {
 	 * Thread for calling <code>produceTuples()</code> to produce tuples 
 	 */
 	private Thread _processThread;
+	
+	private boolean isShutdown = false;
 
 	/**
 	 * Logger for tracing.
@@ -346,7 +348,9 @@ public class MetricsSource extends AbstractJmxSource {
 						try {
 							produceTuples();
 						} catch (Exception e) {
-							_trace.error("Operator error", e);
+							if (false == isShutdown) {
+								_trace.error("Operator error", e);
+							}
 						}                    
 					}
 
@@ -424,6 +428,7 @@ public class MetricsSource extends AbstractJmxSource {
 	 * @throws Exception Operator failure, will cause the enclosing PE to terminate.
 	 */
 	public synchronized void shutdown() throws Exception {
+		isShutdown = true;
 		if (_processThread != null) {
 			_processThread.interrupt();
 			_processThread = null;
