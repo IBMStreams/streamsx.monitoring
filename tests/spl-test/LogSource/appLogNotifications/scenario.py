@@ -2,11 +2,11 @@ import testharness as th
 import os, sys
 
 try:
-   os.environ["TEST_DOMAIN_ID"]
+   os.environ["STREAMS_DOMAIN_ID"]
    os.environ["JMX_USER"]
    os.environ["JMX_PASSWORD"]
 except KeyError: 
-   print "Please set the environment variables TEST_DOMAIN_ID, JMX_USER and JMX_PASSWORD"
+   print ("Please set the environment variables STREAMS_DOMAIN_ID, JMX_USER and JMX_PASSWORD")
    sys.exit(1)
 
 def test():
@@ -15,7 +15,7 @@ def test():
 
     th.start_sample()
 
-    stdout, stderr, err = th.run_monitor_standalone(args=['user='+os.environ["JMX_USER"], 'password='+os.environ["JMX_PASSWORD"], 'domainId='+os.environ["TEST_DOMAIN_ID"]])
+    stdout, stderr, err = th.run_monitor_standalone(args=['user='+os.environ["JMX_USER"], 'password='+os.environ["JMX_PASSWORD"], 'domainId='+os.environ["STREAMS_DOMAIN_ID"]])
 
     #print 'Monitor:\n' + stdout + '\n'
 

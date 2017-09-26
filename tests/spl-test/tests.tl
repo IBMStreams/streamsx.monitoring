@@ -1,3 +1,6 @@
+MetricsSource/appConfig
 MetricsSource/customMetrics
+JobStatusMonitor/appConfig
+JobStatusMonitor/jmxReconnect
 JobStatusMonitor/restartNotification
 LogSource/appLogNotifications

@@ -1,0 +1,70 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2016, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+use com.ibm.streamsx.monitoring.metrics::MetricsSource;
+use com.ibm.streamsx.monitoring.metrics::Notification;
+use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
+
+/**
+ * This sample application demonstrate how to use the MetricsSource operator
+ *
+ * @param applicationConfigurationName
+ * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
+ *
+ */
+composite Main {
+	param
+		expression<rstring> $applicationConfigurationName: getSubmissionTimeValue("applicationConfigurationName", "com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration");
+
+	graph
+		/*
+		 * The MetricsSource generates tuple for the specified metrics.
+		 */
+		(stream<Notification> MetricNotifications
+		) = MetricsSource() {
+			param
+				applicationConfigurationName: $applicationConfigurationName;
+				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorOperatorMetrics.json";
+				emitMetricTuple: onChangedValue;
+		}
+
+		/*
+		 *  Verify the received metric value notifications.
+		 */
+		(stream <rstring result> SaveDone1) as NotificationTracer = Custom(MetricNotifications as I) {
+			logic 
+			state: {
+				mutable boolean done1Sent = false;
+				mutable boolean metricNotificationReceived = false;
+			}
+			onTuple I: {
+				printStringLn((rstring)I);
+				metricNotificationReceived = true;
+			}
+			onPunct I: {
+				if ((!done1Sent) && (metricNotificationReceived)) {
+					submit({result="TEST_RESULT_PASS"}, SaveDone1);
+					submit(Sys.WindowMarker, SaveDone1);
+					done1Sent = true;
+				}
+			}
+		}
+
+		() as Done1 = FileSink(SaveDone1 as I) {
+			param file: "done_1"; format: csv; flush: 1u; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
+		}
+
+
+		/*
+		 * A @parallel-annotated source.
+		 */
+		@parallel(width=3)
+		(stream<rstring dummy> Data) as AnnotatedSource = Beacon() {
+			param period: 3.0; 
+		}
+
+}
