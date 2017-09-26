@@ -571,7 +571,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				p = Runtime.getRuntime().exec(cmd);
 				p.waitFor();
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	            String line = "";
+				String line = "";
 				while ((line = br.readLine())!= null) {
 					output.append(line).append(",");
 				}
@@ -608,7 +608,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				p = Runtime.getRuntime().exec(cmd);
 				p.waitFor();
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	            String line = "";
+				String line = "";
 				while ((line = br.readLine())!= null) {
 					output.append(line);
 				}
