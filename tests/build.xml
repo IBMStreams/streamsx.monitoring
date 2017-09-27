@@ -1,0 +1,16 @@
+<project name="MonitoringTests" default="test">
+
+    <target name="clean">
+       <ant dir="spl-test" target="clean">
+       </ant> 
+    </target>
+
+    <target name="test" depends="spl-test">
+    </target>
+
+    <target name="spl-test">
+        <ant dir="spl-test">
+        </ant>
+    </target>
+
+</project>

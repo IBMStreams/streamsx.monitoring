@@ -10,7 +10,7 @@ use com.ibm.streamsx.monitoring.system::*;
 use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
 
 /**
- * This sample application demonstrates the usage of the LogSource operator and monitors log events
+ * This application tests LogSource operator in standalone mode
  *
  * @param applicationConfigurationName
  * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
@@ -57,7 +57,7 @@ composite Monitor {
 		}
 		
 		/*
-		 * Verify the received metric value notifications.
+		 * Verify the received notifications.
 		 */
 		() as NotificationTracer = Custom(Logs as I; TimeoutStream as T) {
 			logic 

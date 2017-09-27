@@ -74,7 +74,7 @@ def remove_files(name):
     Popen(["rm -f " + name], shell=True, stdout=PIPE).communicate()
 
 def wait_for_file(name):
-    timeout = 120   # [seconds]
+    timeout = 180   # [seconds]
     timeout_start = time.time()
     while time.time() < timeout_start + timeout:
         if os.path.exists (name):

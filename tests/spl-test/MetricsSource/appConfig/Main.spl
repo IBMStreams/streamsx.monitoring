@@ -43,7 +43,9 @@ composite Main {
 			}
 			onTuple I: {
 				printStringLn((rstring)I);
-				metricNotificationReceived = true;
+				if ((I.metricName=="nTuplesSubmitted") && (-1 != findFirst(I.operatorName, "AnnotatedSource", 0))) {
+					metricNotificationReceived = true;
+				}
 			}
 			onPunct I: {
 				if ((!done1Sent) && (metricNotificationReceived)) {
@@ -55,7 +57,7 @@ composite Main {
 		}
 
 		() as Done1 = FileSink(SaveDone1 as I) {
-			param file: "done_1"; format: csv; flush: 1u; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
+			param file: "done_1"; format: csv; flush: 1u; quoteStrings : false; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
 		}
 
 

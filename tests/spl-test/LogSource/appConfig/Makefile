@@ -29,12 +29,12 @@ clean:
 	rm -rf $(OUTPUT_DIR)
 
 configure:
-	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.LogSource.ApplicationConfiguration
+	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) com.ibm.streamsx.monitoring.LogSource.ApplicationConfiguration
 
 start-monitor:
-	streamtool submitjob output/Main.sab --jobname metricsAppConfig
+	streamtool submitjob output/Main.sab --jobname logSourceAppConfig
 
 stop-monitor:
-	streamtool canceljob --jobnames metricsAppConfig --collectlogs
+	streamtool canceljob --jobnames logSourceAppConfig --collectlogs
 

@@ -87,7 +87,7 @@ composite Monitor {
 		}
 
 		() as Done1 = FileSink(SaveDone1 as I) {
-			param file: "done_1"; format: csv; flush: 1u; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
+			param file: "done_1"; format: csv; flush: 1u; quoteStrings : false; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
 		}
 
 	config

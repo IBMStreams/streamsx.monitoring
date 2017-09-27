@@ -1,0 +1,17 @@
+<project name="streamsx.monitoring.spl.tests" default="test" basedir=".">
+
+    <target name="clean">
+	<delete>
+	    <fileset dir="${basedir}" includes="**/*.pyc,**/StreamsLogs*.tgz,**/done*"/>
+	</delete>
+    </target>
+
+    <target name="test">
+        <exec executable="python" failonerror="true">
+            <arg value="runtests.py"/>
+            <arg value="-f"/>
+            <arg value="tests.tl"/>
+        </exec>
+    </target>
+
+</project>

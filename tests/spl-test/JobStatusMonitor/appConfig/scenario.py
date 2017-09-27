@@ -30,7 +30,7 @@ def test():
         err = 1
         th.stop_monitor()
         th.stop_sample()
-        assert_pass(err == 0, "Could not read file:", result_file_1)
+        th.assert_pass(err == 0, "Could not read file:", result_file_1)
 
     th.remove_f(result_file_1)
     th.stop_monitor()

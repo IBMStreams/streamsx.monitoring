@@ -10,7 +10,7 @@ use com.ibm.streamsx.monitoring.jobs::*;
 use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
 
 /**
- * This sample application demonstrates the usage of the JobStatusMonitor operator and monitors all jobs and reports the Job/PE status events
+ * This application tests the JMX reconnect in JobStatusMonitor operator
  *
  * @param applicationConfigurationName
  * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
@@ -91,11 +91,11 @@ composite Monitor {
 		}
 
 		() as Done1 = FileSink(SaveDone1 as I) {
-			param file: "done_1"; format: csv; flush: 1u; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
+			param file: "done_1"; format: csv; flush: 1u; quoteStrings : false; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
 		}
 
 		() as Done2 = FileSink(SaveDone2 as I) {
-			param file: "done_2"; format: csv; flush: 1u; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
+			param file: "done_2"; format: csv; flush: 1u; quoteStrings : false; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
 		}
 
 	config

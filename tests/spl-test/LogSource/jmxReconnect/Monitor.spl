@@ -1,16 +1,16 @@
 //
 // ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
+// * Copyright (C) 2017, International Business Machines Corporation          *
 // * All rights reserved.                                                     *
 // ****************************************************************************
 //
 
-use com.ibm.streamsx.monitoring.metrics::MetricsSource;
-use com.ibm.streamsx.monitoring.metrics::Notification;
+use com.ibm.streamsx.monitoring.system::LogSource;
+use com.ibm.streamsx.monitoring.system::*;
 use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
 
 /**
- * This application tests MetricsSource operator in standalone mode
+ * This application tests the JMX reconnect in MetricsSource operator
  *
  * @param applicationConfigurationName
  * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
@@ -20,10 +20,6 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  *
  * @param password
  * Specifies the password that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
- *
- * @param filterDocument
- * Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the domain, instance and job filters as regular expressions. Each regular expression must follow the rules that are specified for Java [https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
- * If parameter is not set, then all metrics from all jobs in current domain and instance are monitored.
  *
  * @param connectionURL
  * Specifies the connection URL as returned by the `streamtool getjmxconnect` command. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getjmxconnect` command to get the value.
@@ -40,68 +36,66 @@ composite Monitor {
 		expression<rstring> $applicationConfigurationName: getSubmissionTimeValue("applicationConfigurationName", ""); // optional, if user and password are set
 		expression<rstring> $user: getSubmissionTimeValue("user", ""); // optional, if set in application configuration
 		expression<rstring> $password: getSubmissionTimeValue("password", ""); // optional, if set in application configuration
-		expression<rstring> $filterDocument: getSubmissionTimeValue("filterDocument", ""); // uses default, if not set
 		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $domainId: getSubmissionTimeValue("domainId", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then domain settings are used, where the PE is running
 
 	graph
+
 		/*
-		 * The MetricsSource generates tuple for the specified metrics.
+		 * The LogSource generates a tuple for each notified log event.
 		 */
-		(stream<Notification> MetricNotifications
-		) = MetricsSource() {
+		(stream<LogNotification> Logs;
+		 stream<ConnectionNotification> ConnectionNotifications
+		) = LogSource() {
 			param
 				applicationConfigurationName: $applicationConfigurationName;
 				user: $user;
 				password: $password;
-				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorSomeCustomMetrics.json";
 				connectionURL: $connectionURL;
 				domainId: $domainId;
 				sslOption: $sslOption;
-				emitMetricTuple: onChangedValue;
 		}
 		
 		/*
-		 * Verify the received metric value notifications.
+		 * Verify the received notifications.
 		 */
-		() as NotificationTracer = Custom(MetricNotifications as I; TimeoutStream as T) {
+		(stream <rstring result> SaveDone1; stream <rstring result> SaveDone2) as NotificationTracer = Custom(Logs as I; ConnectionNotifications as C) {
 			logic 
 			state: {
-				mutable boolean passed = false;
+				mutable boolean done1Sent = false;
+				mutable boolean done2Sent = false;
+				mutable boolean receivedConnectionNotification = false;
 			}
 			onTuple I: {
-				printStringLn("MetricNotification: " + (rstring)I);
-				if ((I.metricName == "inc") && (I.metricType == "custom")) {
-					//TODO check metricKind != "unknown"
-					if ((length(I.jobName) > 0) && (length(I.domainId) > 0) && (length(I.instanceId) > 0) && (length(I.resource) > 0)) {
-						printStringLn("TEST_RESULT_PASS");
-						passed = true;
-						shutdownPE();
+				printStringLn((rstring)I);
+				if (I.notifyType == "com.ibm.streams.management.log.application.error") {
+					if (!done1Sent) {
+						submit({result="TEST_RESULT_PASS"}, SaveDone1);
+						submit(Sys.WindowMarker, SaveDone1);
+						done1Sent = true;
 					}
-					else {
-						printStringLn("ERROR: MISSING ATTRIBUTE VALUES");
-						printStringLn("TEST_RESULT_FAIL");
-						abort();
+					if ((!done2Sent) && (receivedConnectionNotification)) {
+						submit({result="TEST_RESULT_PASS"}, SaveDone2);
+						submit(Sys.WindowMarker, SaveDone2);
+						done2Sent = true;
 					}
 				}
 			}
-			onTuple T: {
-				if ((false == passed) && (false == isShutdown())) {
-					printStringLn("ERROR: TIMEOUT");
-					printStringLn("TEST_RESULT_FAIL");
-					abort();
-				}
+			onTuple C: {
+				printStringLn((rstring)C);
+				// expect ConnectionNotification when domain is stopped and JMX connections is closed
+				receivedConnectionNotification = true;
 			}
 		}
 		
-		stream<boolean dummy> TimeoutStream = Beacon() {
-			param 
-				iterations: 1u;
-				initDelay: 60.0;
+		() as Done1 = FileSink(SaveDone1 as I) {
+			param file: "done_1"; format: csv; flush: 1u; quoteStrings : false; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
+		}
+
+		() as Done2 = FileSink(SaveDone2 as I) {
+			param file: "done_2"; format: csv; flush: 1u; quoteStrings : false; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
 		}
 
 
-	config
-		placement : partitionColocation("MONITOR");
 }
