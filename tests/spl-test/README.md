@@ -1,5 +1,7 @@
 # Setup for tests
 
+The test scripts require **python 3.x** for python unittest. Ensure that `python3` command is in your `PATH`.
+
 You need to set the following environment variables:
 
 * `JMX_USER` - user name for JMX connection
@@ -9,7 +11,7 @@ You need to set the following environment variables:
 
 The test suites `test_jmx_reconnect` require the following environment variables:
 
-* `TEST_DOMAIN` - domain ID for a second *Streams Domain*. It is required that the property `jmx.port` is not to value `0`.
+* `TEST_DOMAIN` - domain ID for a second *Streams Domain*. It is required that the property `jmx.port` is **not** set to value `0`.
 * `TEST_INSTANCE` - instance ID of a *Streams Instance* in the `TEST_DOMAIN`
 
 If not set, then the test suites are skipped.

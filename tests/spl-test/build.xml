@@ -34,8 +34,8 @@
     </target>
 
     <target name="init">
-        <fail unless="env.JMX_USER" message="Environment variable JMX_USER not set. Please set the user name for JMX connection."/>
-        <fail unless="env.JMX_PASSWORD" message="Environment variable JMX_PASSWORD not set. Please set the password for JMX connection."/>
+        <fail unless="env.JMX_USER" message="Please set environment variables JMX_USER and JMX_PASSWORD for the user name and password for JMX connection."/>
+        <fail unless="env.JMX_PASSWORD" message="Please set environment variables JMX_USER and JMX_PASSWORD for the user name and password for JMX connection."/>
     </target>
 
     <target name="test" depends="init, clean">
