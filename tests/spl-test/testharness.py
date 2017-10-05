@@ -33,8 +33,7 @@ def start_monitor(args=list()):
     assert_pass(err == 0, stdout, stderr)
 
 def start_test_domain(args=list()):
-    stdout, stderr, err = exec_noexit(['make', 'start-test-domain'] + args)
-    assert_pass(err == 0, stdout, stderr)
+    exec_noexit(['make', 'start-test-domain'] + args)
 
 def create_app_config(args=list()):
     stdout, stderr, err = exec_noexit(['make', 'configure'] + args)
