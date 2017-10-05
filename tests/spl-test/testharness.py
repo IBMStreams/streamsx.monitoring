@@ -1,4 +1,4 @@
-# Copyright (C) 2015 International Business Machines Corporation. 
+# Copyright (C) 2017 International Business Machines Corporation. 
 # All Rights Reserved.
 
 import sys, os, time
@@ -46,11 +46,9 @@ def stop_test_domain(args=list()):
 def stop_monitor(args=list()):
     exec_noexit(['make', 'stop-monitor'] + args)
 
-def make_build(args=list()):
-    return exec_noexit(['make', 'build'] + args)
-
-def make_all(args=list()):
-    return exec_noexit(['make', 'all'] + args)
+def make_applications():
+    stdout, stderr, err = exec_noexit(['make', 'all'])
+    assert_pass(err == 0, stdout, stderr)
 
 def make_clean():
     stdout, stderr, err = exec_noexit(['make', 'clean'])
@@ -81,27 +79,30 @@ def wait_for_file(name):
             break
         time.sleep(1)
 
-def testharness(test_name):
-    topdir = os.getcwd()
+def test_result_file(name):
+    err = 0
     try:
-        os.chdir(test_name)
+        fh = open(name, 'r')
+        result = fh.read()
+        fh.close()
+    except IOError:
+        err = 1
+    return err
 
-        sys.path.append(os.getcwd())
-        tester = __import__('scenario')
+def checkEnvJMX():
+    try:
+        os.environ["JMX_USER"]
+        os.environ["JMX_PASSWORD"]
+    except KeyError: 
+        print ("ERROR: Please set the environment variables JMX_USER and JMX_PASSWORD")
+        raise
 
-        tester.test()
-        make_clean()
-
-        del tester
-        del sys.modules['scenario']
-        sys.path.remove(os.getcwd())
-        os.remove('scenario.pyc')
-
-        print (test_name + ' pass')
-    except TestFailure as tf:
-        tf.say(test_name)
-    except ImportError as ie:
-        print (test_name + ' fail:\n' + '\tunable to import ' + test_name + '/scenario.py')
-    finally:
-        os.chdir(topdir)
+def checkDomain():
+    result = 0
+    try:
+        os.environ["TEST_DOMAIN"]
+        os.environ["TEST_INSTANCE"]
+    except KeyError: 
+        result = 1
+    return result
 
