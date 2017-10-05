@@ -1,0 +1,30 @@
+[
+	{
+		"domainIdPatterns":".*",
+		"instances":
+		[
+			{
+				"instanceIdPatterns":".*",
+				"jobs":
+				[
+					{
+						"jobNamePatterns":".*",
+						"operators":
+						[
+							{
+								"operatorNamePatterns":".*",
+								"outputPorts":
+								[
+									{
+										"portIndexes":"*",
+										"metricNamePatterns":".*"
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

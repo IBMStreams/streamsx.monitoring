@@ -1,0 +1,7 @@
+/runTTF/
+*StreamsLogs*.tgz
+*.pyc
+*output/
+*toolkit.xml
+*done*
+*__pycache__/

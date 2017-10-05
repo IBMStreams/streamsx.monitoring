@@ -69,6 +69,12 @@
 		<delete dir="${gensrc.dir}" />
 		<delete dir="${basedir}/output" quiet="true"/>
 		<delete file="${impl.lib.dir}/${jarfile}"/>
+		<!-- toolkit clean with spl-make-toolkit does not delete generated operator xml files -->
+		<delete file="${basedir}/com.ibm.streamsx.monitoring.jobs/JobStatusSource/JobStatusSource.xml" quiet="true"/>
+		<delete file="${basedir}/com.ibm.streamsx.monitoring.metrics/MetricsMonitor/MetricsMonitor.xml" quiet="true"/>
+		<delete file="${basedir}/com.ibm.streamsx.monitoring.metrics/MetricsSource/MetricsSource.xml" quiet="true"/>
+		<delete file="${basedir}/com.ibm.streamsx.monitoring.system/LogSource/LogSource.xml" quiet="true"/>
+		<delete file="${basedir}/com.ibm.streamsx.monitoring.system/SystemMonitorSource/SystemMonitorSource.xml" quiet="true"/>
 	</target>
 	
 	<target name="indexToolkit" depends="package">

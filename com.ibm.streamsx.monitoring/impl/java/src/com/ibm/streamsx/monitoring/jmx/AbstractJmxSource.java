@@ -135,35 +135,35 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	
 	private String _domainId = null; // domainId for this PE
 	
-	private Metric _isConnectedToJMX;
-	private Metric _nJMXConnectionAttempts;
-	private Metric _nBrokenJMXConnections;
+	private Metric isConnected;
+	private Metric nJMXConnectionAttempts;
+	private Metric nBrokenJMXConnections;
 
     public Metric get_nJMXConnectionAttempts() {
-        return _nJMXConnectionAttempts;
+        return this.nJMXConnectionAttempts;
     }
 	
-    public Metric get_isConnectedToJMX() {
-        return _isConnectedToJMX;
+    public Metric get_isConnected() {
+        return this.isConnected;
     }
 
     public Metric get_nBrokenJMXConnections() {
-        return _nBrokenJMXConnections;
+        return this.nBrokenJMXConnections;
     }
     
     @CustomMetric(name="nBrokenJMXConnections", kind = Kind.COUNTER, description = "Number of broken JMX connections that have occurred. Notifications may have been lost.")
     public void set_nConnectionLosts(Metric nBrokenJMXConnections) {
-        this._nBrokenJMXConnections = nBrokenJMXConnections;
+        this.nBrokenJMXConnections = nBrokenJMXConnections;
     }
     
     @CustomMetric(name="nJMXConnectionAttempts", kind = Kind.COUNTER, description = "Number of connection attempts to JMX service.")
     public void set_nJMXConnectionAttempts(Metric nConnectionAttempts) {
-        this._nJMXConnectionAttempts = nConnectionAttempts;
+        this.nJMXConnectionAttempts = nConnectionAttempts;
     }
     
-    @CustomMetric(name="isConnectedToJMX", kind = Kind.GAUGE, description = "Value 1 indicates, that this operator is connected to JMX service. Otherwise value 0 is set, if no connection is established.")
-    public void set_isConnectedToJMX(Metric isConnectedToJMX) {
-        this._isConnectedToJMX = isConnectedToJMX;
+    @CustomMetric(name="isConnected", kind = Kind.GAUGE, description = "Value 1 indicates, that this operator is connected to JMX service. Otherwise value 0 is set, if no connection is established.")
+    public void set_isConnected(Metric isConnected) {
+        this.isConnected = isConnected;
     }
 
 	/**
@@ -440,12 +440,12 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				get_nJMXConnectionAttempts().increment(); // update metric
 				_trace.info("Connect to : " + urls[i]);
 				_operatorConfiguration.set_jmxConnector(JMXConnectorFactory.connect(new JMXServiceURL(urls[i]), env));
-				get_isConnectedToJMX().setValue(1);
+				get_isConnected().setValue(1);
 				break; // exit loop here since a valid connection is established, otherwise exception is thrown.
 			} catch (IOException e) {
 				_trace.error("connect failed: " + e.getMessage());
 				if (i == 0) {
-					get_isConnectedToJMX().setValue(0);
+					get_isConnected().setValue(0);
 					throw e;
 				}
 			}
@@ -571,7 +571,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				p = Runtime.getRuntime().exec(cmd);
 				p.waitFor();
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	            String line = "";
+				String line = "";
 				while ((line = br.readLine())!= null) {
 					output.append(line).append(",");
 				}
@@ -608,7 +608,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				p = Runtime.getRuntime().exec(cmd);
 				p.waitFor();
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	            String line = "";
+				String line = "";
 				while ((line = br.readLine())!= null) {
 					output.append(line);
 				}
@@ -633,11 +633,11 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		catch (Exception ignore) {
 		}
 		_domainHandler = null;
-		if (1 == get_isConnectedToJMX().getValue()) {
+		if (1 == get_isConnected().getValue()) {
 			// update metric to indicate connection is broken
 			get_nBrokenJMXConnections().increment();
 			// update metric to indicate that we are not connected
-			get_isConnectedToJMX().setValue(0);
+			get_isConnected().setValue(0);
 		}
 	}
 	

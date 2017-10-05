@@ -12,6 +12,7 @@
   <property environment="env" />
   <property name="streams.install" value="${env.STREAMS_INSTALL}" />
   <property name="toolkit" location="com.ibm.streamsx.monitoring"/>
+  <property name="toolkit.test" location="tests"/>
   <property name="tmp" location="tmp" />
 	
   <target name="all" depends="toolkit,samples,spldoc"/>
@@ -19,9 +20,13 @@
   <target name="clean" depends="cleansamples"
         description="clean up" >
         <delete includeemptydirs="true">
-          <fileset dir="${basedir}" includes="release-*/"/>
+          <fileset dir="${basedir}" includes="tmp/"/>
+        </delete>
+        <delete includeemptydirs="true">
+          <fileset dir="${toolkit}" includes="doc/"/>
         </delete>
   	<ant dir="${toolkit}" target="clean"/>
+  	<ant dir="${toolkit.test}" target="clean"/>
   </target>
 
   <target name="toolkit"
@@ -33,15 +38,12 @@
         <ant dir="${toolkit}" target="indexToolkit" /> 
   </target> 	
 
-  <target name="spldoc" depends="samples"
+  <target name="spldoc" depends="toolkit"
     description="Create SPLDOC">
     <antcall target="spldoctoolkit">
        <param name="tkdir" value="${toolkit}"/>
        <param name="tktitle" value="IBMStreams streamsx.monitoring Toolkit"/>
     </antcall>
-    <subant target="spldoctoolkit" genericantfile="${basedir}/build.xml">
-       <dirset dir="samples" includes="*"/>
-    </subant>
   </target>
 
   <target name="samples" depends="toolkit">
@@ -61,6 +63,11 @@
     <subant target="buildsample" genericantfile="${basedir}/build.xml">
        <dirset dir="samples" includes="*"/>
     </subant>
+  </target>
+
+  <!-- Test targets -->
+  <target name="test" depends="build-all-samples">
+     <ant dir="${toolkit.test}" target="test"/>
   </target>
 
   <!-- Targets called on samples -->

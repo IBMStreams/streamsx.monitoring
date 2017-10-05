@@ -1,0 +1,50 @@
+<project name="streamsx.monitoring.spl.tests" default="test" basedir=".">
+
+    <property environment="env" />
+
+    <target name="clean" depends="cleantemp,cleantestprojects">
+    </target>
+
+    <target name="cleantemp">
+	<delete>
+	    <fileset dir="${basedir}" includes="**/*.pyc,**/StreamsLogs*.tgz,**/done*"/>
+	</delete>
+	<delete includeemptydirs="true">
+	    <fileset dir="${basedir}" includes="**/__pycache__/**"/>
+	</delete>
+    </target>
+
+
+    <target name="cleantestprojects">
+        <subant genericantfile="${basedir}/build.xml">
+            <target name="cleantestproject"/>
+            <dirset dir="JobStatusMonitor" includes="test*"/>
+            <dirset dir="LogSource" includes="test*"/>
+            <dirset dir="MetricsSource" includes="test*"/>
+        </subant>
+    </target>
+
+    <target name="cleantestproject">
+        <echo message="SPL project to clean: ${basedir}"/>
+        <exec executable="make" failonerror="true" dir="${basedir}">
+            <arg value="-f" />
+            <arg value="Makefile" />
+            <arg value="clean" />
+        </exec>
+    </target>
+
+    <target name="init">
+        <fail unless="env.JMX_USER" message="Please set environment variables JMX_USER and JMX_PASSWORD for the user name and password for JMX connection."/>
+        <fail unless="env.JMX_PASSWORD" message="Please set environment variables JMX_USER and JMX_PASSWORD for the user name and password for JMX connection."/>
+    </target>
+
+    <target name="test" depends="init, clean">
+        <exec executable="python3" failonerror="true">
+            <arg value="-m"/>
+            <arg value="unittest"/>
+            <arg value="discover"/>
+            <arg value="-v"/>
+        </exec>
+    </target>
+
+</project>

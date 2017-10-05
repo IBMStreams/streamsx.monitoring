@@ -1,0 +1,38 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+
+/**
+ * This application is monitored by the Monitor application and
+ * forces an operator crash and PE restart.
+ */
+public composite SampleJob
+{
+
+	graph
+
+		stream<boolean dummy> Triggers as O = Beacon() {
+			param 
+				period: 1.0;
+				iterations: 9u;
+				initDelay: 10.0;
+		}
+
+		() as CrashSink = Custom(Triggers as I) {
+			logic 
+			onTuple I: {
+				appLog(Log.error, "Operator is requested to fail.");
+				abort();
+			}
+			config
+				restartable : true;
+		}
+		
+		
+	config
+		placement : partitionExlocation("TEST");		
+}
