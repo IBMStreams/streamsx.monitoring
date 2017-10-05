@@ -14,11 +14,12 @@ The test suites `test_jmx_reconnect` require the following environment variables
 
 If not set, then the test suites are skipped.
 
-The test scripts does not create, modify or delete Streams Instance or Domain.
+## Before launching the test
 
-Before launching the test:
+**The test scripts does not create, modify or delete a Streams Domain or Instance.**
+
 * It is required that the domain (`STREAMS_DOMAIN_ID`) and instance (`STREAMS_INSTANCE_ID`) are started.
-* **If present, the domain (`TEST_DOMAIN`) and instance (`TEST_INSTANCE`) should be stopped.**
+* *If present, the domain (`TEST_DOMAIN`) and instance (`TEST_INSTANCE`) should be stopped.*
 
 
 # Run the tests
