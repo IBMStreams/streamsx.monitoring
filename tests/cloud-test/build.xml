@@ -1,0 +1,45 @@
+<project name="streamsx.monitoring.cloud.tests" default="test" basedir=".">
+
+    <property environment="env" />
+    <property name="streams.install" value="${env.STREAMS_INSTALL}" />
+    <property name="spl-mt" value="${streams.install}/bin/spl-make-toolkit" />
+    <property name="test-tk-dir" location="test_monitoring" />
+
+    <target name="indexTestToolkit">
+        <exec dir="${test-tk-dir}" executable="${spl-mt}" failonerror="true">
+            <arg value="-i"/>
+            <arg value="."/>
+        </exec>
+    </target>
+
+    <target name="clean" depends="cleantemp">
+        <delete file="${test-tk-dir}/toolkit.xml" quiet="true"/>
+    </target>
+
+    <target name="cleantemp">
+	<delete>
+	    <fileset dir="${basedir}" includes="**/*.pyc,**/StreamsLogs*.tgz"/>
+	</delete>
+	<delete includeemptydirs="true">
+	    <fileset dir="${basedir}" includes="**/__pycache__/**"/>
+	</delete>
+	<delete includeemptydirs="true">
+	    <fileset dir="${basedir}" includes="**/tk*/**"/>
+	</delete>
+    </target>
+
+    <target name="init" depends="indexTestToolkit">
+        <fail unless="env.STREAMING_ANALYTICS_SERVICE_NAME" message="Please set environment variable STREAMING_ANALYTICS_SERVICE_NAME."/>
+        <fail unless="env.VCAP_SERVICES" message="Please set environment variable VCAP_SERVICES."/>
+    </target>
+
+    <target name="test" depends="clean, init">
+        <exec executable="python3" failonerror="true">
+            <arg value="-m"/>
+            <arg value="unittest"/>
+            <arg value="discover"/>
+            <arg value="-v"/>
+        </exec>
+    </target>
+
+</project>

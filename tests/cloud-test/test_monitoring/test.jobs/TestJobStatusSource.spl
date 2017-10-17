@@ -1,0 +1,58 @@
+namespace test.jobs;
+
+use com.ibm.streamsx.monitoring.jobs::*;
+
+public composite TestJobStatusSource(output ResultStream) {
+
+	param
+		expression<rstring> $user;
+		expression<rstring> $password;
+
+	graph
+
+		/*
+		 * The JobStatusSource generates a tuple for each notified PE status change.
+		 */
+		(stream<JobStatusNotification> ChangeNotifications) = JobStatusSource() {
+			param
+				user: $user;
+				password: $password;
+		}
+
+		/*
+		 * Verify the received notifications.
+		 */
+		(stream <rstring result> ResultStream) as NotificationValidator = Custom(ChangeNotifications as I) {
+			logic 
+			state: {
+				mutable boolean doneSent = false;
+			}
+			onTuple I: {
+				printStringLn((rstring)I);
+				if ((!doneSent) && (I.notifyType == "com.ibm.streams.management.pe.changed") && (I.peStatus == "restarting")) {
+					submit({result="TEST_RESULT_PASS"}, ResultStream);
+					doneSent = true;
+				}
+			}
+		}
+
+		stream<boolean dummy> Triggers as O = Beacon() {
+			param 
+				period: 30.0;
+				initDelay: 30.0;
+		}
+
+		() as CrashSink = Custom(Triggers as I) {
+			logic 
+			onTuple I: {
+				appLog(Log.error, "Operator is requested to fail.");
+				abort();
+			}
+		}
+
+	config
+		placement : partitionExlocation("test");
+		
+}
+
+

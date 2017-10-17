@@ -1,0 +1,68 @@
+namespace test.system;
+
+use com.ibm.streamsx.monitoring.system::LogSource;
+use com.ibm.streamsx.monitoring.system::*;
+
+
+public composite TestLogsSource(output ResultStream) {
+
+	param
+		expression<rstring> $user;
+		expression<rstring> $password;
+
+	graph
+
+		/*
+		 * The LogSource generates a tuple for each notified log event.
+		 */
+		(stream<LogNotification> Logs) = LogSource() {
+			param
+				user: $user;
+				password: $password;
+		}
+
+		/*
+		 *  Verify the received notifications.
+		 */
+		(stream <rstring result> ResultStream) as NotificationValidator = Custom(Logs as I) {
+			logic 
+			state: {
+				mutable boolean done1Sent = false;
+				mutable boolean errLogReceived = false;
+				mutable boolean warnLogReceived = false;
+			}
+			onTuple I: {
+				printStringLn((rstring)I);
+				if (I.notifyType == "com.ibm.streams.management.log.application.error") {
+					errLogReceived = true;
+				}
+				if (I.notifyType == "com.ibm.streams.management.log.application.warning") {
+					warnLogReceived = true;
+				}
+				if ((!done1Sent) && (warnLogReceived) && (errLogReceived)) {
+					submit({result="TEST_RESULT_PASS"}, ResultStream);
+					done1Sent = true;
+				}
+			}
+		}
+
+		stream<boolean dummy> Triggers as O = Beacon() {
+			param
+				period: 2.5;
+		}
+		
+		() as Logger = Custom(Triggers as I) {
+			logic
+				state: {
+					mutable int64 count = 0l;
+				}
+				onTuple I: {
+					count++;
+					appLog(Log.error, "This is error log #."+(rstring)count);
+					block((float64)1ul);
+					appLog(Log.warn, "This is warning log #."+(rstring)count);
+				}			
+		}
+}
+
+
