@@ -2,14 +2,21 @@
 
     <target name="clean">
        <ant dir="spl-test" target="clean">
-       </ant> 
+       </ant>
+       <ant dir="cloud-test" target="clean">
+       </ant>
     </target>
 
-    <target name="test" depends="spl-test">
+    <target name="test" depends="spl-test, cloud-test">
     </target>
 
     <target name="spl-test">
         <ant dir="spl-test">
+        </ant>
+    </target>
+
+    <target name="cloud-test">
+        <ant dir="cloud-test">
         </ant>
     </target>
 

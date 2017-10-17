@@ -1,0 +1,58 @@
+namespace test.metrics;
+
+use com.ibm.streamsx.monitoring.metrics::MetricsSource;
+use com.ibm.streamsx.monitoring.metrics::Notification;
+
+
+public composite TestMetricsSource(output ResultStream) {
+
+	param
+		expression<rstring> $user;
+		expression<rstring> $password;
+
+	graph
+
+		/*
+		 * The MetricsSource generates tuple for the specified metrics.
+		 */
+		(stream<Notification> MetricNotifications
+		) = MetricsSource() {
+			param	
+				user: $user;
+				password: $password;
+		}
+
+		/*
+		 *  Verify the received metric value notifications.
+		 */
+		(stream <rstring result> ResultStream) as NotificationValidator = Custom(MetricNotifications as I) {
+			logic 
+			state: {
+				mutable boolean doneSent = false;
+				mutable boolean metricNotificationReceived = false;
+			}
+			onTuple I: {
+				printStringLn((rstring)I);
+				if ((I.metricName=="nTuplesSubmitted") && (-1 != findFirst(I.operatorName, "AnnotatedSource", 0))) {
+					metricNotificationReceived = true;
+				}
+			}
+			onPunct I: {
+				if ((!doneSent) && (metricNotificationReceived)) {
+					submit({result="TEST_RESULT_PASS"}, ResultStream);
+					doneSent = true;
+				}
+			}
+		}
+
+		/*
+		 * A @parallel-annotated source.
+		 */
+		@parallel(width=3)
+		(stream<rstring dummy> Data) as AnnotatedSource = Beacon() {
+			param period: 3.0; 
+		}
+
+}
+
+
