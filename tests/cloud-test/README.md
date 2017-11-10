@@ -22,9 +22,9 @@ Install the latest streamsx package with pip, a package manager for Python, by e
 
 Make sure that your Streaming Analytics service is running.
 
-* If you have a Streaming Analytics service in IBM Bluemix, make sure that it is started and running.
+* If you have a Streaming Analytics service in IBM Cloud, make sure that it is started and running.
 * To create a new Streaming Analytics service:
-	* Go to the Bluemix web portal and sign in (or sign up for a free Bluemix account).
+	* Go to the IBM Cloud web portal and sign in (or sign up for a free IBM Cloud account).
 	* Click Catalog, browse for the Streaming Analytics service, and then click it.
 	* Enter the service name and then click Create to set up your service. The service dashboard opens and your service starts automatically. The service name appears as the title of the service dashboard.
 
