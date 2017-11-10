@@ -50,6 +50,16 @@ public class OperatorConfiguration {
 	 * Specifies the domain that is monitored.
 	 */
 	private String _domainId = null;
+	
+	/**
+	 * Specifies the IAM token endpoint.
+	 */
+	private String _iamTokenEndpoint = "https://iam.bluemix.net/oidc/token";
+
+	/**
+	 * Specifies the IAM API key.
+	 */	
+	private String _iamApiKey = null;
 
 	/**
 	 * Specifies the name of the application configuration object.
@@ -135,6 +145,26 @@ public class OperatorConfiguration {
 		}
 	}
 
+	public String get_iamTokenEndpoint() {
+		return _iamTokenEndpoint;
+	}
+
+	public void set_iamTokenEndpoint(String iamTokenEndpoint) {
+		if (!("".equals(iamTokenEndpoint))) {
+			this._iamTokenEndpoint = iamTokenEndpoint;
+		}
+	}
+
+	public String get_iamApiKey() {
+		return _iamApiKey;
+	}
+
+	public void set_iamApiKey(String iamApiKey) {
+		if (!("".equals(iamApiKey))) {
+			this._iamApiKey = iamApiKey;
+		}
+	}
+
 	public String get_sslOption() {
 		return _sslOption;
 	}
@@ -144,7 +174,7 @@ public class OperatorConfiguration {
 			this._sslOption = sslOption;
 		}
 	}	
-	
+
 	public String get_domainId() {
 		return _domainId;
 	}

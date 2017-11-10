@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -20,6 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+
+import java.net.URL;
+import java.net.URLConnection;
 
 import org.apache.log4j.Logger;
 
@@ -39,6 +43,9 @@ import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.LogTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.MetricsTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.filters.Filters;
+import com.ibm.json.java.JSON;
+import com.ibm.json.java.JSONArtifact;
+import com.ibm.json.java.JSONObject;
 
 /**
  * Abstract class for the JMX operators.
@@ -221,6 +228,16 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		_operatorConfiguration.set_applicationConfigurationName(applicationConfigurationName);
 	}
 
+	@Parameter(optional=true, description = "Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored.")
+	public void setiamApiKey(String iamApiKey) {
+		_operatorConfiguration.set_iamApiKey(iamApiKey);
+	}
+	
+	@Parameter(optional=true, description = "Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the public endpoint is used: https://iam.bluemix.net/oidc/token")
+	public void setiamTokenEndpoint(String iamTokenEndpoint) {
+		_operatorConfiguration.set_iamTokenEndpoint(iamTokenEndpoint);;
+	}
+		
 	/**
 	 * Initialize this operator. Called once before any tuples are processed.
 	 * @param context OperatorContext for this operator.
@@ -376,6 +393,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		String user = _operatorConfiguration.get_user();
 		String password = _operatorConfiguration.get_password();
 		String sslOption = _operatorConfiguration.get_sslOption();
+		String iamApiKey = _operatorConfiguration.get_iamApiKey();
 		// Override defaults if the application configuration is specified
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {
@@ -401,11 +419,19 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				throw new Exception(MISSING_VALUE + PARAMETER_CONNECTION_URL);
 			}
 		}
-		if (user == null) {
-			throw new Exception(MISSING_VALUE + PARAMETER_USER);
+		if (iamApiKey == null) {
+			if (user == null) {
+				throw new Exception(MISSING_VALUE + PARAMETER_USER);
+			}
+			if (password == null) {
+				throw new Exception(MISSING_VALUE + PARAMETER_PASSWORD);
+			}
 		}
-		if (password == null) {
-			throw new Exception(MISSING_VALUE + PARAMETER_PASSWORD);
+		else { 
+			// use IAM authentication
+			String token = getAccessToken(iamApiKey, _operatorConfiguration.get_iamTokenEndpoint());
+			user = "streams-bearer";
+			password = "bearertoken:"+token;
 		}
 		/*
 		 * Prepare the JMX environment settings.
@@ -594,6 +620,84 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		}
 		return result;
 	}	
+
+	private String getAccessToken(String apiKey, String url) throws Exception {		
+		String token = null;
+		_trace.debug("get access token with apiKey:" + apiKey);
+	
+		String[] cmd = { "/bin/sh", "-c", "curl -s -d grant_type=urn:ibm:params:oauth:grant-type:apikey -d apikey="+apiKey+" -H Content-type=application/x-www-form-urlencoded -H Accept=application/json "+url };
+			
+		StringBuffer output = new StringBuffer();
+		Process p;
+		try {
+			p = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = "";
+			while ((line = br.readLine())!= null) {
+				output.append(line);
+			}
+			String cmdResult = output.toString();
+			_trace.debug("cmdResult: " + cmdResult);
+			JSONArtifact root = JSON.parse(cmdResult);
+			JSONObject json = (JSONObject)root;
+			Object tokenObj = json.get("access_token");
+			token = tokenObj.toString();
+			
+			_trace.debug("token: " + token);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (null == token) {
+			_trace.error("Unable to determine IAM access token");
+			throw new Exception("Unable to determine IAM access token");			
+		}		
+		return token;
+	}
+	/*
+	private String getAccessToken(String apiKey, String url) throws Exception {		
+		String token = null;
+		_trace.debug("get access token with apiKey:" + apiKey);
+		try {
+			StringBuffer outputResp = new StringBuffer();
+			String urlParameters = "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey="+apiKey;
+			URLConnection connection = new URL(url).openConnection();
+			connection.setDoOutput(true); // Triggers POST.
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			connection.setRequestProperty("Accept", "application/json");
+
+			OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+			writer.write(urlParameters);
+			writer.flush();
+
+			InputStream response = connection.getInputStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(response, "UTF-8"));
+			for (String line; (line = reader.readLine()) != null;) {
+				outputResp.append(line);
+			}
+			String postResponse = outputResp.toString();
+			_trace.debug("postResponse: " + postResponse);
+			writer.close();
+			reader.close();
+
+			JSONArtifact root = JSON.parse(postResponse);
+			JSONObject json = (JSONObject)root;
+			Object tokenObj = json.get("access_token");
+			token = tokenObj.toString();
+			
+			_trace.debug("token: " + token);		  
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (null == token) {
+			_trace.error("Unable to determine IAM access token");
+			throw new Exception("Unable to determine IAM access token");			
+		}
+		return token;
+	}	
+*/
 
 	private String autoDetectJmxSslOption(String user, String password) {		
 		String sslOption = null;

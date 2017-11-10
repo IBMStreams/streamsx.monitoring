@@ -34,6 +34,9 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  *
  * @param sslOption
  * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getdomainproperty` command to get the value.
+ *
+ * @param iamApiKey
+ * Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored. 
  */
 composite Monitor {
 
@@ -45,6 +48,7 @@ composite Monitor {
 		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $domainId: getSubmissionTimeValue("domainId", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $iamApiKey: getSubmissionTimeValue("iamApiKey", ""); // optional, if user and password are set
 
 	graph
 
@@ -61,7 +65,8 @@ composite Monitor {
 				filterDocument: $filterDocument;
 				connectionURL: $connectionURL;
 				domainId: $domainId;
-				sslOption: $sslOption;				
+				sslOption: $sslOption;
+				iamApiKey: $iamApiKey;
 		}
 
 		/*
