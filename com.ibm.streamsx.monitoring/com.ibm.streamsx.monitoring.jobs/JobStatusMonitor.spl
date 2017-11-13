@@ -41,6 +41,9 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  * 
  * @param iamApiKey
  * Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored.
+ * 
+ * @param iamTokenEndpoint
+ * Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the public endpoint is used: https://iam.bluemix.net/oidc/token
  */
 public composite JobStatusMonitor (output stream<JobStatusNotification> OutStream, stream<ConnectionNotification> ConnectionNotificationStream) {
 
@@ -53,6 +56,7 @@ public composite JobStatusMonitor (output stream<JobStatusNotification> OutStrea
 		expression<rstring> $domainId: ""; // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $sslOption: ""; // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $iamApiKey: getSubmissionTimeValue("iamApiKey", ""); // optional, if user and password are set
+		expression<rstring> $iamTokenEndpoint: getSubmissionTimeValue("iamTokenEndpoint", ""); // optional, used when iamApiKey is set only
 
 	graph
 	
@@ -71,6 +75,7 @@ public composite JobStatusMonitor (output stream<JobStatusNotification> OutStrea
 				domainId: $domainId;
 				sslOption: $sslOption;
 				iamApiKey: $iamApiKey;
+				iamTokenEndpoint: $iamTokenEndpoint;
 		}
 		
 		stream<I> OutStream = DeDuplicate(Notifications as I) {
