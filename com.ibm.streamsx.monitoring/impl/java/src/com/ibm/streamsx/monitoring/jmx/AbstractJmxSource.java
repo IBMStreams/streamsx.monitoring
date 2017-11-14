@@ -59,7 +59,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	
 	protected static final String DESC_PARAM_APPLICATION_CONFIGURATION_NAME = 
 			"Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] "
-			+ "that can contain domainId, connectionURL, user, password, and filterDocument "
+			+ "that can contain domainId, connectionURL, user, password, iamApiKey, iamTokenEndpoint and filterDocument "
 			+ "properties. The application configuration overrides values that "
 			+ "are specified with the corresponding parameters.";
 	
@@ -118,6 +118,10 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	protected static final Object PARAMETER_USER = "user";
 
 	protected static final Object PARAMETER_PASSWORD = "password";
+	
+	protected static final Object PARAMETER_IAM_API_KEY = "iamApiKey";
+	
+	protected static final Object PARAMETER_IAM_TOKEN_ENDPOINT = "iamTokenEndpoint";
 	
 	protected static final Object PARAMETER_SSL_OPTION = "sslOption";
 
@@ -235,7 +239,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	
 	@Parameter(optional=true, description = "Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the public endpoint is used: https://iam.bluemix.net/oidc/token")
 	public void setiamTokenEndpoint(String iamTokenEndpoint) {
-		_operatorConfiguration.set_iamTokenEndpoint(iamTokenEndpoint);;
+		_operatorConfiguration.set_iamTokenEndpoint(iamTokenEndpoint);
 	}
 		
 	/**
@@ -256,8 +260,8 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 
 		// check required parameters
 		if (null == _operatorConfiguration.get_applicationConfigurationName()) {
-			if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password())) {
-				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' or 'applicationConfigurationName' be applied.");
+			if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password()) && (null == _operatorConfiguration.get_iamApiKey())) {
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' or 'applicationConfigurationName' or 'iamApiKey' be applied.");
 			}
 		}
 		else {
@@ -394,6 +398,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		String password = _operatorConfiguration.get_password();
 		String sslOption = _operatorConfiguration.get_sslOption();
 		String iamApiKey = _operatorConfiguration.get_iamApiKey();
+		String iamTokenEndpoint = _operatorConfiguration.get_iamTokenEndpoint();
 		// Override defaults if the application configuration is specified
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {
@@ -409,6 +414,12 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 			}
 			if (properties.containsKey(PARAMETER_SSL_OPTION)) {
 				sslOption = properties.get(PARAMETER_SSL_OPTION);
+			}
+			if (properties.containsKey(PARAMETER_IAM_API_KEY)) {
+				iamApiKey = properties.get(PARAMETER_IAM_API_KEY);
+			}
+			if (properties.containsKey(PARAMETER_IAM_TOKEN_ENDPOINT)) {
+				iamTokenEndpoint = properties.get(PARAMETER_IAM_TOKEN_ENDPOINT);
 			}
 		}
 		// Ensure a valid configuration.
@@ -429,7 +440,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		}
 		else { 
 			// use IAM authentication
-			String token = getAccessToken(iamApiKey, _operatorConfiguration.get_iamTokenEndpoint());
+			String token = getAccessToken(iamApiKey, iamTokenEndpoint);
 			user = "streams-bearer";
 			password = "bearertoken:"+token;
 		}
