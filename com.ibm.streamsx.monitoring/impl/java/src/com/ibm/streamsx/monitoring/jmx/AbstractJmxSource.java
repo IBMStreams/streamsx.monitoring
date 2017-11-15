@@ -237,7 +237,7 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 		_operatorConfiguration.set_iamApiKey(iamApiKey);
 	}
 	
-	@Parameter(optional=true, description = "Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the public endpoint is used: https://iam.bluemix.net/oidc/token")
+	@Parameter(optional=true, description = "Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the global endpoint is used: " + OperatorConfiguration.IAM_TOKEN_ENDPOINT)
 	public void setiamTokenEndpoint(String iamTokenEndpoint) {
 		_operatorConfiguration.set_iamTokenEndpoint(iamTokenEndpoint);
 	}

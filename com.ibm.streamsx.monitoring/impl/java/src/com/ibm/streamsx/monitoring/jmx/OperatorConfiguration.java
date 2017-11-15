@@ -52,9 +52,15 @@ public class OperatorConfiguration {
 	private String _domainId = null;
 	
 	/**
+	 * Global Endpoint
+	 */
+	public static final String IAM_TOKEN_ENDPOINT = "https://iam.bluemix.net/identity/token";
+	
+	/**
 	 * Specifies the IAM token endpoint.
 	 */
-	private String _iamTokenEndpoint = "https://iam.bluemix.net/oidc/token";
+	
+	private String _iamTokenEndpoint = IAM_TOKEN_ENDPOINT;
 
 	/**
 	 * Specifies the IAM API key.
