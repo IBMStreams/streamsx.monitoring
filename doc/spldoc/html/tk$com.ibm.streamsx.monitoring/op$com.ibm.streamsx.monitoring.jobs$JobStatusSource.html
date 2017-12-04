@@ -22,12 +22,12 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.5.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; JobStatusSource</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.6.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; JobStatusSource</p>
 
 </div>
 
 <div class="section splprimop">
-  <embed class="image" src="../../image/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.svg" width="672" height="112"/>
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.svg" width="872" height="112"/>
 </div>
 
 <div class="section">
@@ -67,7 +67,7 @@
  
   <dt class="dt dlterm">Ports</dt>
 
-  <dd class="dd">This operator has 0 input port and 2 output ports.</dd>
+  <dd class="dd">This operator has 0 input ports and 2 output ports.</dd>
 
  
  
@@ -79,9 +79,9 @@
  
   <dt class="dt dlterm">Parameters</dt>
 
-  <dd class="dd">This operator supports 8 parameters.
+  <dd class="dd">This operator supports 10 parameters.
 <p class="p"> Optional: 
-<a class="xref" href="#spldoc_operator__parameter__applicationConfigurationName">applicationConfigurationName</a>, <a class="xref" href="#spldoc_operator__parameter__connectionURL">connectionURL</a>, <a class="xref" href="#spldoc_operator__parameter__domainId">domainId</a>, <a class="xref" href="#spldoc_operator__parameter__filterDocument">filterDocument</a>, <a class="xref" href="#spldoc_operator__parameter__password">password</a>, <a class="xref" href="#spldoc_operator__parameter__scanPeriod">scanPeriod</a>, <a class="xref" href="#spldoc_operator__parameter__sslOption">sslOption</a>, <a class="xref" href="#spldoc_operator__parameter__user">user</a>
+<a class="xref" href="#spldoc_operator__parameter__applicationConfigurationName">applicationConfigurationName</a>, <a class="xref" href="#spldoc_operator__parameter__connectionURL">connectionURL</a>, <a class="xref" href="#spldoc_operator__parameter__domainId">domainId</a>, <a class="xref" href="#spldoc_operator__parameter__filterDocument">filterDocument</a>, <a class="xref" href="#spldoc_operator__parameter__iamApiKey">iamApiKey</a>, <a class="xref" href="#spldoc_operator__parameter__iamTokenEndpoint">iamTokenEndpoint</a>, <a class="xref" href="#spldoc_operator__parameter__password">password</a>, <a class="xref" href="#spldoc_operator__parameter__scanPeriod">scanPeriod</a>, <a class="xref" href="#spldoc_operator__parameter__sslOption">sslOption</a>, <a class="xref" href="#spldoc_operator__parameter__user">user</a>
 
 </p>
 </dd>
@@ -219,9 +219,9 @@
 
 <div class="section">
 <p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters">Parameters</a></strong></p>
-This operator supports 8 parameters.
+This operator supports 10 parameters.
 <p class="p"> Optional: 
-<a class="xref" href="#spldoc_operator__parameter__applicationConfigurationName">applicationConfigurationName</a>, <a class="xref" href="#spldoc_operator__parameter__connectionURL">connectionURL</a>, <a class="xref" href="#spldoc_operator__parameter__domainId">domainId</a>, <a class="xref" href="#spldoc_operator__parameter__filterDocument">filterDocument</a>, <a class="xref" href="#spldoc_operator__parameter__password">password</a>, <a class="xref" href="#spldoc_operator__parameter__scanPeriod">scanPeriod</a>, <a class="xref" href="#spldoc_operator__parameter__sslOption">sslOption</a>, <a class="xref" href="#spldoc_operator__parameter__user">user</a>
+<a class="xref" href="#spldoc_operator__parameter__applicationConfigurationName">applicationConfigurationName</a>, <a class="xref" href="#spldoc_operator__parameter__connectionURL">connectionURL</a>, <a class="xref" href="#spldoc_operator__parameter__domainId">domainId</a>, <a class="xref" href="#spldoc_operator__parameter__filterDocument">filterDocument</a>, <a class="xref" href="#spldoc_operator__parameter__iamApiKey">iamApiKey</a>, <a class="xref" href="#spldoc_operator__parameter__iamTokenEndpoint">iamTokenEndpoint</a>, <a class="xref" href="#spldoc_operator__parameter__password">password</a>, <a class="xref" href="#spldoc_operator__parameter__scanPeriod">scanPeriod</a>, <a class="xref" href="#spldoc_operator__parameter__sslOption">sslOption</a>, <a class="xref" href="#spldoc_operator__parameter__user">user</a>
 
 </p>
 <dl class="dl">
@@ -229,7 +229,7 @@ This operator supports 8 parameters.
 <dt class="dt dlterm"><a name="spldoc_operator__parameter__applicationConfigurationName"><!-- --></a><tt class="ph tt">applicationConfigurationName</tt></dt>
 
 <dd class="dd">
-<p class="p">Specifies the name of <a class="xref" href="https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html">application configuration object</a> that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
+<p class="p">Specifies the name of <a class="xref" href="https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html">application configuration object</a> that can contain domainId, connectionURL, user, password, iamApiKey, iamTokenEndpoint and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
 </p>
 <dl class="dl">
 
@@ -323,6 +323,68 @@ This operator supports 8 parameters.
 
 <dd class="dd">
 <p class="p">Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the domain, instance and job as regular expressions. Each regular expression must follow the rules that are specified for Java <a class="xref" href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Pattern</a>. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value.
+</p>
+<dl class="dl">
+
+ <dt class="dt dlterm">Properties </dt>
+
+ <dd class="dd">
+  <ul class="sl simple">
+  <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: rstring
+  </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
+     </li>
+
+  </ul>
+
+ </dd>
+
+
+</dl>
+
+</dd>
+
+
+
+<dt class="dt dlterm"><a name="spldoc_operator__parameter__iamApiKey"><!-- --></a><tt class="ph tt">iamApiKey</tt></dt>
+
+<dd class="dd">
+<p class="p">Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored.
+</p>
+<dl class="dl">
+
+ <dt class="dt dlterm">Properties </dt>
+
+ <dd class="dd">
+  <ul class="sl simple">
+  <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: rstring
+  </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
+     </li>
+
+  </ul>
+
+ </dd>
+
+
+</dl>
+
+</dd>
+
+
+
+<dt class="dt dlterm"><a name="spldoc_operator__parameter__iamTokenEndpoint"><!-- --></a><tt class="ph tt">iamTokenEndpoint</tt></dt>
+
+<dd class="dd">
+<p class="p">Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the global endpoint is used: https://iam.bluemix.net/identity/token
 </p>
 <dl class="dl">
 
