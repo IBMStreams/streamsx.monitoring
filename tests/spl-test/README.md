@@ -29,6 +29,10 @@ If not set, then the test suites are skipped.
 ant test
 ```
 
+To run a single test, select one of the test suites, for example:
+```
+python3 -m unittest JobStatusMonitor/test_jmx_reconnect/test_jmx_reconnect.py -v
+```
 
 # Clean-up
 

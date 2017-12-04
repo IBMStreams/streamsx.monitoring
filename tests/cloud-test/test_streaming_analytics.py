@@ -42,8 +42,7 @@ class TestCloud(unittest.TestCase):
 
         tester = Tester(topo)
         tester.tuple_count(test_op.stream, 1, exact=True)
-        values = test_op.stream.map(lambda x: x['result'])
-        tester.contents(values, self._get_expected_values())
+        tester.contents(test_op.stream, [{'result':'TEST_RESULT_PASS'}] )
 
         tester.test(self.test_ctxtype, self.test_config)
 

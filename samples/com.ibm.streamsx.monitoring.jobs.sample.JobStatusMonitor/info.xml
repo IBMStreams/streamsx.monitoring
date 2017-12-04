@@ -10,7 +10,7 @@
  <info:dependencies>
    <info:toolkit>
      <common:name>com.ibm.streamsx.monitoring</common:name>
-     <common:version>1.5.0</common:version>
+     <common:version>1.6.0</common:version>
    </info:toolkit>
  </info:dependencies>
 </info:toolkitInfoModel>
