@@ -32,6 +32,9 @@ configure:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.LogSource.ApplicationConfiguration
 	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) com.ibm.streamsx.monitoring.LogSource.ApplicationConfiguration
 
+configure-none:
+	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.LogSource.ApplicationConfiguration
+
 start-monitor:
 	streamtool submitjob output/Main.sab --jobname logSourceAppConfig
 

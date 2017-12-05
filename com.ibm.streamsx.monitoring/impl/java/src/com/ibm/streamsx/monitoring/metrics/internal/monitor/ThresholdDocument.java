@@ -76,6 +76,9 @@ public class ThresholdDocument {
 	 */
 	OperatorContext context;
 	
+	private File baseDir = null;
+	String thresholdDocumentPath = null;
+	
 	/**
 	 * Time thresholdDocument file was last modified (used to check for modifications).
 	 */
@@ -87,18 +90,36 @@ public class ThresholdDocument {
 	protected Long parsedTime;
 	
 	/**
+	 * Converts the path to absolute path.
+	 */
+	private String makeAbsolute(File rootForRelative, String path)
+			throws IOException {
+		File pathFile = new File(path);
+		if (pathFile.isAbsolute()) {
+			return pathFile.getCanonicalPath();
+		} else {
+			File abs = new File(rootForRelative.getAbsolutePath()
+					+ File.separator + path);
+			return abs.getCanonicalPath();
+		}
+	}
+
+	/**
 	 * Set thresholdDocument file from given file path.
 	 */
-	public void setFileThresholdDocument(String thresholdDocumentPath) {
-		thresholdFile = new File(thresholdDocumentPath);
-		lastModified = thresholdFile.lastModified();
+	public void setFileThresholdDocument(String thresholdDocumentPath) throws IOException {
+		if (!("".equals(thresholdDocumentPath))) {
+			this.thresholdDocumentPath = thresholdDocumentPath;
+		}
 	}
 	
 	/**
 	 * Set application configuration properties.
 	 */
 	public void setApplicationConfigurationName(String applicationConfigurationName) {
-		this.applicationConfigurationName = applicationConfigurationName;
+		if (!("".equals(applicationConfigurationName))) {
+			this.applicationConfigurationName = applicationConfigurationName;
+		}
 	}
 	
 	/**
@@ -107,6 +128,7 @@ public class ThresholdDocument {
 	 */
 	public void setOperatorContext(OperatorContext context) {
 		this.context = context;
+		this.baseDir = context.getPE().getApplicationDirectory();
 	}
     
 	/**
@@ -163,7 +185,11 @@ public class ThresholdDocument {
 				setupApplicationConfigurationThresholds();
 				resetAlerts();
 			}
-		} else if (thresholdFile != null) {
+		} else if (thresholdDocumentPath != null) {
+			if (null == thresholdFile) {
+				thresholdFile = new File(makeAbsolute(this.baseDir, thresholdDocumentPath));
+				lastModified = thresholdFile.lastModified();
+			}
 			if (thresholdFileChanged()) {
 				setupFileThresholds();
 				resetAlerts();

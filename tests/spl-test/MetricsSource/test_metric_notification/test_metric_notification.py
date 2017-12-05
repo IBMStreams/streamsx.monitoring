@@ -24,6 +24,14 @@ class MetricsSourceNotificationTest(unittest.TestCase):
         stdout, stderr, err = th.run_monitor_standalone(args=['user='+os.environ["JMX_USER"], 'password='+os.environ["JMX_PASSWORD"], 'domainId='+os.environ["STREAMS_DOMAIN_ID"]])
         th.assert_pass(err == 0 and (str(stdout).find('TEST_RESULT_PASS') != -1), stdout, stderr)
 
+    def test_standalone_filter_doc(self):
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+        th.make_applications()
+        th.start_sample()
+        stdout, stderr, err = th.run_monitor_standalone(args=['user='+os.environ["JMX_USER"], 'password='+os.environ["JMX_PASSWORD"], 'domainId='+os.environ["STREAMS_DOMAIN_ID"], 'filterDocument=etc/MetricsSource_MonitorSomeCustomMetrics.json'])
+        th.assert_pass(err == 0 and (str(stdout).find('TEST_RESULT_PASS') != -1), stdout, stderr)
+
+
 if __name__ == '__main__':
     unittest.main()
 

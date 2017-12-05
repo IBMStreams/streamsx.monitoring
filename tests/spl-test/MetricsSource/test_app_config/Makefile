@@ -16,6 +16,7 @@ SPL_DATA_DIR = ./data
 
 SPL_CMD_ARGS ?= 
 SPL_MAIN_COMPOSITE = Main
+START_MON_ARGS ?= 
 
 build: distributed 
 
@@ -32,8 +33,15 @@ configure:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 
+configure-json:
+	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+
+configure-none:
+	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+
 start-monitor:
-	streamtool submitjob output/Main.sab --jobname metricsAppConfig
+	streamtool submitjob output/Main.sab --jobname metricsAppConfig $(START_MON_ARGS)
 
 stop-monitor:
 	streamtool canceljob --jobnames metricsAppConfig --collectlogs

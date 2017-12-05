@@ -1,17 +1,44 @@
 //
 // ****************************************************************************
-// * Copyright (C) 2016, International Business Machines Corporation          *
+// * Copyright (C) 2017, International Business Machines Corporation          *
 // * All rights reserved.                                                     *
 // ****************************************************************************
 //
 
-use com.ibm.streamsx.monitoring.metrics::MetricsSource;
-use com.ibm.streamsx.monitoring.metrics::Notification;
-use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
+ 
+namespace com.ibm.streamsx.monitoring.service;
+
+use com.ibm.streamsx.monitoring.metrics::* ;
+use com.ibm.streamsx.json::* ;
+use com.ibm.streamsx.topology.topic::Publish ;
 
 /**
- * This application tests MetricsSource operator in standalone mode
- *
+ * A service which publishes the com.ibm.streamsx.monitoring.metrics::MetricsSource
+ * operator's tuples in JSON format to a specified topic.
+ * 
+ * Output JSON Schema:
+ * \{
+ *   "domainId" : string,
+ *   "instanceId" : string,
+ *   "jobId" : string,
+ *   "jobName" : string,
+ *   "resource" : string,
+ *   "peId" : long,
+ *   "operatorName" : string,
+ *   "channel" : int,
+ *   "portIndex" : int,
+ *   "connectionId" : string,
+ *   "metricType" : string,
+ *   "metricKind" : string,
+ *   "metricName" : string,
+ *   "metricValue" : long,
+ *   "lastTimeRetrieved" : long
+ * \}
+ * 
+ * This composite depends on the following toolkits:
+ * * **com.ibm.streamsx.topology**
+ * * **com.ibm.streamsx.json**
+ * 
  * @param applicationConfigurationName
  * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
  *
@@ -34,8 +61,17 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  * @param sslOption
  * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getdomainproperty` command to get the value.
  *
+ * @param iamApiKey
+ * Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored.
+ * 
+ * @param iamTokenEndpoint
+ * Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the public endpoint is used: https://iam.bluemix.net/oidc/token
+ *
+ * @param ingestTopic
+ * Specifies the name of the published topic for metrics ingestion, If parameter is not set, then the topic name `streamsx/monitoring/metrics/values` is used.
  */
-composite Monitor {
+public composite MetricsIngestService
+{			
 	param
 		expression<rstring> $applicationConfigurationName: getSubmissionTimeValue("applicationConfigurationName", ""); // optional, if user and password are set
 		expression<rstring> $user: getSubmissionTimeValue("user", ""); // optional, if set in application configuration
@@ -44,13 +80,16 @@ composite Monitor {
 		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $domainId: getSubmissionTimeValue("domainId", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $iamApiKey: getSubmissionTimeValue("iamApiKey", ""); // optional, if user and password are set
+		expression<rstring> $iamTokenEndpoint: getSubmissionTimeValue("iamTokenEndpoint", ""); // optional, used when iamApiKey is set only
+
+		expression<rstring> $ingestTopic : getSubmissionTimeValue("ingestTopic", "streamsx/monitoring/metrics/values");
 
 	graph
-		/*
-		 * The MetricsSource generates tuple for the specified metrics.
+		/**
+		 * The MetricsSource generates a tuple for each retrieved metric.
 		 */
-		(stream<Notification> MetricNotifications
-		) = MetricsSource() {
+		stream<Notification> MetricsIngest = MetricsSource() {
 			param
 				applicationConfigurationName: $applicationConfigurationName;
 				user: $user;
@@ -60,48 +99,21 @@ composite Monitor {
 				domainId: $domainId;
 				sslOption: $sslOption;
 				emitMetricTuple: onChangedValue;
+				iamApiKey: $iamApiKey;
+				iamTokenEndpoint: $iamTokenEndpoint;
 		}
-		
-		/*
-		 * Verify the received metric value notifications.
+
+		/**
+		 * The TupleToJSON converts the Metrics tuples into JSON format.
 		 */
-		() as NotificationTracer = Custom(MetricNotifications as I; TimeoutStream as T) {
-			logic 
-			state: {
-				mutable boolean passed = false;
-			}
-			onTuple I: {
-				printStringLn("MetricNotification: " + (rstring)I);
-				if ((I.metricName == "inc") && (I.metricType == "custom")) {
-					//TODO check metricKind != "unknown"
-					if ((length(I.jobName) > 0) && (length(I.domainId) > 0) && (length(I.instanceId) > 0) && (length(I.resource) > 0)) {
-						printStringLn("TEST_RESULT_PASS");
-						passed = true;
-						shutdownPE();
-					}
-					else {
-						printStringLn("ERROR: MISSING ATTRIBUTE VALUES");
-						printStringLn("TEST_RESULT_FAIL");
-						abort();
-					}
-				}
-			}
-			onTuple T: {
-				if ((false == passed) && (false == isShutdown())) {
-					printStringLn("ERROR: TIMEOUT");
-					printStringLn("TEST_RESULT_FAIL");
-					abort();
-				}
-			}
+		stream<Json> JsonMetricsIngest = TupleToJSON(MetricsIngest) {
 		}
 		
-		stream<boolean dummy> TimeoutStream = Beacon() {
-			param 
-				iterations: 1u;
-				initDelay: 60.0;
+		/**
+		 * The Publish publishes the JsonMetrics to the specified topic.
+		 */
+		() as PublishMetricsIngest = Publish(JsonMetricsIngest) {
+			param
+				topic: $ingestTopic;
 		}
-
-
-	config
-		placement : partitionColocation("MONITOR");
 }
