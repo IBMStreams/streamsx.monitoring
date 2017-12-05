@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.6.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.metrics.html">com.ibm.streamsx.monitoring.metrics</a> &gt; <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsMonitor.html">MetricsMonitor</a> &gt; Threshold document</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.7.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.metrics.html">com.ibm.streamsx.monitoring.metrics</a> &gt; <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsMonitor.html">MetricsMonitor</a> &gt; Threshold document</p>
 
 </div>
 
@@ -66,22 +66,23 @@
 <p class="p"><strong class="ph b">filters (optional)</strong>: JSON object specifying 1 or more filters. Filters give users the option to further filter which metrics they want monitored. Simply provide an attribute of the incoming metric tuples as a key, and a regular expression as the value (example format below).
 </p>
 
-<p class="p">The following threshold document monitors the <strong class="ph b">com.ibm.streamsx.monitoring.sample.MetricsSource.MemoryMetrics</strong> sample application for when its nResidentMemoryConsumption goes above 10000KB:
+<p class="p">The following threshold document monitors the <strong class="ph b">com.ibm.streamsx.monitoring.metrics.sample.</strong> sample application for when its nResidentMemoryConsumption goes above 10000KB:
 </p>
 
 <div class="p">
 <pre class="pre codeblock">
 [
   {
-    "metricname":"nResidentMemoryConsumption",
+    "metricName":"nResidentMemoryConsumption",
     "thresholds":
     {
       "value":"&gt;10000",
     },
     "filters":
     {
-      "jobName":"com.ibm.streamsx.sample.MetricsSource.MemoryMetrics.*"
+      "jobName":"com.ibm.streamsx.monitoring.metrics.sample.*"
     }
+  }
 ]
 </pre>
 
@@ -95,7 +96,7 @@
 <pre class="pre codeblock">
 [
   {
-    "metricname":"congestionFactor",
+    "metricName":"congestionFactor",
     "thresholds":
     {
       "value":"&gt;=80,20000",
@@ -104,6 +105,7 @@
     {
       "jobName":"com.ibm.streamsx.sample.MetricsMonitor.HighCongestion.*"
     }
+  }
 ]
 </pre>
 
