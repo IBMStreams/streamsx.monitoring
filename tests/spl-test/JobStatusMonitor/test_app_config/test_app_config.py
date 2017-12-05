@@ -25,6 +25,7 @@ class JobStatusMonitorAppConfigTest(unittest.TestCase):
         th.remove_f(self.result_file_1)
         th.stop_monitor()
         th.stop_sample()
+        th.rm_app_config()
 
     def test_distributed(self):
         os.chdir(os.path.dirname(os.path.abspath(__file__)))

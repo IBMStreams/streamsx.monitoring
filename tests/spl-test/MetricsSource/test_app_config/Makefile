@@ -37,6 +37,9 @@ configure-json:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 
+configure-none:
+	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+
 start-monitor:
 	streamtool submitjob output/Main.sab --jobname metricsAppConfig $(START_MON_ARGS)
 
