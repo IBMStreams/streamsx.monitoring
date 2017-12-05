@@ -19,6 +19,7 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
 composite Main {
 	param
 		expression<rstring> $applicationConfigurationName: getSubmissionTimeValue("applicationConfigurationName", "com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration");
+		expression<rstring> $filterDocument: getSubmissionTimeValue("filterDocument", ""); // uses default, if not set
 
 	graph
 		/*
@@ -27,8 +28,8 @@ composite Main {
 		(stream<Notification> MetricNotifications
 		) = MetricsSource() {
 			param
-				applicationConfigurationName: $applicationConfigurationName;
-				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorOperatorMetrics.json";
+				applicationConfigurationName: $applicationConfigurationName;				
+				filterDocument: $filterDocument; // test needs to apply etc/MetricsSource_MonitorOperatorMetrics.json as submission param
 				emitMetricTuple: onChangedValue;
 		}
 

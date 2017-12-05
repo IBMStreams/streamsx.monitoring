@@ -146,6 +146,11 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	
 	private String _domainId = null; // domainId for this PE
 	
+	/**
+	 * The base directory of the application
+	 */	
+	private File baseDir = null;
+	
 	private Metric isConnected;
 	private Metric nJMXConnectionAttempts;
 	private Metric nBrokenJMXConnections;
@@ -271,6 +276,8 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				}				
 			}
 		}
+		
+		this.baseDir = context.getPE().getApplicationDirectory();
 
 		/*
 		 * The domainId parameter is optional. If the application developer does
@@ -526,6 +533,21 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 	}
 
 	/**
+	 * Converts the path to absolute path.
+	 */
+	private String makeAbsolute(File rootForRelative, String path)
+			throws IOException {
+		File pathFile = new File(path);
+		if (pathFile.isAbsolute()) {
+			return pathFile.getCanonicalPath();
+		} else {
+			File abs = new File(rootForRelative.getAbsolutePath()
+					+ File.separator + path);
+			return abs.getCanonicalPath();
+		}
+	}	
+	
+	/**
 	 * Setup the filters. The filters are either specified in an external text
 	 * file (filterDocument parameter specifies the file path), or in the
 	 * application control object as JSON string.
@@ -558,11 +580,16 @@ public abstract class AbstractJmxSource extends AbstractOperator {
 				filterDocument = _operatorConfiguration.get_defaultFilterDocument();
 				_trace.info("filterDocument is not specified, use default: " + filterDocument);
 			}
-			File fdoc = new File(filterDocument);
+			else {
+				_trace.debug("filterDocument is not in application configuration:" + filterDocument);
+			}
+			String fileAbsolute = makeAbsolute(this.baseDir, filterDocument);
+			File fdoc = new File(fileAbsolute);
 			if (fdoc.exists()) {
-				_operatorConfiguration.set_filters(Filters.setupFilters(filterDocument, _operatorConfiguration.get_OperatorType()));
+				_operatorConfiguration.set_filters(Filters.setupFilters(fileAbsolute, _operatorConfiguration.get_OperatorType()));
 			}
 			else {
+				_trace.debug("filterDocument is not a file");
 				String filterDoc = filterDocument.replaceAll("\\\\t", ""); // remove tabs
 				try(InputStream inputStream = new ByteArrayInputStream(filterDoc.getBytes())) {
 					_operatorConfiguration.set_filters(Filters.setupFilters(inputStream, _operatorConfiguration.get_OperatorType()));

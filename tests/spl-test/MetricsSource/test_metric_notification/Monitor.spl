@@ -55,7 +55,7 @@ composite Monitor {
 				applicationConfigurationName: $applicationConfigurationName;
 				user: $user;
 				password: $password;
-				filterDocument: getThisToolkitDir()+"/etc" + "/MetricsSource_MonitorSomeCustomMetrics.json";
+				filterDocument: $filterDocument;
 				connectionURL: $connectionURL;
 				domainId: $domainId;
 				sslOption: $sslOption;

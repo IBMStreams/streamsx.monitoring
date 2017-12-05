@@ -35,6 +35,26 @@ class MetricsSourceAppConfigTest(unittest.TestCase):
         err = th.test_result_file(self.result_file_1)
         self.assertEqual(err, 0)
 
+    def test_distributed_filter_doc_in_app_config(self):
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+        th.create_app_config_json()
+        th.make_applications()
+        th.start_monitor()
+        th.wait_for_file(self.result_file_1)
+        err = th.test_result_file(self.result_file_1)
+        self.assertEqual(err, 0)
+
+    def test_distributed_filter_doc_param_file(self):
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+        th.create_app_config()
+        th.make_applications()
+        th.start_monitor(['START_MON_ARGS=-P filterDocument=etc/MetricsSource_MonitorOperatorMetrics.json'])
+        th.wait_for_file(self.result_file_1)
+        err = th.test_result_file(self.result_file_1)
+        self.assertEqual(err, 0)
+
 if __name__ == '__main__':
     unittest.main()
 
