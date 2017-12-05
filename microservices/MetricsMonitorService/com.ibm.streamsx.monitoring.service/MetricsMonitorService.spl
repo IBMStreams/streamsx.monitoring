@@ -26,37 +26,38 @@ use com.ibm.streamsx.json::* ;
  * * **com.ibm.streamsx.topology**
  * * **com.ibm.streamsx.json**
  * 
+ * @param applicationConfigurationName
+ * Name of application configuration containing thresholdDocument JSON.
+ * If parameter is not set, then the thresholdDocument parameter must be set.
+ * 
+ * @param thresholdDocument
+ * Specifies the path to a JSON-formatted document. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ * If parameter is not set, then the applicationConfigurationName parameter must be set. 
+ * 
+ * @param ingestTopic
+ * The ingestTopic specifies which topic the MetricsSourceService is publishing to. If parameter is not set, then the topic name `streamsx/monitoring/metrics/values` is used.
+ * 
+ * @param metricsMonitorTopic
+ * The metricsMonitorTopic specifies which topic this service (MetricsMonitorService) is publishing to.
  */
 public composite MetricsMonitorService
 {
 	param
-		/**
-		 * The applicationConfigurationName allows the MetricsMonitorService to get access 
-		 * to the application configuration.
-		 */
-		expression<rstring> $applicationConfigurationName : getSubmissionTimeValue("applicationConfigurationName", "thresholdDocumentConfiguration");
+		expression<rstring> $applicationConfigurationName : getSubmissionTimeValue("applicationConfigurationName", ""); // uses thresholdDocument, if not set		
+		expression<rstring> $thresholdDocument: getSubmissionTimeValue("thresholdDocument", ""); // uses applicationConfiguration, if not set
 		
-		/**
-		 * The metricsSourceTopic specifies which topic the MetricsSourceService is publishing 
-		 * to.
-		 */
-		expression<rstring> $metricsSourceTopic : getSubmissionTimeValue("metricsSourceTopic", "streamsx/monitoring/metrics/values");
-		
-		/**
-		 * The metricsMonitorTopic specifies which topic this service (MetricsMonitorService) is 
-		 * publishing to.
-		 */
+		expression<rstring> $ingestTopic : getSubmissionTimeValue("ingestTopic", "streamsx/monitoring/metrics/values");
 		expression<rstring> $metricsMonitorTopic : getSubmissionTimeValue("metricsMonitorTopic", "streamsx/monitoring/metrics/alerts");
 		
 	graph
 		/**
-		 * The Subscribe imports the metric tuples JSON from the topic  the MetricsSourceService's 
+		 * The Subscribe imports the metric tuples JSON from the topic the MetricsSourceService's 
 		 * is publishing to.
 		 */
 		stream<Json> JsonMetrics = Subscribe() {
 			param
-				topic : $metricsSourceTopic ;
-				streamType : Json ;
+				topic: $ingestTopic;
+				streamType: Json;
 		}
 		
 		/** The JSONToTuple converts the JSON back into Metrics tuples.		
@@ -71,7 +72,8 @@ public composite MetricsMonitorService
 		 */
 		stream<rstring message> AlertMessage = MetricsMonitor(Metrics) {
 			param
-				applicationConfigurationName : $applicationConfigurationName ;
+				applicationConfigurationName: $applicationConfigurationName;
+				thresholdDocumentPath: $thresholdDocument;
 		}
 		
 		/** The TupleToJSON converts the alert message into JSON to prepare it for publishing.		
@@ -82,9 +84,9 @@ public composite MetricsMonitorService
 		/**
 		 * The Publish publishes the alert messsages to the user-defined topic (default: 'streamsx/monitoring/metrics/alerts').
 		 */
-		() as Publish_0 = Publish(JsonMessage) {
+		() as PublishMetricsMonitor = Publish(JsonMessage) {
 			param
-				 topic : $metricsMonitorTopic ;
+				 topic: $metricsMonitorTopic;
 		}
 
 }

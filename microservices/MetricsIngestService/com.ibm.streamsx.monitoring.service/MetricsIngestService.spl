@@ -1,0 +1,119 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+ 
+namespace com.ibm.streamsx.monitoring.service;
+
+use com.ibm.streamsx.monitoring.metrics::* ;
+use com.ibm.streamsx.json::* ;
+use com.ibm.streamsx.topology.topic::Publish ;
+
+/**
+ * A service which publishes the com.ibm.streamsx.monitoring.metrics::MetricsSource
+ * operator's tuples in JSON format to a specified topic.
+ * 
+ * Output JSON Schema:
+ * \{
+ *   "domainId" : string,
+ *   "instanceId" : string,
+ *   "jobId" : string,
+ *   "jobName" : string,
+ *   "resource" : string,
+ *   "peId" : long,
+ *   "operatorName" : string,
+ *   "channel" : int,
+ *   "portIndex" : int,
+ *   "connectionId" : string,
+ *   "metricType" : string,
+ *   "metricKind" : string,
+ *   "metricName" : string,
+ *   "metricValue" : long,
+ *   "lastTimeRetrieved" : long
+ * \}
+ * 
+ * This composite depends on the following toolkits:
+ * * **com.ibm.streamsx.topology**
+ * * **com.ibm.streamsx.json**
+ * 
+ * @param applicationConfigurationName
+ * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
+ *
+ * @param user
+ * Specifies the user that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ *
+ * @param password
+ * Specifies the password that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ *
+ * @param filterDocument
+ * Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the domain, instance and job filters as regular expressions. Each regular expression must follow the rules that are specified for Java [https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ * If parameter is not set, then all metrics from all jobs in current domain and instance are monitored.
+ *
+ * @param connectionURL
+ * Specifies the connection URL as returned by the `streamtool getjmxconnect` command. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getjmxconnect` command to get the value.
+ *
+ * @param domainId
+ * Specifies the domain id that is monitored. If no domain id is specified, the domain id under which this operator is running is used. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ *
+ * @param sslOption
+ * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getdomainproperty` command to get the value.
+ *
+ * @param iamApiKey
+ * Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored.
+ * 
+ * @param iamTokenEndpoint
+ * Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the public endpoint is used: https://iam.bluemix.net/oidc/token
+ *
+ * @param ingestTopic
+ * Specifies the name of the published topic for metrics ingestion, If parameter is not set, then the topic name `streamsx/monitoring/metrics/values` is used.
+ */
+public composite MetricsIngestService
+{			
+	param
+		expression<rstring> $applicationConfigurationName: getSubmissionTimeValue("applicationConfigurationName", ""); // optional, if user and password are set
+		expression<rstring> $user: getSubmissionTimeValue("user", ""); // optional, if set in application configuration
+		expression<rstring> $password: getSubmissionTimeValue("password", ""); // optional, if set in application configuration
+		expression<rstring> $filterDocument: getSubmissionTimeValue("filterDocument", ""); // uses default, if not set
+		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $domainId: getSubmissionTimeValue("domainId", ""); // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $iamApiKey: getSubmissionTimeValue("iamApiKey", ""); // optional, if user and password are set
+		expression<rstring> $iamTokenEndpoint: getSubmissionTimeValue("iamTokenEndpoint", ""); // optional, used when iamApiKey is set only
+
+		expression<rstring> $ingestTopic : getSubmissionTimeValue("ingestTopic", "streamsx/monitoring/metrics/values");
+
+	graph
+		/**
+		 * The MetricsSource generates a tuple for each retrieved metric.
+		 */
+		stream<Notification> MetricsIngest = MetricsSource() {
+			param
+				applicationConfigurationName: $applicationConfigurationName;
+				user: $user;
+				password: $password;
+				filterDocument: $filterDocument;
+				connectionURL: $connectionURL;
+				domainId: $domainId;
+				sslOption: $sslOption;
+				emitMetricTuple: onChangedValue;
+				iamApiKey: $iamApiKey;
+				iamTokenEndpoint: $iamTokenEndpoint;
+		}
+
+		/**
+		 * The TupleToJSON converts the Metrics tuples into JSON format.
+		 */
+		stream<Json> JsonMetricsIngest = TupleToJSON(MetricsIngest) {
+		}
+		
+		/**
+		 * The Publish publishes the JsonMetrics to the specified topic.
+		 */
+		() as PublishMetricsIngest = Publish(JsonMetricsIngest) {
+			param
+				topic: $ingestTopic;
+		}
+}

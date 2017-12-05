@@ -52,23 +52,25 @@ public class Thresholds {
 			}
 			
 			if (thresholds.containsKey(thresholdType)) {
-				double metricValue = (double)metricTuples.get(metricTuples.size() - 1).getLong(Metrics.METRIC_VALUE);
-				Integer timeFrame = thresholds.get(thresholdType).getTimeFrame();
-				
-				// Only check threshold rules if threshold timeframe has elapsed.
-				if (timeFrame != null && thresholdTimeFrameHasElapsed(thresholdType, parsedTime)) {
-					List<Tuple> filteredTuplesWithinTimeFrame = getTuplesWithinTimeFrame(metricTuples, timeFrame);
-					if (filteredTuplesWithinTimeFrame.size() > 1) {
-						metricValue = Metrics.calculatedValue(filteredTuplesWithinTimeFrame, thresholdType, timeFrame.intValue());
+				if (metricTuples.size() >= 1) {
+					double metricValue = (double)metricTuples.get(metricTuples.size() - 1).getLong(Metrics.METRIC_VALUE);
+					Integer timeFrame = thresholds.get(thresholdType).getTimeFrame();
+					
+					// Only check threshold rules if threshold timeframe has elapsed.
+					if (timeFrame != null && thresholdTimeFrameHasElapsed(thresholdType, parsedTime)) {
+						List<Tuple> filteredTuplesWithinTimeFrame = getTuplesWithinTimeFrame(metricTuples, timeFrame);
+						if (filteredTuplesWithinTimeFrame.size() > 1) {
+							metricValue = Metrics.calculatedValue(filteredTuplesWithinTimeFrame, thresholdType, timeFrame.intValue());
+						}
 					}
-				}
-				
-				// If threshold is reached, submit alert.
-				if (thresholdValueReached(thresholdType, metricValue)) {
-					Threshold threshold = thresholds.get(thresholdType);
-					Alert alert = new Alert(metricTuples.get(0), metricValue, threshold);
-					alert.submitAlert(context);
-					thresholds.get(thresholdType).setAlerted(true);
+					
+					// If threshold is reached, submit alert.
+					if (thresholdValueReached(thresholdType, metricValue)) {
+						Threshold threshold = thresholds.get(thresholdType);
+						Alert alert = new Alert(metricTuples.get(0), metricValue, threshold);
+						alert.submitAlert(context);
+						thresholds.get(thresholdType).setAlerted(true);
+					}
 				}
 			}
 		}

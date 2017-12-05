@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info:toolkitInfoModel xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common"
+ xmlns:info="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo">
+ <info:identity>
+   <info:name>MetricsMonitorService</info:name>
+   <info:description><![CDATA[
+This microservice SPL application is using MetricsMonitor operator from the com.ibm.streamsx.monitoring toolkit to publish the output tuples as topic and requires the MetricsIngestService be running.
+
+Application Configuration requires Streams 4.2 or later.
+   ]]></info:description>
+   <info:version>1.0.0</info:version>
+   <info:requiredProductVersion>4.2.1.0</info:requiredProductVersion>
+ </info:identity>
+ <info:dependencies>
+   <info:toolkit>
+     <common:name>com.ibm.streamsx.monitoring</common:name>
+     <common:version>1.7.0</common:version>
+   </info:toolkit>
+   <info:toolkit>
+     <common:name>com.ibm.streamsx.topology</common:name>
+     <common:version>1.6.0</common:version>
+   </info:toolkit>
+   <info:toolkit>
+     <common:name>com.ibm.streamsx.json</common:name>
+     <common:version>1.3.0</common:version>
+   </info:toolkit>
+ </info:dependencies>
+</info:toolkitInfoModel>

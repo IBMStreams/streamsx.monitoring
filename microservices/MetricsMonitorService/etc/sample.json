@@ -1,0 +1,13 @@
+[
+  {
+    "metricName":"inc",
+    "thresholds":
+    {
+      "value":">50",
+    },
+    "filters":
+    {
+      "jobName":"com.ibm.streamsx.monitoring.metrics.sample.*"
+    }
+  }
+]
