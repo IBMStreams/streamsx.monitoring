@@ -1,8 +1,9 @@
 <project name="streamsx.monitoring.spl.tests" default="test" basedir=".">
 
     <property environment="env" />
+  <property name="microservices" location="../../microservices" />
 
-    <target name="clean" depends="cleantemp,cleantestprojects">
+    <target name="clean" depends="cleantemp,cleantestprojects,cleanmicroservices">
     </target>
 
     <target name="cleantemp">
@@ -21,6 +22,7 @@
             <dirset dir="JobStatusMonitor" includes="test*"/>
             <dirset dir="LogSource" includes="test*"/>
             <dirset dir="MetricsSource" includes="test*"/>
+            <dirset dir="MetricsMonitor" includes="test*"/>
         </subant>
     </target>
 
@@ -32,6 +34,15 @@
             <arg value="clean" />
         </exec>
     </target>
+
+    <target name="cleanmicroservices">
+        <exec executable="make" failonerror="true" dir="${microservices}">
+            <arg value="-f" />
+            <arg value="Makefile" />
+            <arg value="clean" />
+        </exec>
+    </target>
+
 
     <target name="init">
         <fail unless="env.JMX_USER" message="Please set environment variables JMX_USER and JMX_PASSWORD for the user name and password for JMX connection."/>

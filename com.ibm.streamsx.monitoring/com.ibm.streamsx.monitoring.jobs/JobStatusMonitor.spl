@@ -44,6 +44,11 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  * 
  * @param iamTokenEndpoint
  * Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the public endpoint is used: https://iam.bluemix.net/oidc/token
+ * 
+ * @param timeOut
+ * Specifies the number of seconds during which no duplicate of a tuple is emitted. 
+ * If this parameter is not specified, the default value is `5.0` seconds (5 seconds). 
+ * Identical tuples, which are separated by more than **timeOut** seconds, are seen on the output port.
  */
 public composite JobStatusMonitor (output stream<JobStatusNotification> OutStream, stream<ConnectionNotification> ConnectionNotificationStream) {
 
@@ -55,8 +60,9 @@ public composite JobStatusMonitor (output stream<JobStatusNotification> OutStrea
 		expression<rstring> $connectionURL: ""; // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $domainId: ""; // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $sslOption: ""; // optional, if not set, then domain settings are used, where the PE is running
-		expression<rstring> $iamApiKey: getSubmissionTimeValue("iamApiKey", ""); // optional, if user and password are set
-		expression<rstring> $iamTokenEndpoint: getSubmissionTimeValue("iamTokenEndpoint", ""); // optional, used when iamApiKey is set only
+		expression<rstring> $iamApiKey: ""; // optional, if user and password are set
+		expression<rstring> $iamTokenEndpoint: ""; // optional, used when iamApiKey is set only
+		expression<float64> $timeOut: 5.0;
 
 	graph
 	
@@ -80,7 +86,7 @@ public composite JobStatusMonitor (output stream<JobStatusNotification> OutStrea
 		
 		stream<I> OutStream = DeDuplicate(Notifications as I) {
 			param
- 				timeOut: 5.0;                                                                          
+ 				timeOut: $timeOut;                                                                          
 				key: notifyType, domainId, instanceId, jobId, jobName, resource, peId, peHealth, peStatus;
 		}
 

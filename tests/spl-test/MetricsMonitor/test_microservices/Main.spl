@@ -1,0 +1,83 @@
+//
+// ****************************************************************************
+// * Copyright (C) 2017, International Business Machines Corporation          *
+// * All rights reserved.                                                     *
+// ****************************************************************************
+//
+
+use com.ibm.streamsx.topology.topic::Subscribe;
+use com.ibm.streamsx.json::*;
+
+/**
+ * Create the custom application metrics. The function is usable in the state
+ * logic of an operator.
+ */
+stateful boolean createMetrics() {
+	createCustomMetric("inc", "The incrementing number.", Sys.Counter, 0l);
+	return true;
+}
+
+/**
+ * This test application subscribes the topic of the MetricsMonitor microservice
+ *
+ * @param metricsMonitorTopic
+ * Specifies the topic of the MetricsMonitor microservice
+ *
+ */
+composite Main {
+	param
+		expression<rstring> $metricsMonitorTopic : getSubmissionTimeValue("metricsMonitorTopic", "streamsx/monitoring/metrics/alerts");
+		
+	graph
+
+		stream<Json> JsonMonitor = Subscribe() {
+			param
+				topic: $metricsMonitorTopic;
+				streamType: Json;
+		}
+
+		(stream <rstring result> SaveDone1) as Validator = Custom(JsonMonitor as I) {
+			logic 
+			state: {
+				mutable boolean done1Sent = false;
+			}
+			onTuple I: {
+				printStringLn((rstring)I);
+				if (!done1Sent) {
+					submit({result="TEST_RESULT_PASS"}, SaveDone1);
+					submit(Sys.WindowMarker, SaveDone1);
+					done1Sent = true;
+				}
+			}
+		}
+
+		() as Done1 = FileSink(SaveDone1 as I) {
+			param file: "done_1"; format: csv; flush: 1u; quoteStrings : false; writePunctuations: false; closeMode: punct; moveFileToDirectory: dataDirectory()+"/..";
+		}
+
+		/*
+		 * The Beacon generates incrementing.
+		 */
+		stream<int64 incrementingNumber> Numbers as O = Beacon() {
+			param period: 0.5;
+			output O:
+				incrementingNumber = (int64)IterationCount();
+		}
+		
+		/*
+		 * The Custom stores the received numbers in metrics.
+		 */
+		() as Storage = Custom(Numbers as I) {
+			logic
+			state: {
+				boolean created = createMetrics();
+			}
+			onTuple I: {
+				setCustomMetricValue("inc", I.incrementingNumber);
+			}
+		}
+}
+
+
+
+

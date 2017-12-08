@@ -126,17 +126,17 @@
   </target>
   <!-- Targets to build releases -->
   <target name="release"  depends="clean,all">
-    <exec executable="make" failonerror="true" dir="${microservices}">
+  	<mkdir dir="${tmp}" />
+  	<exec executable="make" failonerror="true" dir="${microservices}">
        <arg value="-f" />
        <arg value="Makefile" />
-       <arg value="all" />
+       <arg value="release" />
     </exec>
     <exec executable="make" failonerror="true" dir="${microservices}">
        <arg value="-f" />
        <arg value="Makefile" />
-       <arg value="make-doc" />
-    </exec>  	
-	<mkdir dir="${tmp}" />
+       <arg value="clean" />
+    </exec>
 	<!-- Create the time stamp -->
 	<tstamp />
 	<!-- Extract info from the toolkit's info.xml -->
