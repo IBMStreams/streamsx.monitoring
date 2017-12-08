@@ -54,3 +54,7 @@ configure-json:
 configure-none:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
 
+release: all
+	-mkdir ../../tmp
+	cp $(OUTPUT_DIR)/*.sab ../../tmp
+

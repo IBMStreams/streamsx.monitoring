@@ -9,6 +9,12 @@ all:
 		make -C $$dir || exit 1; \
 	done
 
+release: 
+	for dir in $(shell ls -d -1 */); do\
+		make release -C $$dir || exit 1; \
+	done
+
+
 clean: clean-doc
 	for dir in $(shell ls -d -1 */); do\
 		make -C $$dir clean || exit 1; \
