@@ -44,15 +44,11 @@ clean:
 	rm -rf $(TO_BE_DELETED)
 
 configure:
-	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
-
-configure-json:
-	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
+	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
+	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) --property thresholdDocument=`cat etc/sample.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
 
 configure-none:
-	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
+	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
 
 release: all
 	-mkdir ../../tmp
