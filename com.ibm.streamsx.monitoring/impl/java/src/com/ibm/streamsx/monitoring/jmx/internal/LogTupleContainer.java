@@ -81,6 +81,11 @@ public class LogTupleContainer {
 	 * Index of the sequence attribute.
 	 */
 	private Integer _sequenceAttributeIndex = null;
+	
+	/**
+	 * Index of the messagesSkipped attribute.
+	 */
+	private Integer _messagesSkippedAttributeIndex = null;
 
 	
 	/**
@@ -137,7 +142,12 @@ public class LogTupleContainer {
 		if (_sequenceAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("sequence");
 			_sequenceAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.INT64 ? attribute.getIndex() : -1);
-		}		
+		}
+		if (_messagesSkippedAttributeIndex == null) {
+			Attribute attribute = schema.getAttribute("messagesSkipped");
+			_messagesSkippedAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.BOOLEAN ? attribute.getIndex() : -1);
+		}
+		
 	}
 	
 	
@@ -158,7 +168,9 @@ public class LogTupleContainer {
 			final String resource,
 			final BigInteger pe,
 			final BigInteger job,
-			final String operator) {
+			final String operator,
+			final String text,
+			final boolean messagesSkipped) {
 		return _port.getStreamSchema().getTuple(getAttributes(
 				notification,
 				domainId,
@@ -166,7 +178,9 @@ public class LogTupleContainer {
 				resource,
 				pe,
 				job,
-				operator				
+				operator,
+				text,
+				messagesSkipped
 				));
 	}
 	
@@ -183,7 +197,9 @@ public class LogTupleContainer {
 			final String resource,
 			final BigInteger peId,
 			final BigInteger jobId,
-			final String operator
+			final String operator,
+			final String text,
+			final boolean messagesSkipped
 			) {
 		
 		final Map<String, Object> attributes = new HashMap<String, Object>();
@@ -232,6 +248,12 @@ public class LogTupleContainer {
 			if (notification.getMessage() != null) {
 				attributes.put("message", new RString(notification.getMessage()));
 			}
+			if (null != text) {
+				attributes.put("message", new RString(text));
+			}
+		}
+		if (_messagesSkippedAttributeIndex != -1) {
+			attributes.put("messagesSkipped", messagesSkipped);
 		}
 
 		return attributes;

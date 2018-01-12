@@ -22,6 +22,7 @@ import javax.management.JMX;
 import javax.management.ObjectName;
 
 import com.ibm.json.java.JSON;
+import com.ibm.json.java.JSONArray;
 import com.ibm.json.java.JSONObject;
 import com.ibm.streams.management.Notifications;
 import com.ibm.streams.management.ObjectNameBuilder;
@@ -183,16 +184,55 @@ public class DomainHandler implements NotificationListener, Closeable {
 					BigInteger pe = null;
 					BigInteger job = null;
 					String operator = null;
+					String text = null;
+					boolean messagesSkipped = false;
 					if (null != notification.getUserData()) {
-						JSONObject obj = (JSONObject)JSON.parse(notification.getUserData().toString());
-						instance = obj.get("instance").toString();
-						resource = obj.get("resource").toString();
-						pe = new BigInteger(obj.get("pe").toString());
-						job = new BigInteger(obj.get("job").toString());
-						operator = obj.get("operator").toString();
+						if ((notification.getMessage() != null) && (notification.getMessage().length() > 0)) {
+							// javax.management.Notification[source=com.ibm.streams.management:type=domain,name="xxx"]
+							// [type=com.ibm.streams.management.log.application.error][message=xxx],
+							// userData={"instance":"xxx","resource":"xxx","pe":"1","domain":"xxx","job":"1","operator":"xxx"}
+							if (_trace.isDebugEnabled()) {
+								_trace.debug("parse userData");
+							}							
+							JSONObject obj = (JSONObject)JSON.parse(notification.getUserData().toString());
+							instance = obj.get("instance").toString();
+							resource = obj.get("resource").toString();
+							pe = new BigInteger(obj.get("pe").toString());
+							job = new BigInteger(obj.get("job").toString());
+							operator = obj.get("operator").toString();
+						}
+						else {
+							// if message is not set then the message is part of userData
+							// javax.management.Notification[source=com.ibm.streams.management:type=domain,name="xxx"]
+							// [type=com.ibm.streams.management.log.application.error][message=],
+							// userData={"messages":[{"instance":"xxx","resource":"xxx","pe":"xx","domain":"xxx","text":"xxx","job":"xx","operator":"xxx","timestamp":1515687171914}],"messagesSkipped":false}
+							if (_trace.isDebugEnabled()) {
+								_trace.debug("parse userData for messages and messagesSkipped");
+							}							
+							JSONObject obj1 = (JSONObject)JSON.parse(notification.getUserData().toString());
+							messagesSkipped = (obj1.get("messagesSkipped").toString().equalsIgnoreCase("true")) ? true : false;
+							Object json = obj1.get("messages");
+							if (json instanceof JSONArray) {
+								for (Object obj : (JSONArray)json) {
+									if (obj instanceof JSONObject) {
+										JSONObject jsonobj = (JSONObject) obj;
+										instance = jsonobj.get("instance").toString();
+										resource = jsonobj.get("resource").toString();
+										pe = new BigInteger(jsonobj.get("pe").toString());
+										job = new BigInteger(jsonobj.get("job").toString());
+										operator = jsonobj.get("operator").toString();
+										text = jsonobj.get("text").toString();
+										final Tuple tuple = _operatorConfiguration.get_tupleContainerLogSource().getTuple(notification, _domainId, instance, resource, pe, job, operator, text, messagesSkipped);
+										_operatorConfiguration.get_tupleContainerLogSource().submit(tuple);										
+									}
+								}
+							}							
+						}
 					}
-					final Tuple tuple = _operatorConfiguration.get_tupleContainerLogSource().getTuple(notification, _domainId, instance, resource, pe, job, operator);
-					_operatorConfiguration.get_tupleContainerLogSource().submit(tuple);
+					if (text == null) {
+						final Tuple tuple = _operatorConfiguration.get_tupleContainerLogSource().getTuple(notification, _domainId, instance, resource, pe, job, operator, text, messagesSkipped);
+						_operatorConfiguration.get_tupleContainerLogSource().submit(tuple);
+					}
 				}
 				catch (Exception e) {
 					_trace.error("Error in parsing userData: " + e);
