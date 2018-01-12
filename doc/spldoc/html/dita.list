@@ -1,4 +1,4 @@
-#Fri Dec 08 13:15:04 CET 2017
+#Fri Jan 12 14:05:00 CET 2018
 copytosourcelist=
 hreftargetslist=dita/tk$com.ibm.streamsx.monitoring/ix$Namespace.xml,dita/tk$com.ibm.streamsx.monitoring/ns$com.ibm.streamsx.monitoring.system.xml,dita/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.system$LogSource.xml,dita/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics$MetricsMonitor$1.xml,dita/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.jobs$JobStatusSource$1.xml,dita/tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.jobs$Types.xml,dita/tk$com.ibm.streamsx.monitoring/ix$Operator.xml,dita/tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.system$Types.xml,dita/toolkits/ix$Namespace.xml,dita/tk$com.ibm.streamsx.monitoring/ns$com.ibm.streamsx.monitoring.jobs.xml,dita/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics$MetricsMonitor.xml,dita/toolkits/ix$Operator.xml,dita/tk$com.ibm.streamsx.monitoring/tk$com.ibm.streamsx.monitoring$1.xml,dita/tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.jobs$JobStatusMonitor.xml,dita/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics$MetricsSource$1.xml,dita/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics$MetricsSource.xml,dita/tk$com.ibm.streamsx.monitoring/ix$Type.xml,dita/tk$com.ibm.streamsx.monitoring/ns$com.ibm.streamsx.monitoring.jmx.xml,dita/tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.jmx$Types.xml,dita/toolkits/ix$Type.xml,dita/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.xml,dita/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.system$SystemMonitorSource.xml,dita/tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.metrics$Types.xml,dita/toolkits/toolkits.xml,dita/tk$com.ibm.streamsx.monitoring/tk$com.ibm.streamsx.monitoring.xml,dita/tk$com.ibm.streamsx.monitoring/ns$com.ibm.streamsx.monitoring.metrics.xml,dita/references/OperatorModel.xml
 fullditatopicfile=fullditatopic.list
@@ -37,7 +37,7 @@ codereffile=coderef.list
 keylist=
 codereflist=
 user.input.file.listfile=usr.input.file.list
-user.input.dir=/mnt/hgfs/share/git-public/streamsx.monitoring/com.ibm.streamsx.monitoring/doc/spldoc
+user.input.dir=/home/streamsadmin/tmp/streamsx.monitoring/com.ibm.streamsx.monitoring/doc/spldoc
 uplevels=../
 tempdirToinputmapdir.relative.value=dita/
 conrefpushfile=conrefpush.list
