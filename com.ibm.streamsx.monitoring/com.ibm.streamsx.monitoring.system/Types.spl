@@ -99,6 +99,10 @@ type SystemStatus = tuple<
  * * **message**
  * 
  *   The notification message.
+ * 
+ * * **messagesSkipped**
+ * 
+ *   Messages are skipped if value is true and not part of the notification.
  */
 type LogNotification = tuple<
 	rstring notifyType,
@@ -110,5 +114,6 @@ type LogNotification = tuple<
 	rstring operatorName,
 	int64 sequence,
 	timestamp eventTimestamp,
-	rstring message
+	rstring message,
+	boolean messagesSkipped
 >;

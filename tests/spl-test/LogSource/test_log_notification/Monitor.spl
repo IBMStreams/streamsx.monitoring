@@ -76,13 +76,14 @@ composite Monitor {
 				}
 
 				if ((warnLogReceived) && (errLogReceived)) {
-					if ((length(I.domainId) > 0) && (length(I.instanceId) > 0) && (length(I.resource) > 0)) {
+					if ((length(I.domainId) > 0) && (length(I.instanceId) > 0) && (length(I.resource) > 0) && (length(I.message) > 0) && (length(I.operatorName) > 0)) {
 						printStringLn("TEST_RESULT_PASS");
 						passed = true;
 						shutdownPE();
 					}
 					else {
 						printStringLn("ERROR: MISSING ATTRIBUTE VALUES");
+						printStringLn("RECEIVED TUPLE:["+(rstring)I+"]");
 						printStringLn("TEST_RESULT_FAIL");
 						abort();
 					}
