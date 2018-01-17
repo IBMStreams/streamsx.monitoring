@@ -20,7 +20,7 @@ class TestCloud(unittest.TestCase):
         connection = sr.StreamingAnalyticsConnection()
         service = connection.get_streaming_analytics()
         result = service.start_instance()
-        print('Streaming Analytics service ' + connection.service_name + ' is ' + result['state'] + ' and ' + result['status'])
+        #print('Streaming Analytics service ' + connection.service_name + ' is ' + result['state'] + ' and ' + result['status'])
 
     @classmethod
     def tearDownClass(self):
@@ -28,7 +28,7 @@ class TestCloud(unittest.TestCase):
         connection = sr.StreamingAnalyticsConnection()
         service = connection.get_streaming_analytics()
         result = service.stop_instance()
-        print('Streaming Analytics service ' + connection.service_name + ' is ' + result['state'])
+        #print('Streaming Analytics service ' + connection.service_name + ' is ' + result['state'])
 
     def setUp(self):
         Tester.setup_streaming_analytics(self, force_remote_build=False)
@@ -89,8 +89,6 @@ class TestCloud(unittest.TestCase):
         # prepare config and submit the job to Streaming Analytics service
         config={}
         sc = sr.StreamingAnalyticsConnection()
-        if self._is_test_server():
-            sc.session.verify=False
         config[context.ConfigParams.STREAMS_CONNECTION] = sc
         context.submit(context.ContextTypes.STREAMING_ANALYTICS_SERVICE, topo, config=config)
 
