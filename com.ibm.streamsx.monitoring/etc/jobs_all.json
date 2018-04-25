@@ -1,0 +1,23 @@
+[
+  {
+    "domainIdPatterns":".*",
+    "instances":
+    [
+      {
+        "instanceIdPatterns":".*",
+        "jobs":
+        [
+          {
+            "jobNamePatterns":".*",
+            "operators":
+            [
+              {
+                "operatorNamePatterns":".*"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
