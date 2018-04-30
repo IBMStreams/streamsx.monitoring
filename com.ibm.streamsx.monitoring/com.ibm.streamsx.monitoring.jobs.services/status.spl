@@ -51,7 +51,7 @@ public composite JobStatusService
      stream<ConnectionNotification> ConnectionStatus) = JobStatusSource() {
       param
         scanPeriod: $scanPeriod;
-        applicationConfigurationName: $monitoring;
+        applicationConfigurationName: $monitoringConfiguration;
     }
 
     () as JobStatusPublish = Publish(JobStatus) {
