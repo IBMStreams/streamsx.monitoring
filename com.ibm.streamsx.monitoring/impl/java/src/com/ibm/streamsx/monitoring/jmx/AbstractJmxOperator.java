@@ -151,13 +151,6 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
         this.isConnected = isConnected;
     }
 
-	/**
-	 * If the application configuration is used (applicationConfigurationName
-	 * parameter is set), save the active filterDocument (as JSON string) to
-	 * detect whether it changes between consecutive checks.
-	 */
-	protected String activeFilterDocumentFromApplicationConfiguration = null;
-
 	@Parameter(
 			optional=true,
 			description=AbstractJmxOperator.DESC_PARAM_CONNECTION_URL
