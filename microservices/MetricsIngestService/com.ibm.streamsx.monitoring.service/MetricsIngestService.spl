@@ -14,7 +14,7 @@ use com.ibm.streamsx.topology.topic::Publish ;
 
 /**
  * A service which publishes the com.ibm.streamsx.monitoring.metrics::MetricsSource
- * operator's tuples in JSON format to a specified topic.
+ * operator's tuples in tuple [com.ibm.streamsx.monitoring.metrics::Notification] and JSON format to a specified topic.
  * 
  * Output JSON Schema:
  * \{
@@ -34,6 +34,7 @@ use com.ibm.streamsx.topology.topic::Publish ;
  *   "metricValue" : long,
  *   "lastTimeRetrieved" : long
  * \}
+ *
  * 
  * This composite depends on the following toolkits:
  * * **com.ibm.streamsx.topology**
@@ -102,6 +103,12 @@ public composite MetricsIngestService
 				iamApiKey: $iamApiKey;
 				iamTokenEndpoint: $iamTokenEndpoint;
 		}
+
+                () as PublishMetrics = Publish(MetricsIngest) {
+                  param
+                    topic: $ingestTopic;
+                    allowFilter: true;
+                }
 
 		/**
 		 * The TupleToJSON converts the Metrics tuples into JSON format.
