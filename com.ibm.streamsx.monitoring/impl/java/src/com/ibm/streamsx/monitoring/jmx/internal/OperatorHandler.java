@@ -120,16 +120,22 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 			/*
 			 * userData is the connection's object name
 			 */
-			_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+			if (_trace.isDebugEnabled()) {
+				_trace.debug("notification: " + notification + ", userData=" + notification.getUserData());
+			}
 		}
 		else if (notification.getType().equals(Notifications.OPERATOR_CONNECTION_REMOVED)) {
 			/*
 			 * userData is the connection's object name
 			 */
-			_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+			if (_trace.isDebugEnabled()) {
+				_trace.debug("notification: " + notification + ", userData=" + notification.getUserData());
+			}
 		}
 		else {
-			_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+			if (_trace.isDebugEnabled()) {
+				_trace.debug("notification: " + notification + ", userData=" + notification.getUserData());
+			}
 		}
 	}
 
