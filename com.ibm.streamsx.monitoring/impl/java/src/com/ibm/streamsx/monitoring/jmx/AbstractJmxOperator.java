@@ -364,7 +364,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		}
 		if (iamApiKey == null) {
 			if (user == null) {
-				throw new Exception(MISSING_VALUE + PARAMETER_USER);
+				throw new Exception(MISSING_VALUE + PARAMETER_USER + " or " + PARAMETER_IAM_API_KEY);
 			}
 			if (password == null) {
 				throw new Exception(MISSING_VALUE + PARAMETER_PASSWORD);
