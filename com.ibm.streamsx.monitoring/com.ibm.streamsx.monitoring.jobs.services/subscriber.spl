@@ -1,0 +1,37 @@
+namespace com.ibm.streamsx.monitoring.jobs.services;
+
+use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
+use com.ibm.streamsx.monitoring.jobs::JobStatusNotification;
+use com.ibm.streamsx.monitoring.jobs::JobStatusSource;
+
+use com.ibm.streamsx.topology.topic::Subscribe;
+
+/**
+ * Subscribe to streams pulished by `JobStatusService`.
+ *
+ * Utility operator to ease development of microservices
+ * that subscribe to streams published by [JobStatusService].
+ *
+ * @output JobStatus Job and PE status notifications
+ *    with stream type [JobStatusNotification]
+ * @output ConnectionStatus JMX connection notifications
+ *    with stream type [ConnectionNotification].
+*/
+public composite JobStatusSubscriber
+  (output
+     stream<JobStatusNotification> JobStatus,
+     stream<ConnectionNotification> ConnectionStatus
+  )
+{
+  graph
+    stream<JobStatusNotification> JobStatus = Subscribe() {
+      param
+        topic: 'streamsx/monitoring/jobs/status';
+        streamType: JobStatusNotification;
+    }
+    stream<ConnectionNotification> ConnectionStatus = Subscribe() {
+      param
+        topic: 'streamsx/monitoring/jobs/connection';
+        streamType: ConnectionNotification;
+    }
+}
