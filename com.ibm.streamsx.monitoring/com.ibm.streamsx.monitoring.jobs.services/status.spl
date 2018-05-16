@@ -1,0 +1,72 @@
+namespace com.ibm.streamsx.monitoring.jobs.services;
+
+use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
+use com.ibm.streamsx.monitoring.jobs::JobStatusNotification;
+use com.ibm.streamsx.monitoring.jobs::JobStatusSource;
+
+use com.ibm.streamsx.topology.topic::Publish;
+
+/**
+ * Microservice that publishes job status notifications.
+ *
+ * Invokes [JobStatusSource] monitoring all jobs and
+ * publishes its two output streams.
+ * Use of this microservice allows a single connection to JMX while
+ * supporting multiple microservices consuming and analyzing job
+ * status notifications.
+ *
+ * Consuming microservices can use the [JobStatusSubscriber]
+ * utility operator to subscribe to streams from this microservice.
+ *
+ * When an instance has an application configuration named
+ * `monitoring` containing the required JMX connection information
+ * then this microservice can be launched without setting any parameters.
+ *
+ * **Published topics**
+ *
+ * * `streamsx/monitoring/jobs/status` - Job and PE status notifications
+ *    with stream type [JobStatusNotification].
+ * * `streamsx/monitoring/jobs/connection` - JMX connection notifications
+ *    with stream type [ConnectionNotification].
+ *
+ * @param monitoringConfiguration Application configuration name for the JMX
+ *    connection details. Defaults to `monitoring` and can be set using
+ *    the submission parameter `monitoringConfiguration`.
+ *
+ * @param scanPeriod Period in seconds the [JobStatusSource] operator
+ *    checks for updates in the application configuration
+ *    specified by `monitoring`. Defaults to 300.0 and can be set using
+ *    the submission parameter `scanPeriod`.
+*/
+public composite JobStatusService
+{
+  param
+    expression<rstring> $monitoringConfiguration:
+      getSubmissionTimeValue('monitoringConfiguration', 'monitoring');
+    expression<float64> $scanPeriod:
+      (float64) getSubmissionTimeValue('scanPeriod', '300.0');
+
+  graph
+    (stream<JobStatusNotification> JobStatus;
+     stream<ConnectionNotification> ConnectionStatus) = JobStatusSource() {
+      param
+        scanPeriod: $scanPeriod;
+        applicationConfigurationName: $monitoringConfiguration;
+    }
+
+    () as JobStatusPublish = Publish(JobStatus) {
+      param
+        topic: 'streamsx/monitoring/jobs/status';
+        allowFilter: true;
+    }
+
+    () as ConnectionsPublish = Publish(ConnectionStatus) {
+      param
+        topic: 'streamsx/monitoring/jobs/connection';
+        allowFilter: true;
+    }
+
+  config
+    // Simple microservice - force a single PE
+    placement: partitionColocation('SinglePE');
+}

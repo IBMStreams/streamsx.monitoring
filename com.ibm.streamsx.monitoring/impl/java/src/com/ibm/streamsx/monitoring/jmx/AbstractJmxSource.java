@@ -118,8 +118,7 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 		 * instances that manages jobs, etc.
 		 */
 		scanDomain();
-	}	
-	
+	}
 
 	/**
 	 * Detects whether the filterDocument in the application configuration

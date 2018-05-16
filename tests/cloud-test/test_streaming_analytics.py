@@ -22,14 +22,6 @@ class TestCloud(unittest.TestCase):
         result = service.start_instance()
         #print('Streaming Analytics service ' + connection.service_name + ' is ' + result['state'] + ' and ' + result['status'])
 
-    @classmethod
-    def tearDownClass(self):
-        # stop streams service
-        connection = sr.StreamingAnalyticsConnection()
-        service = connection.get_streaming_analytics()
-        result = service.stop_instance()
-        #print('Streaming Analytics service ' + connection.service_name + ' is ' + result['state'])
-
     def setUp(self):
         Tester.setup_streaming_analytics(self, force_remote_build=False)
 

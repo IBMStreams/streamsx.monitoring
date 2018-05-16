@@ -1,0 +1,169 @@
+namespace com.ibm.streamsx.monitoring.jobs.services;
+
+use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
+use com.ibm.streamsx.monitoring.jobs::JobStatusNotification;
+
+use com.ibm.streamsx.topology::String;
+use com.ibm.streamsx.topology.topic::Publish;
+
+/**
+ * Failed PE detection microservice.
+ *
+ * This microservices subscribes to notifications from
+ * [JobStatusService] and detects processing elements
+ * (PEs) that have stopped and unhealthy for more
+ * than `stoppedDuration` seconds.
+ *
+ * By default when a PE (or its resource/host) fails it is restarted
+ * automatically. However if the PE continues to fail it will
+ * eventually become stopped with no further automatic restarts.
+ * This service can be used to detect PEs that have stopped after
+ * multiple failures. In an application that is known to be correct
+ * the failure may be due to unavailability of an external system
+ * or service, such as a database servce.
+ *
+ * Thus this service can be used to notify adminstrators through
+ * an alerting system that an issue exists in their Streams applications.
+ *
+ * Notifications of failed PEs are published as the notification
+ * that indicated the PE was stopped and textual representation
+ * of the notification.
+ *
+ * **Subscribed topics**
+ *
+ * This microservice subscribes to topics published by [JobStatusService].
+ *
+ * * `streamsx/monitoring/jobs/status` - Job and PE status notifications
+ *    with stream type [JobStatusNotification].
+ * * `streamsx/monitoring/jobs/connection` - JMX connection notifications
+ *    with stream type [ConnectionNotification].
+ *
+ * **Published topics**
+ * 
+ * * `streamsx/monitoring/pe/failed` - PE failed notificatios. Each tuple
+ *    represents a PE that has been stopped for at least the required
+ *    stoppage time.
+ *    Type [JobStatusNotification] with attribute `notifyType` set to
+ *    `com.ibm.streams.management.pe.changed`. The notification is from
+ *    the first notification that indicated the PE was stopped.
+ *
+ * * `streamsx/monitoring/pe/failed/alerts` - Textual representation of each
+ *    PE failed notifcation. Suitable for submitting to an alert system
+ *    such as a Slack channel.
+ *
+ * @param tag Tag placed at the beginning of the text alert. Can be set using the submission parameter `tag`. Defaults to an empty string meaning the tag for each alert will be the domain identifier followed by the instance identifier.
+ * @param stoppedDuration Duration in seconds a PE must be stopped before a notification is issued. Can be set using the submission parameter `stoppedDuration`. Defaults to sixty seconds.
+*/
+public composite FailedPEService
+{
+  param
+    expression<rstring> $tag :
+       getSubmissionTimeValue('tag', '');
+    expression<float64> $stoppedDuration :
+       (float64) getSubmissionTimeValue('stoppedDuration', "60.0");
+
+  graph
+    (stream<JobStatusNotification> JobStatus;
+     stream<ConnectionNotification> ConnectionStatus) = JobStatusSubscriber() { }
+  
+    // Job canceled notifications
+    stream<int64 jobId, timestamp eventTimestamp> Canceled = Functor(JobStatus) {
+      param
+         filter: notifyType == 'com.ibm.streams.management.job.removed';
+    }
+
+    // PE changed notifications
+    stream<JobStatusNotification> PEStatus = Functor(JobStatus) {
+      param
+        filter: notifyType == 'com.ibm.streams.management.pe.changed';
+    }
+
+    /**
+     * Maintains the last status (pe.changed) notification for
+     * each active PE, keeping it for 4 * $stoppedDuration seconds.
+     *
+     * Every $stoppedDuration/2 seconds each active PE status is sent
+     * downstream to LastPEStatus.
+     */
+    stream<PEStatus> LastPEStatus = Aggregate(PEStatus) {
+      window PEStatus: sliding, count(1), time($stoppedDuration/2.0),
+                       partitioned, partitionAge($stoppedDuration * 4.0);
+
+       param
+         partitionBy: peId;
+    }
+
+    /*
+     * Filter out only PEs that have been stopped
+     * for at least $stoppedDuration seconds.
+     */ 
+    stream<PEStatus> StoppedDups = Filter(LastPEStatus) {
+      param
+        filter: peHealth == 'unhealthy' && peStatus == 'stopped'
+              && diffAsSecs(getTimestamp(), eventTimestamp) >= $stoppedDuration;
+    }
+    stream<PEStatus> Stopped = DeDuplicate(StoppedDups) {
+      param
+          timeOut: $stoppedDuration * 4.0;
+    }
+
+    /**
+     * Join with canceled jobs.
+     *   Left: Cancelled jobs are maintained over a period of $stoppedDuration*8
+     *   Right: Stopped PEs are a lookup style join, not maintained in a window.
+     *
+     * If a Stopped (PE) tuple arrives and there is no cancelled job then
+     * a tuple will be submitted to the Failed port (right outer join),
+     * and thus represents a PE that has failed, it has been stopped
+     * for at least $stoppedDuration and its job has not been canceled.
+     *   Otherwise it will match with a cancelled job and submit a tuple
+     *   to the Unused port, it represents a stopped PE for a cancelled job.
+     *
+     * A Canceled (Job) tuple never matches because the right window is
+     * always empty. Its tuples just create a lookup table for the stopped PEs.
+     *
+     */
+    @view(name='FailedPEs', port=Failed, sampleSize=20, bufferTime=600.0, activateOption=automatic)
+    (stream<int64 jobId> Unused; stream<Stopped> Failed) as Detector = Join(Canceled; Stopped) {
+      window
+        Canceled: sliding, time($stoppedDuration * 8.0);
+        Stopped: sliding, count(0);
+      param
+        algorithm: rightOuter;
+        equalityLHS: Canceled.jobId;
+        equalityRHS: Stopped.jobId;
+   }
+
+   () as FailedPublish = Publish(Failed) {
+      param
+        topic: 'streamsx/monitoring/pe/failed';
+        allowFilter: true;
+   }
+
+   stream<String> Alerts = Functor(Failed) {
+     logic
+       state:
+       {
+         rstring tag_ = $tag != '' ? $tag : '';
+         mutable rstring failed_tag = '';
+       }
+       onTuple Failed:
+         failed_tag = tag_ != '' ? tag_ : domainId + ':' + instanceId;
+
+     output Alerts:
+       string = failed_tag + ': ' +
+              'Job:' + jobName + '(' + (rstring) jobId + ') ' +
+              'PE:' + (rstring) peId + ' ' +
+              peStatus + ' since ' + ctime(eventTimestamp)
+              ;
+   }
+
+   () as FailedAlerts = Publish(Alerts) {
+      param
+        topic: 'streamsx/monitoring/pe/failed/alerts';
+   }
+
+  config
+    // Simple microservice - force a single PE
+    placement: partitionColocation('SinglePE');
+}
