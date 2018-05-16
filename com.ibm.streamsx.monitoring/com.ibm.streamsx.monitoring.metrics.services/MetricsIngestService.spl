@@ -6,11 +6,11 @@
 //
 
  
-namespace com.ibm.streamsx.monitoring.service;
+namespace com.ibm.streamsx.monitoring.metrics.services;
 
-use com.ibm.streamsx.monitoring.metrics::* ;
-use com.ibm.streamsx.json::* ;
-use com.ibm.streamsx.topology.topic::Publish ;
+use com.ibm.streamsx.monitoring.metrics::*;
+use com.ibm.streamsx.json::*;
+use com.ibm.streamsx.topology.topic::Publish;
 
 /**
  * A service which publishes the com.ibm.streamsx.monitoring.metrics::MetricsSource
