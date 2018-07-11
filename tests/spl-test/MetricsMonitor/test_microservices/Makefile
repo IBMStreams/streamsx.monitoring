@@ -20,12 +20,11 @@ SPL_DATA_DIR = ./data
 SPL_CMD_ARGS ?= 
 SPL_MAIN_COMPOSITE = Main
 
-MICROSERVICES_DIR =../../../../microservices
-
 build: distributed 
 
 all: clean build
-	cd $(MICROSERVICES_DIR); make -f Makefile all
+	$(SPLC) $(SPLC_FLAGS) -M com.ibm.streamsx.monitoring.metrics.services::MetricsIngestService $(SPL_CMD_ARGS) --output-directory=$(OUTPUT_DIR)/MetricsIngestService
+	$(SPLC) $(SPLC_FLAGS) -M com.ibm.streamsx.monitoring.metrics.services::MetricsMonitorService $(SPL_CMD_ARGS) --output-directory=$(OUTPUT_DIR)/MetricsMonitorService
 
 distributed:
 	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS) --data-directory $(SPL_DATA_DIR) --output-directory=$(OUTPUT_DIR)
@@ -42,8 +41,8 @@ configure-none:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
 
 start-monitor:
-	streamtool submitjob $(MICROSERVICES_DIR)/MetricsIngestService/output/com.ibm.streamsx.monitoring.service.MetricsIngestService.sab --jobname microserviceMetrics -P applicationConfigurationName=com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
-	streamtool submitjob $(MICROSERVICES_DIR)/MetricsMonitorService/output/com.ibm.streamsx.monitoring.service.MetricsMonitorService.sab --jobname microserviceMonitor -P applicationConfigurationName=com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
+	streamtool submitjob output/MetricsIngestService/com.ibm.streamsx.monitoring.metrics.services.MetricsIngestService.sab --jobname microserviceMetrics -P applicationConfigurationName=com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
+	streamtool submitjob output/MetricsMonitorService/com.ibm.streamsx.monitoring.metrics.services.MetricsMonitorService.sab --jobname microserviceMonitor -P applicationConfigurationName=com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
 	streamtool submitjob output/Main.sab --jobname testMicroservices
 
 stop-monitor:
