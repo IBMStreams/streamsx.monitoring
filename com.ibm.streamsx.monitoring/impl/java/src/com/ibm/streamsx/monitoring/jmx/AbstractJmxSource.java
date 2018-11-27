@@ -129,7 +129,7 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 	 * specified as parameter (file path), nor in the application configuration
 	 * (JSON string).
 	 */
-	protected void detecteAndProcessChangedFilterDocumentInApplicationConfiguration() throws Exception {
+	protected void detectAndProcessChangedFilterDocumentInApplicationConfiguration() throws Exception {
 		boolean isChanged = false;
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {

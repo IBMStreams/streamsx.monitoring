@@ -85,6 +85,12 @@ public class OperatorConfiguration {
 	 * default is 5.0 seconds.
 	 */
 	private Double _scanPeriod = Double.valueOf(5.0);
+	
+	/**
+	 * Specifies the period after which a filter document update check is initiated. The
+	 * default is 5.0 seconds.
+	 */	
+	private Double _checkPeriod = Double.valueOf(5.0);
 
 	private JMXConnector _jmxConnector = null;
 	
@@ -211,6 +217,14 @@ public class OperatorConfiguration {
 		}
 	}
 
+	public Double get_checkPeriod() {
+		return _checkPeriod;
+	}
+
+	public void set_checkPeriod(Double checkPeriod) {
+		this._checkPeriod = checkPeriod;
+	}	
+	
 	public Double get_scanPeriod() {
 		return _scanPeriod;
 	}
