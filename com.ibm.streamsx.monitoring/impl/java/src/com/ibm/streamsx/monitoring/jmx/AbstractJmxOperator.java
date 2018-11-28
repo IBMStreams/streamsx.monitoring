@@ -46,7 +46,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	
 	protected static final String DESC_PARAM_APPLICATION_CONFIGURATION_NAME = 
 			"Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] "
-			+ "that can contain domainId, connectionURL, user, password, iamApiKey, iamTokenEndpoint and filterDocument "
+			+ "that can contain domainId, connectionURL, user, password, credentials and filterDocument "
 			+ "properties. The application configuration overrides values that "
 			+ "are specified with the corresponding parameters.";
 	
@@ -202,11 +202,13 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		_operatorConfiguration.set_applicationConfigurationName(applicationConfigurationName);
 	}
 
-	@Parameter(optional=true, description = "Specifies Streaming Analytics service credentials. Credentials are provided in JSON format. Relevant for IAM authentication to Streaming Analytics service case only. If parameter is set, then the parameters user and password are ignored.")
+	@Parameter(optional=true, description = "Specifies Streaming Analytics service credentials. Credentials are provided in JSON format. Relevant for IAM authentication to Streaming Analytics service case only. If parameter is set, then the parameters user and password are ignored. If the **applicationConfigurationName** parameter is specified, the application configuration property credentials can override this parameter value.")
 	public void setCredentials(String credentials) {
 		_operatorConfiguration.set_credentials(credentials);
-	}
-		
+	}	
+	
+
+	
 	/**
 	 * Initialize this operator. Called once before any tuples are processed.
 	 * @param context OperatorContext for this operator.

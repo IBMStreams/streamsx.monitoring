@@ -54,7 +54,7 @@ import com.ibm.streamsx.monitoring.jobs.JobStatusSource;
 @PrimitiveOperator(
 		name="MetricsSource",
 		namespace="com.ibm.streamsx.monitoring.metrics",
-		description=MetricsSource.DESC_OPERATOR
+		description=MetricsSource.DESC_OPERATOR+AbstractJmxSource.AUTHENTICATION_DESC
 		)
 @OutputPorts({
 	@OutputPortSet(

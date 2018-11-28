@@ -52,6 +52,48 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 			+ "type."
 			;
 	
+	public static final String AUTHENTICATION_DESC =
+			"\\n"+
+			"\\n+ Supported Authentication Schemes" +
+			"\\n"+
+			"\\nAuthentication can be configured with operator parameters or application configuration."+
+			"\\n"+			
+			"\\n# Authentication with application configuration\\n"+
+			"\\n"+
+			"**Create IBM Streaming Analytics Service Credentials**\\n" +
+    		"\\nA service credential provides the necessary information to connect an application to Streaming Analytics service packaged in a JSON document. Service credentials are always associated with a Service ID, and new Service IDs can be created along with a new credential.\\n" +
+    		"\\nUse the following steps to create a service credential:\\n" +
+    		"\\n" + 
+    		" 1. Log in to the IBM Cloud console and navigate to your instance of Streaming Analytics service.\\n" +
+    		" 2. In the side navigation, click Service Credentials.\\n" +
+    		" 3. Click New credential and provide the necessary information.\\n" +
+    		" 4. Click Add to generate service credential.\\n" +
+    		" 5. Click View credentials and copy JSON into clipboard.\\n" +
+			"\\n"+		
+			"**Save Credentials in Application Configuration Property**\\n" + 
+    		"\\n" + 
+    		"With this option, users can copy their IBM Streaming Analytics Credentials JSON from the IBM Streaming Analytics service and "
+    		+ "store it in an application configuration property called `credentials`. When the operator starts, "
+    		+ "it will look for that property and extract the information needed to connect. "
+    		+ "The following steps outline how this can be done: \\n" + 
+    		"\\n" + 
+    		" 1. Create an application configuration called `monitor`. You need to set the operator parameter `applicationConfigurationName`.\\n" + 
+    		" 2. Create a property in the `monitor` application configuration *named* `credentials`.\\n" + 
+    		"   * The *value* of the property should be the raw IBM Streaming Analytics Service Credentials JSON\\n" +
+    		"   * The *value* of the property could be pasted from the clipboard if you have done the *Create IBM Streaming Analytics Service Credentials* steps above. \\n" +
+    		" 3. The operator will look for an application configuration, if the parameter `applicationConfigurationName` is set and will extract "
+    		+ "the information needed to connect.\\n" +
+			"\\n"+
+			"\\n# Apply credentials as operator parameter\\n"+
+			"\\nFor Streaming Analytics service (IAM authentication) the following parameter should be used:"+
+			"\\n* credentials - JSON service credentials\\n"+		
+		    "\\n"+	
+		    "\\n# IBM Streams authentication\\n"+
+		    "\\nFor IBM Streams authentication the following authentication parameters should be used:\\n"+
+			"\\n* user\\n"+
+			"\\n* password\\n"
+	        ;		
+	
 	// ------------------------------------------------------------------------
 	// Implementation.
 	// ------------------------------------------------------------------------

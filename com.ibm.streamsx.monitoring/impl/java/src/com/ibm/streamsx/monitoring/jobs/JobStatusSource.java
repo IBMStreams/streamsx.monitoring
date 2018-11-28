@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 @PrimitiveOperator(
 		name="JobStatusSource",
 		namespace="com.ibm.streamsx.monitoring.jobs",
-		description=JobStatusSource.DESC_OPERATOR
+		description=JobStatusSource.DESC_OPERATOR+AbstractJmxSource.AUTHENTICATION_DESC
 		)
 @OutputPorts({
 	@OutputPortSet(
