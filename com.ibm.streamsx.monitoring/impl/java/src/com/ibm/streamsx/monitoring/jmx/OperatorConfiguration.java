@@ -68,6 +68,11 @@ public class OperatorConfiguration {
 	private String _iamApiKey = null;
 
 	/**
+	 * Specifies the Streaming Analytics service credentials in JSON format.
+	 */	
+	private String _credentials = null;	
+	
+	/**
 	 * Specifies the name of the application configuration object.
 	 */
 	private String _applicationConfigurationName = null;
@@ -176,6 +181,16 @@ public class OperatorConfiguration {
 			this._iamApiKey = iamApiKey;
 		}
 	}
+	
+	public String get_credentials() {
+		return _credentials;
+	}
+
+	public void set_credentials(String credentials) {
+		if (!("".equals(credentials))) {
+			this._credentials = credentials;
+		}
+	}	
 
 	public String get_sslOption() {
 		return _sslOption;

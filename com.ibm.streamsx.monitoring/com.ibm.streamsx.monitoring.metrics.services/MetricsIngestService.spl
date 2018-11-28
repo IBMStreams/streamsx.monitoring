@@ -62,11 +62,8 @@ use com.ibm.streamsx.topology.topic::Publish;
  * @param sslOption
  * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getdomainproperty` command to get the value.
  *
- * @param iamApiKey
- * Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored.
- * 
- * @param iamTokenEndpoint
- * Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the public endpoint is used: https://iam.bluemix.net/oidc/token
+ * @param credentials
+ * Specifies Streaming Analytics service credentials in JSON format. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored.
  *
  * @param ingestTopic
  * Specifies the name of the published topic for metrics ingestion, If parameter is not set, then the topic name `streamsx/monitoring/metrics/values` is used.
@@ -81,8 +78,7 @@ public composite MetricsIngestService
 		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $domainId: getSubmissionTimeValue("domainId", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then domain settings are used, where the PE is running
-		expression<rstring> $iamApiKey: getSubmissionTimeValue("iamApiKey", ""); // optional, if user and password are set
-		expression<rstring> $iamTokenEndpoint: getSubmissionTimeValue("iamTokenEndpoint", ""); // optional, used when iamApiKey is set only
+		expression<rstring> $credentials: getSubmissionTimeValue("credentials", ""); // optional, if user and password are set
 
 		expression<rstring> $ingestTopic : getSubmissionTimeValue("ingestTopic", "streamsx/monitoring/metrics/values");
 
@@ -100,8 +96,7 @@ public composite MetricsIngestService
 				domainId: $domainId;
 				sslOption: $sslOption;
 				emitMetricTuple: onChangedValue;
-				iamApiKey: $iamApiKey;
-				iamTokenEndpoint: $iamTokenEndpoint;
+				credentials: $credentials;
 		}
 
                 () as PublishMetrics = Publish(MetricsIngest) {

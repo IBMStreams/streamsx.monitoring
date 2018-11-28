@@ -22,6 +22,7 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.Logger;
 
+
 import com.ibm.json.java.JSON;
 import com.ibm.json.java.JSONArtifact;
 import com.ibm.json.java.JSONObject;
@@ -101,6 +102,8 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	protected static final Object PARAMETER_DOMAIN_ID = "domainId";
 
 	protected static final String MISSING_VALUE = "The following value must be specified as parameter or in the application configuration: ";
+
+	protected static final String PARAMETER_CREDENTIALS = "credentials";
 
 	// ------------------------------------------------------------------------
 	// Implementation.
@@ -199,14 +202,9 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		_operatorConfiguration.set_applicationConfigurationName(applicationConfigurationName);
 	}
 
-	@Parameter(optional=true, description = "Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored.")
-	public void setiamApiKey(String iamApiKey) {
-		_operatorConfiguration.set_iamApiKey(iamApiKey);
-	}
-	
-	@Parameter(optional=true, description = "Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the global endpoint is used: " + OperatorConfiguration.IAM_TOKEN_ENDPOINT)
-	public void setiamTokenEndpoint(String iamTokenEndpoint) {
-		_operatorConfiguration.set_iamTokenEndpoint(iamTokenEndpoint);
+	@Parameter(optional=true, description = "Specifies Streaming Analytics service credentials. Credentials are provided in JSON format. Relevant for IAM authentication to Streaming Analytics service case only. If parameter is set, then the parameters user and password are ignored.")
+	public void setCredentials(String credentials) {
+		_operatorConfiguration.set_credentials(credentials);
 	}
 		
 	/**
@@ -227,8 +225,8 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 
 		// check required parameters
 		if (null == _operatorConfiguration.get_applicationConfigurationName()) {
-			if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password()) && (null == _operatorConfiguration.get_iamApiKey())) {
-				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' or 'applicationConfigurationName' or 'iamApiKey' be applied.");
+			if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password()) && (null == _operatorConfiguration.get_credentials())) {
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' or 'applicationConfigurationName' or 'credentials' be applied.");
 			}
 		}
 		else {
@@ -266,7 +264,25 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 
 		_operatorConfiguration.set_defaultFilterInstance((context.getPE().isStandalone()) ? ".*" : context.getPE().getInstanceId());
 		_operatorConfiguration.set_defaultFilterDomain(_domainId);
+		
 
+		String credentials = getCredentials();
+		if (!"".equals(credentials)) {
+			if (null != _operatorConfiguration.get_applicationConfigurationName()) {
+	            try {
+					// read the JSON service credentials applied in application configuration
+					String apikey = null;
+					JSONArtifact root = JSON.parse(credentials);
+					JSONObject json = (JSONObject)root;
+					Object apikeyObj = json.get("apikey");
+					apikey = apikeyObj.toString();
+					_trace.debug("apikey: " + apikey);
+					_operatorConfiguration.set_iamApiKey(apikey);
+	            } catch (Exception e) {
+	            	_trace.error("Failed to parse credentials property from application configuration '" + _operatorConfiguration.get_applicationConfigurationName() + "'. ERROR: '" + e.getMessage() + "'");
+	            }
+			}
+		}
 	}	
 	
 	/**
@@ -315,6 +331,24 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		}
 		return result;
 	}
+	
+	protected String getCredentials() {
+		String result = "";
+		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+		if (applicationConfigurationName != null) {
+			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
+			if (properties.containsKey(PARAMETER_CREDENTIALS)) {
+				result = properties.get(PARAMETER_CREDENTIALS);
+			}
+		}
+		if (!"".equals(result)) {
+			if (null != _operatorConfiguration.get_credentials()) {
+				result = _operatorConfiguration.get_credentials();
+			}
+		}
+		return result;
+	}	
+	
 
 	/**
 	 * Sets up a JMX connection. The connection URL, the user, and the password
