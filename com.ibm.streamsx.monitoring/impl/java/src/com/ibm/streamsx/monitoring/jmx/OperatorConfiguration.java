@@ -68,6 +68,11 @@ public class OperatorConfiguration {
 	private String _iamApiKey = null;
 
 	/**
+	 * Specifies the Streaming Analytics service credentials in JSON format.
+	 */	
+	private String _credentials = null;	
+	
+	/**
 	 * Specifies the name of the application configuration object.
 	 */
 	private String _applicationConfigurationName = null;
@@ -85,6 +90,12 @@ public class OperatorConfiguration {
 	 * default is 5.0 seconds.
 	 */
 	private Double _scanPeriod = Double.valueOf(5.0);
+	
+	/**
+	 * Specifies the period after which a filter document update check is initiated. The
+	 * default is 5.0 seconds.
+	 */	
+	private Double _checkPeriod = Double.valueOf(5.0);
 
 	private JMXConnector _jmxConnector = null;
 	
@@ -170,6 +181,16 @@ public class OperatorConfiguration {
 			this._iamApiKey = iamApiKey;
 		}
 	}
+	
+	public String get_credentials() {
+		return _credentials;
+	}
+
+	public void set_credentials(String credentials) {
+		if (!("".equals(credentials))) {
+			this._credentials = credentials;
+		}
+	}	
 
 	public String get_sslOption() {
 		return _sslOption;
@@ -211,6 +232,14 @@ public class OperatorConfiguration {
 		}
 	}
 
+	public Double get_checkPeriod() {
+		return _checkPeriod;
+	}
+
+	public void set_checkPeriod(Double checkPeriod) {
+		this._checkPeriod = checkPeriod;
+	}	
+	
 	public Double get_scanPeriod() {
 		return _scanPeriod;
 	}

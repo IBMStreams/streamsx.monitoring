@@ -8,6 +8,8 @@
 package com.ibm.streamsx.monitoring.metrics;
 
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 import com.ibm.streams.operator.OperatorContext;
 import com.ibm.streams.operator.OperatorContext.ContextCheck;
@@ -24,6 +26,7 @@ import com.ibm.streamsx.monitoring.messages.Messages;
 import com.ibm.streamsx.monitoring.jmx.AbstractJmxSource;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 import com.ibm.streamsx.monitoring.jmx.internal.EmitMetricTupleMode;
+import com.ibm.streamsx.monitoring.jobs.JobStatusSource;
 
 /**
  * A source operator that does not receive any input streams and produces new tuples. 
@@ -51,7 +54,7 @@ import com.ibm.streamsx.monitoring.jmx.internal.EmitMetricTupleMode;
 @PrimitiveOperator(
 		name="MetricsSource",
 		namespace="com.ibm.streamsx.monitoring.metrics",
-		description=MetricsSource.DESC_OPERATOR
+		description=MetricsSource.DESC_OPERATOR+AbstractJmxSource.AUTHENTICATION_DESC
 		)
 @OutputPorts({
 	@OutputPortSet(
@@ -260,6 +263,10 @@ public class MetricsSource extends AbstractJmxSource {
 			"Specifies the period after which a new metrics scan is "
 			+ "initiated. The default is 5.0 seconds.";
 
+	private static final String DESC_PARAM_CHECK_PERIOD = 
+			"Specifies the period after which is checked if the application configuration is updated, for example to update the filter document during runtime."
+			+ "The default is 5.0 seconds.";	
+	
 	private static final String DESC_PARAM_EMIT_METRIC_TUPLE =
 			"Specifies when to emit a tuple for a metric. Supported modes are:\\n"
 			+ "\\n"
@@ -305,6 +312,14 @@ public class MetricsSource extends AbstractJmxSource {
 
 	@Parameter(
 			optional=true,
+			description=MetricsSource.DESC_PARAM_CHECK_PERIOD
+			)
+	public void setCheckPeriod(Double scanPeriod) {
+		_operatorConfiguration.set_checkPeriod(scanPeriod);
+	}	
+	
+	@Parameter(
+			optional=true,
 			description=MetricsSource.DESC_PARAM_EMIT_METRIC_TUPLE
 			)
 	public void setEmitMetricTuple(EmitMetricTupleMode mode) {
@@ -334,6 +349,26 @@ public class MetricsSource extends AbstractJmxSource {
 		_trace.trace("Operator " + context.getName() + " initializing in PE: " + context.getPE().getPEId() + " in Job: " + context.getPE().getJobId() );
 		_operatorConfiguration.set_OperatorType(OpType.METRICS_SOURCE);
 		super.initialize(context);
+		
+		/*
+		 * Enable scheduled service for checking application configuration updates
+		 * and for JMX connection health check
+		 */				
+		if (_operatorConfiguration.get_applicationConfigurationName() != null) {
+			java.util.concurrent.ScheduledExecutorService scheduler = getOperatorContext().getScheduledExecutorService();
+			scheduler.scheduleWithFixedDelay(
+					new Runnable() {
+						@Override
+						public void run() {
+							try {
+								detectAndProcessChangedFilterDocumentInApplicationConfiguration();
+							}
+							catch (Exception e) {
+								_trace.error("Error reading application configuration ", e);
+							}							
+						}
+					}, 5000l, Double.valueOf(_operatorConfiguration.get_checkPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);		
+		}
 		
 		/*
 		 * Create the thread for producing tuples. 
@@ -393,12 +428,10 @@ public class MetricsSource extends AbstractJmxSource {
 					setupJMXConnection();
 					connected = true;
 					scanDomain(); // create new DomainHandler
-				}
-
-				detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
+				}		
 
 				if (connected) {
-					_domainHandler.healthCheck();					
+					_domainHandler.healthCheck();				
 					_domainHandler.captureMetrics();
 				}
 			}

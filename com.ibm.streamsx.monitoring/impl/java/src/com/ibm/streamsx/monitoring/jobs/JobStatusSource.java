@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 @PrimitiveOperator(
 		name="JobStatusSource",
 		namespace="com.ibm.streamsx.monitoring.jobs",
-		description=JobStatusSource.DESC_OPERATOR
+		description=JobStatusSource.DESC_OPERATOR+AbstractJmxSource.AUTHENTICATION_DESC
 		)
 @OutputPorts({
 	@OutputPortSet(
@@ -177,8 +177,8 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "If the **applicationConfigurationName** parameter is specified, "
 			+ "the application configuration can override this parameter value.";
 	
-	private static final String DESC_PARAM_SCAN_PERIOD = 
-			"Specifies the period after which is checked if the application configuration is updated."
+	private static final String DESC_PARAM_CHECK_PERIOD = 
+			"Specifies the period after which is checked if the application configuration is updated, for example to update the filter document during runtime."
 			+ "The default is 5.0 seconds.";
 
 	// ------------------------------------------------------------------------
@@ -202,10 +202,10 @@ public class JobStatusSource extends AbstractJmxSource {
 
 	@Parameter(
 			optional=true,
-			description=JobStatusSource.DESC_PARAM_SCAN_PERIOD
+			description=JobStatusSource.DESC_PARAM_CHECK_PERIOD
 			)
-	public void setScanPeriod(Double scanPeriod) {
-		_operatorConfiguration.set_scanPeriod(scanPeriod);
+	public void setCheckPeriod(Double scanPeriod) {
+		_operatorConfiguration.set_checkPeriod(scanPeriod);
 	}
 
 	@ContextCheck(compile = true)
@@ -253,7 +253,7 @@ public class JobStatusSource extends AbstractJmxSource {
 								_domainHandler.healthCheck();
 								
 								if (_operatorConfiguration.get_applicationConfigurationName() != null) {
-									detecteAndProcessChangedFilterDocumentInApplicationConfiguration();
+									detectAndProcessChangedFilterDocumentInApplicationConfiguration();
 								}
 							}
 						}
@@ -263,7 +263,7 @@ public class JobStatusSource extends AbstractJmxSource {
 							closeDomainHandler();
 						}							
 					}
-				}, 3000l, Double.valueOf(_operatorConfiguration.get_scanPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);
+				}, 5000l, Double.valueOf(_operatorConfiguration.get_checkPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);
 	}
 
 	/**
