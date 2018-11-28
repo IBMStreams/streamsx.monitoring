@@ -9,13 +9,13 @@ Incubation for projects is covered here: https://github.com/IBMStreams/administr
 - [ ] :white_check_mark: Stable release(s)
   * Status: Yes
 - [ ] :white_check_mark: Project is properly documented
-  * Status: SPLDOC, GH-pages and Wiki available
+  * Status: SPLDOC and GH-pages available
 - [ ] :white_check_mark: Project has samples and instructions to help users get started easily
   * Status: Samples available
 - [ ] :red_circle: Sufficient testing
   * Status: No
 - [ ] :white_check_mark: Instructions on how to get started with development and contributing to project
-  * Status: https://github.com/IBMStreams/streamsx.monitoring/wiki/Getting-Started
+  * Status: https://ibmstreams.github.io/streamsx.monitoring/docs/developer/overview/
 - [ ] :white_check_mark: Website that contains information and documentation of the project
   * Status: https://ibmstreams.github.io/streamsx.monitoring/
 - [ ] :red_circle: Clear release plan

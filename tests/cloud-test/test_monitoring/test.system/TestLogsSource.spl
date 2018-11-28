@@ -6,12 +6,6 @@ use com.ibm.streamsx.monitoring.system::*;
 
 public composite TestLogsSource(output ResultStream) {
 
-	param
-		expression<rstring> $user: getSubmissionTimeValue("user", ""); // optional, if set in application configuration
-		expression<rstring> $password: getSubmissionTimeValue("password", ""); // optional, if set in application configuration
-		expression<rstring> $iamApiKey: getSubmissionTimeValue("iamApiKey", ""); // optional, if user and password are set
-		expression<rstring> $iamTokenEndpoint: getSubmissionTimeValue("iamTokenEndpoint", ""); // optional, used when iamApiKey is set only
-
 	graph
 
 		/*
@@ -19,10 +13,7 @@ public composite TestLogsSource(output ResultStream) {
 		 */
 		(stream<LogNotification> Logs) = LogSource() {
 			param
-				user: $user;
-				password: $password;
-				iamApiKey: $iamApiKey;
-				iamTokenEndpoint: $iamTokenEndpoint;				
+				applicationConfigurationName: "monitor";		
 		}
 
 		/*

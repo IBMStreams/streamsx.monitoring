@@ -6,12 +6,6 @@ use com.ibm.streamsx.monitoring.metrics::Notification;
 
 public composite TestMetricsSource(output ResultStream) {
 
-	param
-		expression<rstring> $user: getSubmissionTimeValue("user", ""); // optional, if set in application configuration
-		expression<rstring> $password: getSubmissionTimeValue("password", ""); // optional, if set in application configuration
-		expression<rstring> $iamApiKey: getSubmissionTimeValue("iamApiKey", ""); // optional, if user and password are set
-		expression<rstring> $iamTokenEndpoint: getSubmissionTimeValue("iamTokenEndpoint", ""); // optional, used when iamApiKey is set only
-
 	graph
 
 		/*
@@ -20,10 +14,7 @@ public composite TestMetricsSource(output ResultStream) {
 		(stream<Notification> MetricNotifications
 		) = MetricsSource() {
 			param	
-				user: $user;
-				password: $password;
-				iamApiKey: $iamApiKey;
-				iamTokenEndpoint: $iamTokenEndpoint;				
+				applicationConfigurationName: "monitor";				
 		}
 
 		/*

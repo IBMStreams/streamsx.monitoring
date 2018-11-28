@@ -28,6 +28,11 @@ Make sure that your Streaming Analytics service is running.
 	* Click Catalog, browse for the Streaming Analytics service, and then click it.
 	* Enter the service name and then click Create to set up your service. The service dashboard opens and your service starts automatically. The service name appears as the title of the service dashboard.
 
+### Create Application Configuration
+
+Test applications require an application configuration with the name "monitor".
+The "monitor" application configuration needs to have a single property with the name "credentials" containing the JSON from the Streaming Analytics service credentials.
+
 
 # Run the tests
 ```

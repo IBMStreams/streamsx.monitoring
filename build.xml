@@ -14,7 +14,6 @@
   <property name="toolkit" location="com.ibm.streamsx.monitoring"/>
   <property name="toolkit.test" location="tests"/>
   <property name="tmp" location="tmp" />
-  <property name="microservices" location="microservices" />
 	
 	
   <target name="all" depends="toolkit,samples,spldoc"/>
@@ -29,11 +28,6 @@
         </delete>
   	<ant dir="${toolkit}" target="clean"/>
   	<ant dir="${toolkit.test}" target="clean"/>
-    <exec executable="make" failonerror="true" dir="${microservices}">
-       <arg value="-f" />
-       <arg value="Makefile" />
-       <arg value="clean" />
-    </exec>  	
   </target>
 
   <target name="toolkit"
@@ -127,16 +121,6 @@
   <!-- Targets to build releases -->
   <target name="release"  depends="clean,all">
   	<mkdir dir="${tmp}" />
-  	<exec executable="make" failonerror="true" dir="${microservices}">
-       <arg value="-f" />
-       <arg value="Makefile" />
-       <arg value="release" />
-    </exec>
-    <exec executable="make" failonerror="true" dir="${microservices}">
-       <arg value="-f" />
-       <arg value="Makefile" />
-       <arg value="clean" />
-    </exec>
 	<!-- Create the time stamp -->
 	<tstamp />
 	<!-- Extract info from the toolkit's info.xml -->
@@ -146,7 +130,7 @@
     	<tar compression="gzip" longfile="gnu"
              destfile="${releasefilename}"
     	     basedir="${basedir}"
-             includes="com.ibm.streamsx.monitoring/** samples/** microservices/**"
+             includes="com.ibm.streamsx.monitoring/** samples/**"
              excludes="**/.gitignore com.ibm.streamsx.monitoring/.settings/** com.ibm.streamsx.monitoring/.project com.ibm.streamsx.monitoring/.classpat*"
     	/>
         <checksum file="${releasefilename}"/>

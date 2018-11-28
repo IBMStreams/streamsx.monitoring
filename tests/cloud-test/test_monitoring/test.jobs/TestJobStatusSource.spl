@@ -4,12 +4,6 @@ use com.ibm.streamsx.monitoring.jobs::*;
 
 public composite TestJobStatusSource(output ResultStream) {
 
-	param
-		expression<rstring> $user: getSubmissionTimeValue("user", ""); // optional, if set in application configuration
-		expression<rstring> $password: getSubmissionTimeValue("password", ""); // optional, if set in application configuration
-		expression<rstring> $iamApiKey: getSubmissionTimeValue("iamApiKey", ""); // optional, if user and password are set
-		expression<rstring> $iamTokenEndpoint: getSubmissionTimeValue("iamTokenEndpoint", ""); // optional, used when iamApiKey is set only
-
 	graph
 
 		/*
@@ -17,10 +11,7 @@ public composite TestJobStatusSource(output ResultStream) {
 		 */
 		(stream<JobStatusNotification> ChangeNotifications) = JobStatusSource() {
 			param
-				user: $user;
-				password: $password;
-				iamApiKey: $iamApiKey;
-				iamTokenEndpoint: $iamTokenEndpoint;				
+				applicationConfigurationName: "monitor";				
 		}
 
 		/*

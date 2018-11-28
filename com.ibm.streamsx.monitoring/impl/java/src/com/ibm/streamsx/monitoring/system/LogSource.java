@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 @PrimitiveOperator(
 		name="LogSource",
 		namespace="com.ibm.streamsx.monitoring.system",
-		description=LogSource.DESC_OPERATOR
+		description=LogSource.DESC_OPERATOR+AbstractJmxSource.AUTHENTICATION_DESC
 		)
 @OutputPorts({
 	@OutputPortSet(
