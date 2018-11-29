@@ -52,6 +52,11 @@ public class OperatorConfiguration {
 	private String _domainId = null;
 	
 	/**
+	 * Specifies the instance that is monitored.
+	 */	
+	private String _instanceIdFilter = ".*";
+	
+	/**
 	 * Global Endpoint
 	 */
 	public static final String IAM_TOKEN_ENDPOINT = "https://iam.bluemix.net/identity/token";
@@ -212,6 +217,16 @@ public class OperatorConfiguration {
 		}
 	}
 
+	public String get_instanceIdFilter() {
+		return _instanceIdFilter;
+	}
+
+	public void set_instanceIdFilter(String instanceIdFilter) {
+		if (!("".equals(instanceIdFilter))) {
+			this._instanceIdFilter = instanceIdFilter;
+		}
+	}	
+	
 	public String get_applicationConfigurationName() {
 		return _applicationConfigurationName;
 	}

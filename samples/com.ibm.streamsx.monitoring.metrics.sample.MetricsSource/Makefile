@@ -42,21 +42,21 @@ clean:
 
 configure:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
+	streamtool mkappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(STREAMS_USER) --property password=$(STREAMS_PASSWORD) com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
 
 configure-json:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
+	streamtool mkappconfig --property user=$(STREAMS_USER) --property password=$(STREAMS_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
 
 configure-none:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
 
 configure-incomplete:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(JMX_USER) com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
+	streamtool mkappconfig --property user=$(STREAMS_USER) com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
 
 configure-memory:
-	streamtool chappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorMemoryMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
+	streamtool chappconfig --property user=$(STREAMS_USER) --property password=$(STREAMS_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorMemoryMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
 
 configure-original:
-	streamtool chappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration
+	streamtool chappconfig --property user=$(STREAMS_USER) --property password=$(STREAMS_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.metrics.MetricsSource.ApplicationConfiguration

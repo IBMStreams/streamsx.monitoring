@@ -32,7 +32,7 @@ clean:
 
 configure:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.jobs.JobStatusMonitor.ApplicationConfiguration
-	streamtool mkappconfig --property domainId=$(TEST_DOMAIN) --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) com.ibm.streamsx.monitoring.jobs.JobStatusMonitor.ApplicationConfiguration
+	streamtool mkappconfig --property domainId=$(TEST_DOMAIN) --property user=$(STREAMS_USERNAME) --property password=$(STREAMS_PASSWORD) com.ibm.streamsx.monitoring.jobs.JobStatusMonitor.ApplicationConfiguration
 
 start-test-domain:
 	streamtool startdomain -d $(TEST_DOMAIN)
@@ -42,7 +42,7 @@ start-sample:
 	streamtool submitjob output/sample/SampleJob.sab --jobname sampleJmxReconnectJobStatus -i $(TEST_INSTANCE) -d $(TEST_DOMAIN)
 
 start-monitor:
-	streamtool submitjob output/monitor/Monitor.sab --jobname monitorJmxReconnectJobStatus -P domainId=$(TEST_DOMAIN) -P user=$(JMX_USER) -P password=$(JMX_PASSWORD) -P connectionURL=`streamtool getjmxconnect -d $(TEST_DOMAIN)`
+	streamtool submitjob output/monitor/Monitor.sab --jobname monitorJmxReconnectJobStatus -P domainId=$(TEST_DOMAIN) -P user=$(STREAMS_USERNAME) -P password=$(STREAMS_PASSWORD) -P connectionURL=`streamtool getjmxconnect -d $(TEST_DOMAIN)`
 
 stop-test-domain:
 	streamtool stopinst -d $(TEST_DOMAIN) -i $(TEST_INSTANCE)

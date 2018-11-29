@@ -9,10 +9,10 @@ class MetricsMonitorMicroservicesTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         try:
-           os.environ["JMX_USER"]
-           os.environ["JMX_PASSWORD"]
+           os.environ["STREAMS_USERNAME"]
+           os.environ["STREAMS_PASSWORD"]
         except KeyError: 
-           print ("ERROR: Please set the environment variables JMX_USER and JMX_PASSWORD")
+           print ("ERROR: Please set the environment variables STREAMS_USERNAME and STREAMS_PASSWORD")
            raise
 
     def setUp(self):

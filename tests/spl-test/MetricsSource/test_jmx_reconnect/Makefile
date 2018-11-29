@@ -38,7 +38,7 @@ start-sample:
 	streamtool submitjob output/sample/SampleJob.sab --jobname sampleJmxReconnectMetricsSource -i $(TEST_INSTANCE) -d $(TEST_DOMAIN)
 
 start-monitor:
-	streamtool submitjob output/monitor/Monitor.sab --jobname monitorJmxReconnectMetricsSource -P domainId=$(TEST_DOMAIN) -P user=$(JMX_USER) -P password=$(JMX_PASSWORD) -P connectionURL=`streamtool getjmxconnect -d $(TEST_DOMAIN)`
+	streamtool submitjob output/monitor/Monitor.sab --jobname monitorJmxReconnectMetricsSource -P domainId=$(TEST_DOMAIN) -P user=$(STREAMS_USERNAME) -P password=$(STREAMS_PASSWORD) -P connectionURL=`streamtool getjmxconnect -d $(TEST_DOMAIN)`
 
 stop-test-domain:
 	streamtool stopinst -d $(TEST_DOMAIN) -i $(TEST_INSTANCE)
