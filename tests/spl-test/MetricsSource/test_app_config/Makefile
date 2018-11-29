@@ -31,11 +31,11 @@ clean:
 
 configure:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+	streamtool mkappconfig --property user=$(STREAMS_USERNAME) --property password=$(STREAMS_PASSWORD) com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 
 configure-json:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
+	streamtool mkappconfig --property user=$(STREAMS_USERNAME) --property password=$(STREAMS_PASSWORD) --property filterDocument=`cat etc/MetricsSource_MonitorOperatorMetrics.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration
 
 configure-none:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.MetricsSource.ApplicationConfiguration

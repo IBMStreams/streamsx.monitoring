@@ -35,7 +35,7 @@ clean:
 
 configure:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) --property thresholdDocument=`cat etc/microservices.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
+	streamtool mkappconfig --property user=$(STREAMS_USERNAME) --property password=$(STREAMS_PASSWORD) --property thresholdDocument=`cat etc/microservices.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
 
 configure-none:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration

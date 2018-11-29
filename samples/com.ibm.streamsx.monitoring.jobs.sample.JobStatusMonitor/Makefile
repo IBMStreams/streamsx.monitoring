@@ -41,5 +41,5 @@ clean:
 
 configure:
 	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.jobs.JobStatusMonitor.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(JMX_USER) --property password=$(JMX_PASSWORD) com.ibm.streamsx.monitoring.jobs.JobStatusMonitor.ApplicationConfiguration
+	streamtool mkappconfig --property user=$(STREAMS_USER) --property password=$(STREAMS_PASSWORD) com.ibm.streamsx.monitoring.jobs.JobStatusMonitor.ApplicationConfiguration
 

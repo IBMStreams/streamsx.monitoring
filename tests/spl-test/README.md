@@ -4,8 +4,8 @@ The test scripts require **python 3.x** for python unittest. Ensure that `python
 
 You need to set the following environment variables:
 
-* `JMX_USER` - user name for JMX connection
-* `JMX_PASSWORD` - password for JMX connection
+* `STREAMS_USERNAME` - user name for JMX connection
+* `STREAMS_PASSWORD` - password for JMX connection
 
 ## Optional 
 
