@@ -81,9 +81,15 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 			"Specifies the domain id that is monitored. If no domain id is "
 			+ "specified, the domain id under which this operator is running "
 			+ "is used. If the operator is running in a standalone application "
-			+ "it raises an exception and aborts. If "
+			+ "the parameter is mandatory. If "
 			+ "the **applicationConfigurationName** parameter is specified, "
 			+ "the application configuration can override this parameter value.";
+	
+	protected static final String DESC_PARAM_INSTANCE_ID_FILTER = 
+			"Specifies the instance id filter used to select the instance(s) that is monitored. If no value is "
+			+ "specified, all instances are monitored per default. To monitor the instance id under which this operator is running, the value OWN can be specified when running in distributed mode."
+			+ " If the **applicationConfigurationName** parameter is specified, "
+			+ "the application configuration can override this parameter value.";	
 	
 	protected static final Object PARAMETER_CONNECTION_URL = "connectionURL";
 	
@@ -100,6 +106,8 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	protected static final Object PARAMETER_FILTER_DOCUMENT = "filterDocument";
 	
 	protected static final Object PARAMETER_DOMAIN_ID = "domainId";
+	
+	protected static final Object PARAMETER_INSTANCE_ID_FILTER = "instanceIdFilter";
 
 	protected static final String MISSING_VALUE = "The following value must be specified as parameter or in the application configuration: ";
 
@@ -196,6 +204,14 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 
 	@Parameter(
 			optional=true,
+			description=AbstractJmxOperator.DESC_PARAM_INSTANCE_ID_FILTER
+			)
+	public void setInstanceIdFilter(String instanceIdFilter) {
+		_operatorConfiguration.set_instanceIdFilter(instanceIdFilter);
+	}	
+	
+	@Parameter(
+			optional=true,
 			description=AbstractJmxOperator.DESC_PARAM_APPLICATION_CONFIGURATION_NAME
 			)
 	public void setApplicationConfigurationName(String applicationConfigurationName) {
@@ -263,9 +279,21 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		// used to determine if configured domain is the domain where the PE runs
 		// if is running in standalone, then the domainId parameter/application configuration is used 
 		_domainId = ((context.getPE().isStandalone()) ? _operatorConfiguration.get_domainId() : context.getPE().getDomainId());
-
-		_operatorConfiguration.set_defaultFilterInstance((context.getPE().isStandalone()) ? ".*" : context.getPE().getInstanceId());
 		_operatorConfiguration.set_defaultFilterDomain(_domainId);
+		
+		// Set the instance filter, default is ".*"
+		if (!(context.getPE().isStandalone())) {
+			String instanceFilter = getApplicationConfigurationInstanceId();
+			if (!"".equals(instanceFilter)) {
+				_operatorConfiguration.set_instanceIdFilter(instanceFilter);
+			}
+			if ("OWN".equals(_operatorConfiguration.get_instanceIdFilter())) {
+				_operatorConfiguration.set_instanceIdFilter(context.getPE().getInstanceId());
+			}
+		}
+		_trace.info("The " + context.getName() + " operator uses the instance ID filter: " + _operatorConfiguration.get_instanceIdFilter());
+		_operatorConfiguration.set_defaultFilterInstance(_operatorConfiguration.get_instanceIdFilter());
+		
 		
 
 		String credentials = getCredentials();
@@ -333,6 +361,18 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		}
 		return result;
 	}
+
+	protected String getApplicationConfigurationInstanceId() {
+		String result = "";
+		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+		if (applicationConfigurationName != null) {
+			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
+			if (properties.containsKey(PARAMETER_INSTANCE_ID_FILTER)) {
+				result = properties.get(PARAMETER_INSTANCE_ID_FILTER);
+			}
+		}
+		return result;
+	}	
 	
 	protected String getCredentials() {
 		String result = "";
