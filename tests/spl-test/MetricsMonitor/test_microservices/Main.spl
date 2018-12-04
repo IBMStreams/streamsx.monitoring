@@ -6,7 +6,6 @@
 //
 
 use com.ibm.streamsx.topology.topic::Subscribe;
-use com.ibm.streamsx.json::*;
 
 /**
  * Create the custom application metrics. The function is usable in the state
@@ -30,13 +29,13 @@ composite Main {
 		
 	graph
 
-		stream<Json> JsonMonitor = Subscribe() {
+		stream<com.ibm.streamsx.topology::String> AlertStrings = Subscribe() {
 			param
 				topic: $metricsMonitorTopic;
-				streamType: Json;
+				streamType: com.ibm.streamsx.topology::String;
 		}
 
-		(stream <rstring result> SaveDone1) as Validator = Custom(JsonMonitor as I) {
+		(stream <rstring result> SaveDone1) as Validator = Custom(AlertStrings as I) {
 			logic 
 			state: {
 				mutable boolean done1Sent = false;

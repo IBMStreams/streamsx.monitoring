@@ -97,10 +97,10 @@ public class Alert {
 	public void submitAlert(OperatorContext context) {
 		StreamingOutput<OutputTuple> streamingOutput = context.getStreamingOutputs().get(0);
 		
-		// Submit tuple with message attribute.
+		// Submit tuple with message at attribute with index 0.
 		try {
 			OutputTuple outputTuple = streamingOutput.newTuple();
-			outputTuple.setString("message", message);
+			outputTuple.setString(0, message);
 			streamingOutput.submit(outputTuple);
 		} catch (Exception e) {
 			_trace.error("Exception submitting alert tuple.", e);

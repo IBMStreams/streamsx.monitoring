@@ -35,7 +35,7 @@ import com.ibm.streams.operator.model.PrimitiveOperator;
 		)
 @InputPorts({
 	@InputPortSet(
-			description="Port that ingests tuples",
+			description="Port that ingests metrics tuples. Expects the output stream of the MetricsSource operator as input.",
 			cardinality=1, optional=false,
 			windowingMode=WindowMode.NonWindowed,
 			windowPunctuationInputMode=WindowPunctuationInputMode.Oblivious)}
@@ -45,7 +45,7 @@ import com.ibm.streams.operator.model.PrimitiveOperator;
 			cardinality=1,
 			optional=false,
 			windowPunctuationOutputMode=WindowPunctuationOutputMode.Generating,
-			description="Specifies the output port."
+			description="Specifies the output port for alert messages. Expects a String attribute at index 0 of the output stream, for example `com.ibm.streamsx.topology::String` type."
 			)
 })
 public class MetricsMonitor extends AbstractOperator {
