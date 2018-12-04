@@ -20,9 +20,9 @@ use com.ibm.streamsx.topology.topic::Publish;
  * This service can be used to detect PEs that have stopped after
  * multiple failures. In an application that is known to be correct
  * the failure may be due to unavailability of an external system
- * or service, such as a database servce.
+ * or service, such as a database service.
  *
- * Thus this service can be used to notify adminstrators through
+ * Thus this service can be used to notify administrators through
  * an alerting system that an issue exists in their Streams applications.
  *
  * Notifications of failed PEs are published as the notification
@@ -40,7 +40,7 @@ use com.ibm.streamsx.topology.topic::Publish;
  *
  * **Published topics**
  * 
- * * `streamsx/monitoring/pe/failed` - PE failed notificatios. Each tuple
+ * * `streamsx/monitoring/pe/failed` - PE failed notifications. Each tuple
  *    represents a PE that has been stopped for at least the required
  *    stoppage time.
  *    Type [JobStatusNotification] with attribute `notifyType` set to
@@ -48,7 +48,7 @@ use com.ibm.streamsx.topology.topic::Publish;
  *    the first notification that indicated the PE was stopped.
  *
  * * `streamsx/monitoring/pe/failed/alerts` - Textual representation of each
- *    PE failed notifcation. Suitable for submitting to an alert system
+ *    PE failed notification. Suitable for submitting to an alert system
  *    such as a Slack channel.
  *
  * @param tag Tag placed at the beginning of the text alert. Can be set using the submission parameter `tag`. Defaults to an empty string meaning the tag for each alert will be the domain identifier followed by the instance identifier.
