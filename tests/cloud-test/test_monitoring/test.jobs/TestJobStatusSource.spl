@@ -11,7 +11,7 @@ public composite TestJobStatusSource(output ResultStream) {
 		 */
 		(stream<JobStatusNotification> ChangeNotifications) = JobStatusSource() {
 			param
-				applicationConfigurationName: "monitor";				
+				applicationConfigurationName: "monitoring";				
 		}
 
 		/*

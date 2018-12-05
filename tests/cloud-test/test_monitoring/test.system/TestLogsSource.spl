@@ -13,7 +13,7 @@ public composite TestLogsSource(output ResultStream) {
 		 */
 		(stream<LogNotification> Logs) = LogSource() {
 			param
-				applicationConfigurationName: "monitor";		
+				applicationConfigurationName: "monitoring";		
 		}
 
 		/*

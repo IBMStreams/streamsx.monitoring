@@ -14,7 +14,7 @@ public composite TestMetricsSource(output ResultStream) {
 		(stream<Notification> MetricNotifications
 		) = MetricsSource() {
 			param	
-				applicationConfigurationName: "monitor";				
+				applicationConfigurationName: "monitoring";				
 		}
 
 		/*

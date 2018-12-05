@@ -30,8 +30,8 @@ Make sure that your Streaming Analytics service is running.
 
 ### Create Application Configuration
 
-Test applications require an application configuration with the name "monitor".
-The "monitor" application configuration needs to have a single property with the name "credentials" containing the JSON from the Streaming Analytics service credentials.
+Test applications require an application configuration with the name "monitoring".
+The "monitoring" application configuration needs to have a single property with the name "credentials" containing the JSON from the Streaming Analytics service credentials.
 
 
 # Run the tests
