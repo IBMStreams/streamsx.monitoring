@@ -204,8 +204,8 @@ public class JobStatusSource extends AbstractJmxSource {
 			optional=true,
 			description=JobStatusSource.DESC_PARAM_CHECK_PERIOD
 			)
-	public void setCheckPeriod(Double scanPeriod) {
-		_operatorConfiguration.set_checkPeriod(scanPeriod);
+	public void setCheckPeriod(Double checkPeriod) {
+		_operatorConfiguration.set_checkPeriod(checkPeriod);
 	}
 
 	@ContextCheck(compile = true)

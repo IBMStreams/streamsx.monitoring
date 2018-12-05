@@ -34,15 +34,18 @@ clean:
 	rm -rf $(OUTPUT_DIR)
 
 configure:
-	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(STREAMS_USERNAME) --property password=$(STREAMS_PASSWORD) --property thresholdDocument=`cat etc/microservices.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
+	-streamtool rmappconfig --noprompt thresholds
+	streamtool mkappconfig --property thresholdDocument=`cat etc/microservices.json | perl -e 'my @content = <STDIN>; my $$str = join("", @content); $$str =~ s/\s//g; print $$str;'` thresholds
+	-streamtool rmappconfig --noprompt monitoring
+	streamtool mkappconfig --property user=$(STREAMS_USERNAME) --property password=$(STREAMS_PASSWORD) monitoring
 
 configure-none:
-	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
+	-streamtool rmappconfig --noprompt monitoring
+	-streamtool rmappconfig --noprompt thresholds
 
 start-monitor:
-	streamtool submitjob output/MetricsIngestService/com.ibm.streamsx.monitoring.metrics.services.MetricsIngestService.sab --jobname microserviceMetrics -P applicationConfigurationName=com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
-	streamtool submitjob output/MetricsMonitorService/com.ibm.streamsx.monitoring.metrics.services.MetricsMonitorService.sab --jobname microserviceMonitor -P applicationConfigurationName=com.ibm.streamsx.monitoring.microservices.ApplicationConfiguration
+	streamtool submitjob output/MetricsIngestService/com.ibm.streamsx.monitoring.metrics.services.MetricsIngestService.sab --jobname microserviceMetrics
+	streamtool submitjob output/MetricsMonitorService/com.ibm.streamsx.monitoring.metrics.services.MetricsMonitorService.sab --jobname microserviceMonitor
 	streamtool submitjob output/Main.sab --jobname testMicroservices
 
 stop-monitor:

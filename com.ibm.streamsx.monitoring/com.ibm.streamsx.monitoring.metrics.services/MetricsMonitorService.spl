@@ -11,7 +11,6 @@ use com.ibm.streamsx.monitoring.metrics::MetricsMonitor;
 use com.ibm.streamsx.monitoring.metrics::*;
 use com.ibm.streamsx.topology.topic::Subscribe;
 use com.ibm.streamsx.topology.topic::Publish;
-use com.ibm.streamsx.json::*;
 
 /**
  * The MetricsMonitorService ingests metric tuples from the MetricsIngestService and 
@@ -24,67 +23,56 @@ use com.ibm.streamsx.json::*;
  * 
  * This composite depends on the following toolkits:
  * * **com.ibm.streamsx.topology**
- * * **com.ibm.streamsx.json**
+ *
+ * **Published topic**
+ *
+ * * `streamsx/monitoring/metrics/alerts` - Alerts messages
+ *    with stream type `com.ibm.streamsx.topology::String`.
  * 
- * @param applicationConfigurationName
+ * @param thresholdsConfiguration
  * Name of application configuration containing thresholdDocument JSON.
  * If parameter is not set, then the thresholdDocument parameter must be set.
+ * Defaults to `thresholds` and can be set using the submission parameter `thresholdsConfiguration`.
  * 
- * @param thresholdDocument
- * Specifies the path to a JSON-formatted document. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
- * If parameter is not set, then the applicationConfigurationName parameter must be set. 
- * 
- * @param ingestTopic
- * The ingestTopic specifies which topic the MetricsSourceService is publishing to. If parameter is not set, then the topic name `streamsx/monitoring/metrics/values` is used.
+ * @param metricsTopic
+ * The metricsTopic specifies which topic the MetricsIngestService is publishing to. If parameter is not set, then the topic name `streamsx/monitoring/metrics/values` is used.
  * 
  * @param metricsMonitorTopic
- * The metricsMonitorTopic specifies which topic this service (MetricsMonitorService) is publishing to.
+ * The metricsMonitorTopic specifies which topic this service (MetricsMonitorService) is publishing to. Defaults to `streamsx/monitoring/metrics/alerts`.
  */
 public composite MetricsMonitorService
 {
 	param
-		expression<rstring> $applicationConfigurationName : getSubmissionTimeValue("applicationConfigurationName", ""); // uses thresholdDocument, if not set		
-		expression<rstring> $thresholdDocument: getSubmissionTimeValue("thresholdDocument", ""); // uses applicationConfiguration, if not set
+		expression<rstring> $thresholdsConfiguration : getSubmissionTimeValue("thresholdsConfiguration", "thresholds");
 		
-		expression<rstring> $ingestTopic : getSubmissionTimeValue("ingestTopic", "streamsx/monitoring/metrics/values");
+		expression<rstring> $metricsTopic: getSubmissionTimeValue("metricsTopic", "streamsx/monitoring/metrics/values");
 		expression<rstring> $metricsMonitorTopic : getSubmissionTimeValue("metricsMonitorTopic", "streamsx/monitoring/metrics/alerts");
 		
 	graph
 		/**
-		 * The Subscribe imports the metric tuples JSON from the topic the MetricsSourceService's 
+		 * The Subscribe imports the metric tuples from the topic the MetricsIngestService 
 		 * is publishing to.
 		 */
-		stream<Json> JsonMetrics = Subscribe() {
+		stream<Notification> NotificationMetrics = Subscribe() {
 			param
-				topic: $ingestTopic;
-				streamType: Json;
+				topic: $metricsTopic;
+				streamType: Notification;
 		}
 		
-		/** The JSONToTuple converts the JSON back into Metrics tuples.		
-		*/
-		stream<Notification> Metrics = JSONToTuple(JsonMetrics) {
-		}
-
 		/**
 		 * The MetricsMonitor compares the metric tuple's values against the threshold rules 
 		 * defined in the application configuration's thresholdDocument property. It outputs 
 		 * an alert whenever any threshold rules are violated.
 		 */
-		stream<rstring message> AlertMessage = MetricsMonitor(Metrics) {
+		stream<com.ibm.streamsx.topology::String> AlertMessage = MetricsMonitor(NotificationMetrics) {
 			param
-				applicationConfigurationName: $applicationConfigurationName;
-				thresholdDocumentPath: $thresholdDocument;
-		}
-		
-		/** The TupleToJSON converts the alert message into JSON to prepare it for publishing.		
-		*/
-		stream<Json> JsonMessage = TupleToJSON(AlertMessage) {
+				applicationConfigurationName: $thresholdsConfiguration;
 		}
 
 		/**
-		 * The Publish publishes the alert messsages to the user-defined topic (default: 'streamsx/monitoring/metrics/alerts').
+		 * The Publish publishes the alert messsages
 		 */
-		() as PublishMetricsMonitor = Publish(JsonMessage) {
+		() as PublishMetricsMonitor = Publish(AlertMessage) {
 			param
 				 topic: $metricsMonitorTopic;
 		}
