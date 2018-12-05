@@ -218,7 +218,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		_operatorConfiguration.set_applicationConfigurationName(applicationConfigurationName);
 	}
 
-	@Parameter(optional=true, description = "Specifies Streaming Analytics service credentials. Credentials are provided in JSON format. Relevant for IAM authentication to Streaming Analytics service case only. If parameter is set, then the parameters user and password are ignored. If the **applicationConfigurationName** parameter is specified, the application configuration property credentials can override this parameter value.")
+	@Parameter(optional=true, description = "Specifies Streaming Analytics service credentials. Credentials are provided in JSON format. Relevant for IAM authentication to Streaming Analytics service case only. If parameter is set, then the parameters user and password are ignored.")
 	public void setCredentials(String credentials) {
 		_operatorConfiguration.set_credentials(credentials);
 	}	
@@ -297,21 +297,19 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		
 
 		String credentials = getCredentials();
-		if (!"".equals(credentials)) {
-			if (null != _operatorConfiguration.get_applicationConfigurationName()) {
-	            try {
-					// read the JSON service credentials applied in application configuration
-					String apikey = null;
-					JSONArtifact root = JSON.parse(credentials);
-					JSONObject json = (JSONObject)root;
-					Object apikeyObj = json.get("apikey");
-					apikey = apikeyObj.toString();
-					_trace.debug("apikey: " + apikey);
-					_operatorConfiguration.set_iamApiKey(apikey);
-	            } catch (Exception e) {
-	            	_trace.error("Failed to parse credentials property from application configuration '" + _operatorConfiguration.get_applicationConfigurationName() + "'. ERROR: '" + e.getMessage() + "'");
-	            }
-			}
+		if (!"".equals(credentials)) {		
+            try {
+				// read the JSON service credentials applied in application configuration
+				String apikey = null;
+				JSONArtifact root = JSON.parse(credentials);
+				JSONObject json = (JSONObject)root;
+				Object apikeyObj = json.get("apikey");
+				apikey = apikeyObj.toString();
+				_trace.debug("apikey: " + apikey);
+				_operatorConfiguration.set_iamApiKey(apikey);
+            } catch (Exception e) {
+            	_trace.error("Failed to parse credentials property from application configuration '" + _operatorConfiguration.get_applicationConfigurationName() + "'. ERROR: '" + e.getMessage() + "'");
+            }
 		}
 	}	
 	
@@ -376,16 +374,17 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	
 	protected String getCredentials() {
 		String result = "";
-		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
-		if (applicationConfigurationName != null) {
-			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
-			if (properties.containsKey(PARAMETER_CREDENTIALS)) {
-				result = properties.get(PARAMETER_CREDENTIALS);
-			}
+		// prio: operator parameter credentials first, check app config if credentials parameter is not set 
+		if (null != _operatorConfiguration.get_credentials()) {
+			result = _operatorConfiguration.get_credentials();
 		}
-		if (!"".equals(result)) {
-			if (null != _operatorConfiguration.get_credentials()) {
-				result = _operatorConfiguration.get_credentials();
+		if ("".equals(result)) {
+			String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
+			if (applicationConfigurationName != null) {
+				Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
+				if (properties.containsKey(PARAMETER_CREDENTIALS)) {
+					result = properties.get(PARAMETER_CREDENTIALS);
+				}
 			}
 		}
 		return result;
