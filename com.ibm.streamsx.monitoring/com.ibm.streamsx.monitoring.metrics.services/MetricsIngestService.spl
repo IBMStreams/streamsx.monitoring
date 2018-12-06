@@ -52,12 +52,16 @@ use com.ibm.streamsx.topology.topic::Publish;
  *
  * @param metricsTopic
  * The name of the topic this service is publishing to. If parameter is not set, then the topic name `streamsx/monitoring/metrics/values` is used.
+ *
+ * @param emitMetricTuple
+ * Specifies when to emit a tuple for a metric. Supported modes are the following string values: "onChangedValue" (default) and "periodic".
  */
 public composite MetricsIngestService
 {			
 	param
 		expression<rstring> $monitoringConfiguration: getSubmissionTimeValue("monitoringConfiguration", "monitoring");
 		expression<rstring> $metricsTopic: getSubmissionTimeValue("metricsTopic", "streamsx/monitoring/metrics/values");
+		expression<rstring> $emitMetricTuple: getSubmissionTimeValue("emitMetricTuple", "onChangedValue");
 
 	graph
 		/**
@@ -66,7 +70,7 @@ public composite MetricsIngestService
 		stream<Notification> MetricsIngest = MetricsSource() {
 			param
 				applicationConfigurationName: $monitoringConfiguration;
-				emitMetricTuple: onChangedValue;
+				emitMetricTuple: $emitMetricTuple;
 		}
 
 		() as PublishMetrics = Publish(MetricsIngest) {
