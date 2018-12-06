@@ -30,7 +30,7 @@ composite Main {
 			param
 				applicationConfigurationName: $applicationConfigurationName;				
 				filterDocument: $filterDocument; // test needs to apply etc/MetricsSource_MonitorOperatorMetrics.json as submission param
-				emitMetricTuple: onChangedValue;
+				emitMetricTuple: "onChangedValue";
 		}
 
 		/*

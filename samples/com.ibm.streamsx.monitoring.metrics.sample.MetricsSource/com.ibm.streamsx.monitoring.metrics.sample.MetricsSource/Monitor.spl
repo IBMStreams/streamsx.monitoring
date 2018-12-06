@@ -38,6 +38,9 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  *
  * @param credentials
  * Specifies Streaming Analytics service credentials in JSON format. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored. If the **applicationConfigurationName** parameter is specified, the application configuration with the property credentials can override this parameter value.
+ * 
+ * @param emitMetricTuple
+ * Specifies when to emit a tuple for a metric. Supported modes are the following string values: "onChangedValue" (default) and "periodic".
  */
 composite Monitor {
 	param
@@ -49,6 +52,7 @@ composite Monitor {
 		expression<rstring> $domainId: getSubmissionTimeValue("domainId", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then domain settings are used, where the PE is running
 		expression<rstring> $credentials: getSubmissionTimeValue("credentials", "");
+		expression<rstring> $emitMetricTuple: getSubmissionTimeValue("emitMetricTuple", "onChangedValue");
 
 	graph
 		/*
@@ -65,7 +69,7 @@ composite Monitor {
 				connectionURL: $connectionURL;
 				domainId: $domainId;
 				sslOption: $sslOption;
-				emitMetricTuple: onChangedValue;
+				emitMetricTuple: $emitMetricTuple;
 				credentials: $credentials;
 		}
 		

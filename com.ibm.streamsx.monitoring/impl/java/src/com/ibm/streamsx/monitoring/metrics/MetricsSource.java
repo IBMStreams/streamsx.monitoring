@@ -268,7 +268,7 @@ public class MetricsSource extends AbstractJmxSource {
 			+ "The default is 5.0 seconds.";	
 	
 	private static final String DESC_PARAM_EMIT_METRIC_TUPLE =
-			"Specifies when to emit a tuple for a metric. Supported modes are:\\n"
+			"Specifies when to emit a tuple for a metric. Supported modes are the following string values:\\n"
 			+ "\\n"
 			+ "* **periodic**\\n"
 			+ "\\n"
@@ -322,8 +322,8 @@ public class MetricsSource extends AbstractJmxSource {
 			optional=true,
 			description=MetricsSource.DESC_PARAM_EMIT_METRIC_TUPLE
 			)
-	public void setEmitMetricTuple(EmitMetricTupleMode mode) {
-		_operatorConfiguration.set_emitMetricTuple(mode);
+	public void setEmitMetricTuple(String mode) {
+		_operatorConfiguration.set_emitMetricTuple(EmitMetricTupleMode.valueOf(mode));
 	}
 
 	@ContextCheck(compile = true)

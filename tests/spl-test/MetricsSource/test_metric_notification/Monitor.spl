@@ -59,7 +59,7 @@ composite Monitor {
 				connectionURL: $connectionURL;
 				domainId: $domainId;
 				sslOption: $sslOption;
-				emitMetricTuple: onChangedValue;
+				emitMetricTuple: "onChangedValue";
 		}
 		
 		/*
