@@ -196,3 +196,14 @@ type Notification = tuple<
 	int64 metricValue,
 	int64 lastTimeRetrieved
 >;
+
+
+type Thresholds = tuple<
+	float64 currentValue,
+	float64 thresholdValue
+>;
+
+type Alert = tuple<
+	Thresholds,
+	Notification
+>;
