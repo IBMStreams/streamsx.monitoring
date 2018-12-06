@@ -19,6 +19,7 @@ import com.ibm.streams.operator.model.InputPortSet;
 import com.ibm.streams.operator.model.InputPortSet.WindowMode;
 import com.ibm.streams.operator.model.InputPortSet.WindowPunctuationInputMode;
 import com.ibm.streams.operator.model.OutputPortSet.WindowPunctuationOutputMode;
+import com.ibm.streamsx.monitoring.jmx.AbstractJmxSource;
 import com.ibm.streamsx.monitoring.metrics.internal.monitor.Metrics;
 import com.ibm.streamsx.monitoring.metrics.internal.monitor.StoredTuples;
 import com.ibm.streamsx.monitoring.metrics.internal.monitor.ThresholdDocument;
@@ -44,9 +45,16 @@ import com.ibm.streams.operator.model.PrimitiveOperator;
 	@OutputPortSet(
 			cardinality=1,
 			optional=false,
-			windowPunctuationOutputMode=WindowPunctuationOutputMode.Generating,
+			windowPunctuationOutputMode=WindowPunctuationOutputMode.Free,
 			description="Specifies the output port for alert messages. Expects a String attribute at index 0 of the output stream, for example `com.ibm.streamsx.topology::String` type."
 			)
+	,
+	@OutputPortSet(
+			cardinality=1,
+			optional=true,
+			windowPunctuationOutputMode=WindowPunctuationOutputMode.Free,
+			description="Specifies the optional output port for alert messages in structured Streams schema with type  with stream type `com.ibm.streamsx.monitoring.metrics::Alert`. Forwards attributes of the input stream to the output stream and sets the values for the attributes `currentValue` and `thresholdValue`."
+			)	
 })
 public class MetricsMonitor extends AbstractOperator {
 

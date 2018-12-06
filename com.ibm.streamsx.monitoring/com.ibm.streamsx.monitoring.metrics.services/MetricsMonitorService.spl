@@ -28,6 +28,9 @@ use com.ibm.streamsx.topology.topic::Publish;
  *
  * * `streamsx/monitoring/metrics/alerts` - Alerts messages
  *    with stream type `com.ibm.streamsx.topology::String`.
+ * * `streamsx/monitoring/metrics/alerts` - Alerts messages
+ *    with stream type `com.ibm.streamsx.monitoring.metrics::Alert`.
+ * 
  * 
  * @param thresholdsConfiguration
  * Name of application configuration containing thresholdDocument JSON.
@@ -64,15 +67,24 @@ public composite MetricsMonitorService
 		 * defined in the application configuration's thresholdDocument property. It outputs 
 		 * an alert whenever any threshold rules are violated.
 		 */
-		stream<com.ibm.streamsx.topology::String> AlertMessage = MetricsMonitor(NotificationMetrics) {
+		(stream<com.ibm.streamsx.topology::String> AlertStringMessage;
+		stream<Alert> AlertTypeMessage) as ThresholdMonitor = MetricsMonitor(NotificationMetrics) {
 			param
 				applicationConfigurationName: $thresholdsConfiguration;
 		}
 
 		/**
-		 * The Publish publishes the alert messsages
+		 * The Publish publishes the alert messsages as strings
 		 */
-		() as PublishMetricsMonitor = Publish(AlertMessage) {
+		() as PublishAlertStrings = Publish(AlertStringMessage) {
+			param
+				 topic: $metricsMonitorTopic;
+		}
+
+		/**
+		 * The Publish publishes the alert messsages with type Alert
+		 */
+		() as PublishAlerts = Publish(AlertTypeMessage) {
 			param
 				 topic: $metricsMonitorTopic;
 		}

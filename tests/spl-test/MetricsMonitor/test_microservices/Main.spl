@@ -34,8 +34,14 @@ composite Main {
 				topic: $metricsMonitorTopic;
 				streamType: com.ibm.streamsx.topology::String;
 		}
+		
+		stream<com.ibm.streamsx.monitoring.metrics::Alert> AlertMessages = Subscribe() {
+			param
+				topic: $metricsMonitorTopic;
+				streamType: com.ibm.streamsx.monitoring.metrics::Alert;
+		}		
 
-		(stream <rstring result> SaveDone1) as Validator = Custom(AlertStrings as I) {
+		(stream <rstring result> SaveDone1) as Validator = Custom(AlertStrings as I; AlertMessages as M) {
 			logic 
 			state: {
 				mutable boolean done1Sent = false;
@@ -48,6 +54,9 @@ composite Main {
 					done1Sent = true;
 				}
 			}
+			onTuple M: {
+				printStringLn((rstring)M);
+			}			
 		}
 
 		() as Done1 = FileSink(SaveDone1 as I) {

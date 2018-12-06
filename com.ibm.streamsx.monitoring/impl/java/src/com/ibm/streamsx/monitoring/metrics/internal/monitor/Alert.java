@@ -23,6 +23,10 @@ public class Alert {
 	 */
 	private static Logger _trace = Logger.getLogger(Alert.class.getName());
 	
+	Tuple inputTuple;
+	Double currentValue;
+	Double thresholdValue;
+	
 	/**
 	 * Initialize Alert.
 	 */
@@ -35,6 +39,9 @@ public class Alert {
 		String thresholdOperator = threshold.getOperator();
 		Integer timeFrame = threshold.getTimeFrame();
 		String unit = getUnit(thresholdType);
+		this.inputTuple = tuple;
+		this.currentValue = currentValue;
+		this.thresholdValue = thresholdValue;
 		
 		// Format operator.
 		thresholdOperator = (thresholdOperator != null) ? thresholdOperator : "";
@@ -103,7 +110,22 @@ public class Alert {
 			outputTuple.setString(0, message);
 			streamingOutput.submit(outputTuple);
 		} catch (Exception e) {
-			_trace.error("Exception submitting alert tuple.", e);
+			_trace.error("Exception submitting alert tuple on port 0.", e);
 		}
+		
+		if (context.getNumberOfStreamingOutputs() > 1) {
+			StreamingOutput<OutputTuple> streamingOutput1 = context.getStreamingOutputs().get(1);
+			try {
+				OutputTuple outputTuple1 = streamingOutput1.newTuple();
+				outputTuple1.setDouble("currentValue", this.currentValue);
+				outputTuple1.setDouble("thresholdValue", this.thresholdValue);
+				// Copy across all matching attributes.
+				outputTuple1.assign(inputTuple);				
+				streamingOutput1.submit(outputTuple1);
+			} catch (Exception e) {
+				_trace.error("Exception submitting alert tuple on port 1.", e);
+			}
+		}
+		
 	}
 }
