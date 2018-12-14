@@ -33,7 +33,7 @@ Advantage of the use of an application configuration is, that you can update the
 
 ***Application configuration is supported in distributed mode only.***
 
-`streamtool submitjob output/monitor/com.ibm.streamsx.monitoring.jobs.sample.JobStatusMonitor.Monitor.sab -P applicationConfigurationName=com.ibm.streamsx.monitoring.jobs.JobStatusMonitor.ApplicationConfiguration`
+`streamtool submitjob output/monitor/com.ibm.streamsx.monitoring.jobs.sample.JobStatusMonitor.Monitor.sab -P applicationConfigurationName=monitoring`
 
 ### Run sample application to be monitored
 
