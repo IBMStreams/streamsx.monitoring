@@ -135,6 +135,34 @@ by toolkit with their namespaces as prefixes.
 5. Run the application. You can submit the application as a job by using the
   **streamtool submitjob** command or by using Streams Studio. 
 
++ Using the sample applications
+
+The samples directory contains the following sample applications demonstrating the usage of the monitoring operators:
+
+* com.ibm.streamsx.monitoring.jobs.sample.JobStatusMonitor
+* com.ibm.streamsx.monitoring.metrics.sample.MetricsSource
+* com.ibm.streamsx.monitoring.system.sample.LogSource
+* com.ibm.streamsx.monitoring.system.sample.SystemMonitorSource
+
+Find a description of each sample in the README.md file of the sample directory.
+
+Either build the samples after importing the project into Streams Studio or from command line using the Makefile.
+The sample applications can be launched in standalone or distributed mode.
+
++ Using the microservices
+
+The toolkit provides applications that can be launched as microservice. Find the microservices description in the following namespaces:
+
+* [tk$com.ibm.streamsx.monitoring/ns$com.ibm.streamsx.monitoring.jobs.services.html|com.ibm.streamsx.monitoring.jobs.services]
+* [tk$com.ibm.streamsx.monitoring/ns$com.ibm.streamsx.monitoring.metrics.services.html|com.ibm.streamsx.monitoring.metrics.services]
+
+The recommended way to build and launch the microservices is using **streamsx-runner**.
+From command line you could launch the application with [http://ibmstreams.github.io/streamsx.topology/doc/pythondoc/scripts/runner.html|streamsx-runner] to the Streaming Analytics service.
+
+For example, launch the MetricsIngestService from command line using relative path to the `com.ibm.streamsx.monitoring` toolkit location:
+
+    streamsx-runner --service-name $STREAMING_ANALYTICS_SERVICE_NAME --main-composite com.ibm.streamsx.monitoring.metrics.services::MetricsIngestService --toolkits com.ibm.streamsx.monitoring --trace info
+
 		]]></info:description>
 		<info:version>2.0.0.__dev__</info:version>
 		<info:requiredProductVersion>4.1.0.0</info:requiredProductVersion>
