@@ -32,7 +32,7 @@ Alternative you can specify the `domainId`, `connectionURL`, `user` and `passwor
 
 ***Application configuration is supported in distributed mode only.***
 
-`streamtool submitjob output/monitor/com.ibm.streamsx.monitoring.system.sample.LogSource.Monitor.sab -P applicationConfigurationName=com.ibm.streamsx.monitoring.system.LogSource.ApplicationConfiguration`
+`streamtool submitjob output/monitor/com.ibm.streamsx.monitoring.system.sample.LogSource.Monitor.sab -P applicationConfigurationName=monitoring`
 
 ### Run sample application to be monitored
 

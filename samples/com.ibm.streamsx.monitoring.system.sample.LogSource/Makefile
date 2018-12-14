@@ -40,6 +40,6 @@ clean:
 	rm -rf $(OUTPUT_DIR)
 
 configure:
-	-streamtool rmappconfig --noprompt com.ibm.streamsx.monitoring.system.LogSource.ApplicationConfiguration
-	streamtool mkappconfig --property user=$(STREAMS_USER) --property password=$(STREAMS_PASSWORD) com.ibm.streamsx.monitoring.system.LogSource.ApplicationConfiguration
+	-streamtool rmappconfig --noprompt monitoring
+	streamtool mkappconfig --property user=$(STREAMS_USER) --property password=$(STREAMS_PASSWORD) monitoring
 
