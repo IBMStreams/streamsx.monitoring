@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.7.4</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; JobStatusSource</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; JobStatusSource</p>
 
 </div>
 
@@ -59,6 +59,12 @@
 </dd>
 </dl>
 
+  <dl class="dl"><dt class="dt dlterm"><a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource$2.html">Supported Authentication Schemes</a>
+</dt>
+<dd class="dd">
+</dd>
+</dl>
+
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-1">Summary</h2>
@@ -81,7 +87,7 @@
 
   <dd class="dd">This operator supports 10 parameters.
 <p class="p"> Optional: 
-<a class="xref" href="#spldoc_operator__parameter__applicationConfigurationName">applicationConfigurationName</a>, <a class="xref" href="#spldoc_operator__parameter__connectionURL">connectionURL</a>, <a class="xref" href="#spldoc_operator__parameter__domainId">domainId</a>, <a class="xref" href="#spldoc_operator__parameter__filterDocument">filterDocument</a>, <a class="xref" href="#spldoc_operator__parameter__iamApiKey">iamApiKey</a>, <a class="xref" href="#spldoc_operator__parameter__iamTokenEndpoint">iamTokenEndpoint</a>, <a class="xref" href="#spldoc_operator__parameter__password">password</a>, <a class="xref" href="#spldoc_operator__parameter__scanPeriod">scanPeriod</a>, <a class="xref" href="#spldoc_operator__parameter__sslOption">sslOption</a>, <a class="xref" href="#spldoc_operator__parameter__user">user</a>
+<a class="xref" href="#spldoc_operator__parameter__applicationConfigurationName">applicationConfigurationName</a>, <a class="xref" href="#spldoc_operator__parameter__checkPeriod">checkPeriod</a>, <a class="xref" href="#spldoc_operator__parameter__connectionURL">connectionURL</a>, <a class="xref" href="#spldoc_operator__parameter__credentials">credentials</a>, <a class="xref" href="#spldoc_operator__parameter__domainId">domainId</a>, <a class="xref" href="#spldoc_operator__parameter__filterDocument">filterDocument</a>, <a class="xref" href="#spldoc_operator__parameter__instanceIdFilter">instanceIdFilter</a>, <a class="xref" href="#spldoc_operator__parameter__password">password</a>, <a class="xref" href="#spldoc_operator__parameter__sslOption">sslOption</a>, <a class="xref" href="#spldoc_operator__parameter__user">user</a>
 
 </p>
 </dd>
@@ -221,7 +227,7 @@
 <p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters">Parameters</a></strong></p>
 This operator supports 10 parameters.
 <p class="p"> Optional: 
-<a class="xref" href="#spldoc_operator__parameter__applicationConfigurationName">applicationConfigurationName</a>, <a class="xref" href="#spldoc_operator__parameter__connectionURL">connectionURL</a>, <a class="xref" href="#spldoc_operator__parameter__domainId">domainId</a>, <a class="xref" href="#spldoc_operator__parameter__filterDocument">filterDocument</a>, <a class="xref" href="#spldoc_operator__parameter__iamApiKey">iamApiKey</a>, <a class="xref" href="#spldoc_operator__parameter__iamTokenEndpoint">iamTokenEndpoint</a>, <a class="xref" href="#spldoc_operator__parameter__password">password</a>, <a class="xref" href="#spldoc_operator__parameter__scanPeriod">scanPeriod</a>, <a class="xref" href="#spldoc_operator__parameter__sslOption">sslOption</a>, <a class="xref" href="#spldoc_operator__parameter__user">user</a>
+<a class="xref" href="#spldoc_operator__parameter__applicationConfigurationName">applicationConfigurationName</a>, <a class="xref" href="#spldoc_operator__parameter__checkPeriod">checkPeriod</a>, <a class="xref" href="#spldoc_operator__parameter__connectionURL">connectionURL</a>, <a class="xref" href="#spldoc_operator__parameter__credentials">credentials</a>, <a class="xref" href="#spldoc_operator__parameter__domainId">domainId</a>, <a class="xref" href="#spldoc_operator__parameter__filterDocument">filterDocument</a>, <a class="xref" href="#spldoc_operator__parameter__instanceIdFilter">instanceIdFilter</a>, <a class="xref" href="#spldoc_operator__parameter__password">password</a>, <a class="xref" href="#spldoc_operator__parameter__sslOption">sslOption</a>, <a class="xref" href="#spldoc_operator__parameter__user">user</a>
 
 </p>
 <dl class="dl">
@@ -229,7 +235,7 @@ This operator supports 10 parameters.
 <dt class="dt dlterm"><a name="spldoc_operator__parameter__applicationConfigurationName"><!-- --></a><tt class="ph tt">applicationConfigurationName</tt></dt>
 
 <dd class="dd">
-<p class="p">Specifies the name of <a class="xref" href="https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html">application configuration object</a> that can contain domainId, connectionURL, user, password, iamApiKey, iamTokenEndpoint and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
+<p class="p">Specifies the name of <a class="xref" href="https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html">application configuration object</a> that can contain domainId, connectionURL, user, password, credentials and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
 </p>
 <dl class="dl">
 
@@ -238,6 +244,37 @@ This operator supports 10 parameters.
  <dd class="dd">
   <ul class="sl simple">
   <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: rstring
+  </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
+     </li>
+
+  </ul>
+
+ </dd>
+
+
+</dl>
+
+</dd>
+
+
+
+<dt class="dt dlterm"><a name="spldoc_operator__parameter__checkPeriod"><!-- --></a><tt class="ph tt">checkPeriod</tt></dt>
+
+<dd class="dd">
+<p class="p">Specifies the period after which is checked if the application configuration is updated, for example to update the filter document during runtime.The default is 5.0 seconds.
+</p>
+<dl class="dl">
+
+ <dt class="dt dlterm">Properties </dt>
+
+ <dd class="dd">
+  <ul class="sl simple">
+  <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: float64
   </li>
 
      <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
@@ -288,10 +325,41 @@ This operator supports 10 parameters.
 
 
 
+<dt class="dt dlterm"><a name="spldoc_operator__parameter__credentials"><!-- --></a><tt class="ph tt">credentials</tt></dt>
+
+<dd class="dd">
+<p class="p">Specifies Streaming Analytics service credentials. Credentials are provided in JSON format. Relevant for IAM authentication to Streaming Analytics service case only. If parameter is set, then the parameters user and password are ignored.
+</p>
+<dl class="dl">
+
+ <dt class="dt dlterm">Properties </dt>
+
+ <dd class="dd">
+  <ul class="sl simple">
+  <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: rstring
+  </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
+     </li>
+
+  </ul>
+
+ </dd>
+
+
+</dl>
+
+</dd>
+
+
+
 <dt class="dt dlterm"><a name="spldoc_operator__parameter__domainId"><!-- --></a><tt class="ph tt">domainId</tt></dt>
 
 <dd class="dd">
-<p class="p">Specifies the domain id that is monitored. If no domain id is specified, the domain id under which this operator is running is used. If the operator is running in a standalone application it raises an exception and aborts. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value.
+<p class="p">Specifies the domain id that is monitored. If no domain id is specified, the domain id under which this operator is running is used. If the operator is running in a standalone application the parameter is mandatory. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value.
 </p>
 <dl class="dl">
 
@@ -350,41 +418,10 @@ This operator supports 10 parameters.
 
 
 
-<dt class="dt dlterm"><a name="spldoc_operator__parameter__iamApiKey"><!-- --></a><tt class="ph tt">iamApiKey</tt></dt>
+<dt class="dt dlterm"><a name="spldoc_operator__parameter__instanceIdFilter"><!-- --></a><tt class="ph tt">instanceIdFilter</tt></dt>
 
 <dd class="dd">
-<p class="p">Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored.
-</p>
-<dl class="dl">
-
- <dt class="dt dlterm">Properties </dt>
-
- <dd class="dd">
-  <ul class="sl simple">
-  <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: rstring
-  </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
-     </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
-     </li>
-
-  </ul>
-
- </dd>
-
-
-</dl>
-
-</dd>
-
-
-
-<dt class="dt dlterm"><a name="spldoc_operator__parameter__iamTokenEndpoint"><!-- --></a><tt class="ph tt">iamTokenEndpoint</tt></dt>
-
-<dd class="dd">
-<p class="p">Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the global endpoint is used: https://iam.bluemix.net/identity/token
+<p class="p">Specifies the instance id filter used to select the instance(s) that is monitored. If no value is specified, all instances are monitored per default. To monitor the instance id under which this operator is running, the value OWN can be specified when running in distributed mode. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value.
 </p>
 <dl class="dl">
 
@@ -424,37 +461,6 @@ This operator supports 10 parameters.
  <dd class="dd">
   <ul class="sl simple">
   <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: rstring
-  </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
-     </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
-     </li>
-
-  </ul>
-
- </dd>
-
-
-</dl>
-
-</dd>
-
-
-
-<dt class="dt dlterm"><a name="spldoc_operator__parameter__scanPeriod"><!-- --></a><tt class="ph tt">scanPeriod</tt></dt>
-
-<dd class="dd">
-<p class="p">Specifies the period after which is checked if the application configuration is updated.The default is 5.0 seconds.
-</p>
-<dl class="dl">
-
- <dt class="dt dlterm">Properties </dt>
-
- <dd class="dd">
-  <ul class="sl simple">
-  <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: float64
   </li>
 
      <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1

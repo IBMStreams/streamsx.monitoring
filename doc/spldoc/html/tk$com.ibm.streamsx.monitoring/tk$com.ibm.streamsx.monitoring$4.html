@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Using the microservices"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_page"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>Using the microservices</title>
+</head>
+<body id="spldoc_page">
+
+
+<h1 class="title topictitle1">Using the microservices</h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.0</a> &gt; Using the microservices</p>
+
+</div>
+
+
+<div class="section">
+<p class="p">The toolkit provides applications that can be launched as microservice. Find the microservices description in the following namespaces:
+</p>
+
+<div class="p">
+<ul class="ul">
+<li class="li"> <a class="xref" href="../tk$com.ibm.streamsx.monitoring/ns$com.ibm.streamsx.monitoring.jobs.services.html">com.ibm.streamsx.monitoring.jobs.services</a></li>
+
+<li class="li"> <a class="xref" href="../tk$com.ibm.streamsx.monitoring/ns$com.ibm.streamsx.monitoring.metrics.services.html">com.ibm.streamsx.monitoring.metrics.services</a></li>
+
+</ul>
+
+</div>
+
+<p class="p">The recommended way to build and launch the microservices is using <strong class="ph b">streamsx-runner</strong>. From command line you could launch the application with <a class="xref" href="http://ibmstreams.github.io/streamsx.topology/doc/pythondoc/scripts/runner.html">streamsx-runner</a> to the Streaming Analytics service.
+</p>
+
+<p class="p">For example, launch the MetricsIngestService from command line using relative path to the <tt class="ph tt">com.ibm.streamsx.monitoring</tt> toolkit location:
+</p>
+
+<div class="p">
+<pre class="pre codeblock">
+streamsx-runner --service-name $STREAMING_ANALYTICS_SERVICE_NAME --main-composite com.ibm.streamsx.monitoring.metrics.services::MetricsIngestService --toolkits com.ibm.streamsx.monitoring --trace info
+</pre>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+</body>
+</html>

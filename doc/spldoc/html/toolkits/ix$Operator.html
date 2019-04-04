@@ -30,9 +30,21 @@
   
 <dl class="dl">
 
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.jobs.services$pe.html#spldoc_compilationunit__composite_operator__FailedPEService">FailedPEService</a></dt>
+
+  <dd class="dd">Failed PE detection microservice.</dd>
+
+
+
   <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.jobs$JobStatusMonitor.html#spldoc_compilationunit__composite_operator__JobStatusMonitor">JobStatusMonitor</a></dt>
 
   <dd class="dd">This operator uses JobStatusSource and prevents near duplicate notifications being emitted.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.jobs.services$status.html#spldoc_compilationunit__composite_operator__JobStatusService">JobStatusService</a></dt>
+
+  <dd class="dd">Microservice that publishes job status notifications.</dd>
 
 
 
@@ -42,15 +54,33 @@
 
 
 
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.jobs.services$subscriber.html#spldoc_compilationunit__composite_operator__JobStatusSubscriber">JobStatusSubscriber</a></dt>
+
+  <dd class="dd">Subscribe to streams published by <tt class="ph tt">JobStatusService</tt>.</dd>
+
+
+
   <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.system$LogSource.html">LogSource</a></dt>
 
   <dd class="dd">The LogSource operator uses the <a class="xref" href="http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.ref.doc/doc/jmxapi.html">JMX</a> API to retrieve log events and provides log messages as tuple stream. </dd>
 
 
 
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.metrics.services$MetricsIngestService.html#spldoc_compilationunit__composite_operator__MetricsIngestService">MetricsIngestService</a></dt>
+
+  <dd class="dd">Microservice that publishes metrics values notifications.</dd>
+
+
+
   <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics$MetricsMonitor.html">MetricsMonitor</a></dt>
 
   <dd class="dd">The MetricsMonitor operator connects to the MetricsSource operator and receives incoming metric tuples.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.monitoring/spl$com.ibm.streamsx.monitoring.metrics.services$MetricsMonitorService.html#spldoc_compilationunit__composite_operator__MetricsMonitorService">MetricsMonitorService</a></dt>
+
+  <dd class="dd">The MetricsMonitorService ingests metric tuples from the MetricsIngestService and  monitors the metric values against the threshold rules defined in the application  configuration's thresholdDocument property.</dd>
 
 
 

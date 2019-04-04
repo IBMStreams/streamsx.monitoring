@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 1.7.4</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; JobStatusMonitor.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; JobStatusMonitor.spl</p>
 
 </div>
 
@@ -92,10 +92,7 @@
 <li class="sli"><strong class="ph b">sslOption</strong>: Specifies the sslOption that is required for the JMX connection. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the <tt class="ph tt">streamtool getdomainproperty</tt> command to get the value. 
 </li>
 
-<li class="sli"><strong class="ph b">iamApiKey</strong>: Specifies IAM API Key. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored. 
-</li>
-
-<li class="sli"><strong class="ph b">iamTokenEndpoint</strong>: Specifies IAM token endpoint. Relevant for IAM authentication case only. If parameter is not set, then the public endpoint is used: https://iam.bluemix.net/oidc/token 
+<li class="sli"><strong class="ph b">credentials</strong>: Specifies Streaming Analytics service credentials in JSON format. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored. If the <strong class="ph b">applicationConfigurationName</strong> parameter is specified, the application configuration with the property credentials can override this parameter value. 
 </li>
 
 <li class="sli"><strong class="ph b">timeOut</strong>: Specifies the number of seconds during which no duplicate of a tuple is emitted.  If this parameter is not specified, the default value is <tt class="ph tt">5.0</tt> seconds (5 seconds).  Identical tuples, which are separated by more than <strong class="ph b">timeOut</strong> seconds, are seen on the output port.
