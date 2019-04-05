@@ -44,7 +44,7 @@ Afterwards launch the **SampleJob** application to be monitored in distributed m
 
 Verify the application log notification tuples in the console output.
 
-*In the Streaming Analytics service, go to the Log Viewer and Click on the PE's Console Log to view output.*
+*In the Streams Console, go to the Log Viewer and Click on the PE's Console Log to view output.*
 
     ...
     {notifyType="com.ibm.streams.management.log.application.error",domainId="StreamsDomain",instanceId="StreamsInstance",jobId=0,resource="streamshost.ibm.com",peId=0,operatorName="Logger",sequence=109,eventTimestamp=(1506002769,408000000,0),message="This is error log #.43"}

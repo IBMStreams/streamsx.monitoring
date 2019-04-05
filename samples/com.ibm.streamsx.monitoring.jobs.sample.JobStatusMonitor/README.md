@@ -45,7 +45,7 @@ Afterwards launch the **SampleJob** application to be monitored in distributed m
 
 Verify the notification events in the console output.
 
-*In the Streaming Analytics service, go to the Log Viewer and Click on the PE's Console Log to view output.*
+*In the Streams Console, go to the Log Viewer and Click on the PE's Console Log to view output.*
 
 One PE of the sample application has been forced to restart and the output contains "com.ibm.streams.management.pe.changed" notifications:
 

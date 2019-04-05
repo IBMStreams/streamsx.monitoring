@@ -45,7 +45,7 @@ Afterwards launch the **SampleJob** application to be monitored in distributed m
 
 Verify the metrics notification tuples in the console output.
 
-*In the Streaming Analytics service, go to the Log Viewer and Click on the PE's Console Log to view output.*
+*In the Streams Console, go to the Log Viewer and Click on the PE's Console Log to view output.*
 
 The MetricsSource operator emits a metric tuple for each metric, for which the operator identifies a changed value.
 After each scan cycle, the operator emits a WindowMarker to this port.
