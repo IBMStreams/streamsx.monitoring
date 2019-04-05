@@ -13,7 +13,6 @@ class TestCloud(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        self.service_name = os.environ.get('STREAMING_ANALYTICS_SERVICE_NAME')
         # start streams service
         connection = sr.StreamingAnalyticsConnection()
         service = connection.get_streaming_analytics()
@@ -27,6 +26,7 @@ class TestCloud(unittest.TestCase):
         tk.add_toolkit(topo, '../../com.ibm.streamsx.monitoring')
 
     def _build_launch_validate(self, name, composite_name):
+        print ("------ "+name+" ------")
         topo = Topology(name)
         self._add_toolkits(topo)
 
@@ -52,7 +52,7 @@ class TestCloud(unittest.TestCase):
         config={}
         sc = sr.StreamingAnalyticsConnection()
         config[context.ConfigParams.STREAMS_CONNECTION] = sc
-        context.submit(context.ContextTypes.STREAMING_ANALYTICS_SERVICE, topo, config=config)
+        return context.submit(context.ContextTypes.STREAMING_ANALYTICS_SERVICE, topo, config=config)
 
 
     def test_metrics_monitor(self):
@@ -62,7 +62,10 @@ class TestCloud(unittest.TestCase):
         self._build_launch_validate("test_logs_monitor", "test.system::TestLogsSource")
 
     def test_jobs_status_monitor(self):
-        self._launch_sample_job()
+        submission_result = self._launch_sample_job()
         self._build_launch_validate("test_jobs_status_monitor", "test.jobs::TestJobStatusSource")
+        if submission_result is not None:
+            submission_result.job.cancel()
+
 
 
