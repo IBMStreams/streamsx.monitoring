@@ -18,6 +18,10 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ibm.json.java.JSON;
+import com.ibm.json.java.JSONArray;
+import com.ibm.json.java.JSONObject;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.JMX;
 import javax.management.ObjectName;
@@ -27,6 +31,7 @@ import com.ibm.streams.management.instance.InstanceMXBean;
 import com.ibm.streams.management.job.JobMXBean;
 import com.ibm.streams.operator.Tuple;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration;
+import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 
 /**
  * Listen for the following notifications:
@@ -78,8 +83,14 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		 * Register to get instance-related notifications.
 		 */
 		NotificationFilterSupport filter = new NotificationFilterSupport();
-		filter.enableType(Notifications.JOB_ADDED);
-		filter.enableType(Notifications.JOB_REMOVED);
+		if (OpType.LOG_SOURCE == _operatorConfiguration.get_OperatorType()) {
+			filter.enableType(Notifications.LOG_APPLICATION_ERROR);
+			filter.enableType(Notifications.LOG_APPLICATION_WARNING);		
+		}
+		else {		
+			filter.enableType(Notifications.JOB_ADDED);
+			filter.enableType(Notifications.JOB_REMOVED);
+		}
 		try {
 			_operatorConfiguration.get_mbeanServerConnection().addNotificationListener(_objName, this, filter, null);
 		} catch (InstanceNotFoundException e) {
@@ -87,8 +98,19 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//	TODO      jmxc.addConnectionNotificationListener(this, null, null); // listen for potential lost notifications
 
+		if (null != _operatorConfiguration.get_tupleContainerConnectionNotification()) {
+			try {
+				if (_trace.isInfoEnabled()) {
+					_trace.info("JMXConnector.addConnectionNotificationListener()");
+				}
+				// listen for potential lost notifications
+				operatorConfiguration.get_jmxConnector().addConnectionNotificationListener(this, null, null);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}		
+		
 		/*
 		 * Register existing jobs.
 		 */
@@ -155,7 +177,80 @@ public class InstanceHandler implements NotificationListener, Closeable {
 			}
 		}
 		else {
-			_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+			if ((OpType.LOG_SOURCE == _operatorConfiguration.get_OperatorType()) &&
+				(notification.getType().contains("com.ibm.streams.management.log.application"))) {
+				// emit tuple
+				try {
+					String instance = null;
+					String resource = null;
+					BigInteger pe = null;
+					BigInteger job = null;
+					String operator = null;
+					String text = null;
+					boolean messagesSkipped = false;
+					if (null != notification.getUserData()) {
+						if ((notification.getMessage() != null) && (notification.getMessage().length() > 0)) {
+							// javax.management.Notification[source=com.ibm.streams.management:type=domain,name="xxx"]
+							// [type=com.ibm.streams.management.log.application.error][message=xxx],
+							// userData={"instance":"xxx","resource":"xxx","pe":"1","domain":"xxx","job":"1","operator":"xxx"}
+							if (_trace.isDebugEnabled()) {
+								_trace.debug("parse userData");
+							}							
+							JSONObject obj = (JSONObject)JSON.parse(notification.getUserData().toString());
+							instance = obj.get("instance").toString();
+							resource = obj.get("resource").toString();
+							pe = new BigInteger(obj.get("pe").toString());
+							job = new BigInteger(obj.get("job").toString());
+							operator = obj.get("operator").toString();
+						}
+						else {
+							// if message is not set then the message is part of userData
+							// javax.management.Notification[source=com.ibm.streams.management:type=domain,name="xxx"]
+							// [type=com.ibm.streams.management.log.application.error][message=],
+							// userData={"messages":[{"instance":"xxx","resource":"xxx","pe":"xx","domain":"xxx","text":"xxx","job":"xx","operator":"xxx","timestamp":1515687171914}],"messagesSkipped":false}
+							if (_trace.isDebugEnabled()) {
+								_trace.debug("parse userData for messages and messagesSkipped");
+							}							
+							JSONObject obj1 = (JSONObject)JSON.parse(notification.getUserData().toString());
+							messagesSkipped = (obj1.get("messagesSkipped").toString().equalsIgnoreCase("true")) ? true : false;
+							Object json = obj1.get("messages");
+							if (json instanceof JSONArray) {
+								for (Object obj : (JSONArray)json) {
+									if (obj instanceof JSONObject) {
+										JSONObject jsonobj = (JSONObject) obj;
+										instance = jsonobj.get("instance").toString();
+										resource = jsonobj.get("resource").toString();
+										pe = new BigInteger(jsonobj.get("pe").toString());
+										job = new BigInteger(jsonobj.get("job").toString());
+										operator = jsonobj.get("operator").toString();
+										text = jsonobj.get("text").toString();
+										final Tuple tuple = _operatorConfiguration.get_tupleContainerLogSource().getTuple(notification, instance, resource, pe, job, operator, text, messagesSkipped);
+										_operatorConfiguration.get_tupleContainerLogSource().submit(tuple);										
+									}
+								}
+							}							
+						}
+					}
+					if (text == null) {
+						final Tuple tuple = _operatorConfiguration.get_tupleContainerLogSource().getTuple(notification, instance, resource, pe, job, operator, text, messagesSkipped);
+						_operatorConfiguration.get_tupleContainerLogSource().submit(tuple);
+					}
+				}
+				catch (Exception e) {
+					_trace.error("Error in parsing userData: " + e);
+				}
+			}
+			else {
+				if ((null != _operatorConfiguration.get_tupleContainerConnectionNotification()) &&
+					(notification.getType().contains("jmx.remote.connection"))) {
+					// Notification emitted when a client connection has failed unexpectedly or when client connection has potentially lost notifications.
+					final Tuple tuple = _operatorConfiguration.get_tupleContainerConnectionNotification().getTuple(notification);
+					_operatorConfiguration.get_tupleContainerConnectionNotification().submit(tuple);
+				}
+				else {
+					_trace.error("notification: " + notification + ", userData=" + notification.getUserData());
+				}
+			}
 		}
 	}
 
@@ -166,7 +261,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		}
 		// Registering the job must be done before attempting to access any of
 		// the job-related beans. 
-		_instance.registerJob(jobId);
+		_instance.registerJobById(jobId);
 		// Special handling required because we do not have the job name easily accessible.
 		ObjectName jobObjName = ObjectNameBuilder.job(_instanceId, jobId);
 		JobMXBean job = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), jobObjName, JobMXBean.class, true);
