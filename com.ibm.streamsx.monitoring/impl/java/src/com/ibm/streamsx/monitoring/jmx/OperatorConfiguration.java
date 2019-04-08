@@ -26,8 +26,8 @@ import com.ibm.streamsx.monitoring.jmx.internal.LogTupleContainer;
 public class OperatorConfiguration {
 
 	/**
-	 * Specifies the connection URL as returned by the {@code streamtool
-	 * getjmxconnect} command.
+	 * Specifies the connection URL as returned by the {@code 
+	 * STREAMS_JMX_CONNECT} environment variable.
 	 */
 	private String _connectionURL = null;
 
@@ -44,33 +44,12 @@ public class OperatorConfiguration {
 	/**
 	 * Specifies the sslOption that is required for the JMX connection.
 	 */
-	private String _sslOption = null;	
+	private String _sslOption = "TLSv1.2";	
 	
 	/**
 	 * Specifies the instance that is monitored.
 	 */	
 	private String _instanceId = null;
-	
-	/**
-	 * Global Endpoint
-	 */
-	public static final String IAM_TOKEN_ENDPOINT = "https://iam.bluemix.net/identity/token";
-	
-	/**
-	 * Specifies the IAM token endpoint.
-	 */
-	
-	private String _iamTokenEndpoint = IAM_TOKEN_ENDPOINT;
-
-	/**
-	 * Specifies the IAM API key.
-	 */	
-	private String _iamApiKey = null;
-
-	/**
-	 * Specifies the Streaming Analytics service credentials in JSON format.
-	 */	
-	private String _credentials = null;	
 	
 	/**
 	 * Specifies the name of the application configuration object.
@@ -159,36 +138,6 @@ public class OperatorConfiguration {
 			this._password = password;
 		}
 	}
-
-	public String get_iamTokenEndpoint() {
-		return _iamTokenEndpoint;
-	}
-
-	public void set_iamTokenEndpoint(String iamTokenEndpoint) {
-		if (!("".equals(iamTokenEndpoint))) {
-			this._iamTokenEndpoint = iamTokenEndpoint;
-		}
-	}
-
-	public String get_iamApiKey() {
-		return _iamApiKey;
-	}
-
-	public void set_iamApiKey(String iamApiKey) {
-		if (!("".equals(iamApiKey))) {
-			this._iamApiKey = iamApiKey;
-		}
-	}
-	
-	public String get_credentials() {
-		return _credentials;
-	}
-
-	public void set_credentials(String credentials) {
-		if (!("".equals(credentials))) {
-			this._credentials = credentials;
-		}
-	}	
 
 	public String get_sslOption() {
 		return _sslOption;

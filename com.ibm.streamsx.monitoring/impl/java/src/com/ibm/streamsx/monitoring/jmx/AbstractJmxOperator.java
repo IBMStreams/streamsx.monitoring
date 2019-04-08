@@ -46,7 +46,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	
 	protected static final String DESC_PARAM_APPLICATION_CONFIGURATION_NAME = 
 			"Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] "
-			+ "that can contain instanceId, connectionURL, user, password, credentials and filterDocument "
+			+ "that can contain instanceId, connectionURL, user, password and filterDocument "
 			+ "properties. The application configuration overrides values that "
 			+ "are specified with the corresponding parameters.";
 	
@@ -69,7 +69,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	protected static final String DESC_PARAM_SSL_OPTION = 
 			"Specifies the sslOption that is required for the JMX connection. If "
 			+ "the **applicationConfigurationName** parameter is specified, "
-			+ "the application configuration can override this parameter value.";
+			+ "the application configuration can override this parameter value. Default is TLSv1.2";
 	
 	protected static final String DESC_PARAM_INSTANCE_ID = 
 			"Specifies the instance id filter used to select the instance(s) that is monitored. If no value is "
@@ -83,10 +83,6 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 
 	protected static final Object PARAMETER_PASSWORD = "password";
 	
-	protected static final Object PARAMETER_IAM_API_KEY = "iamApiKey";
-	
-	protected static final Object PARAMETER_IAM_TOKEN_ENDPOINT = "iamTokenEndpoint";
-	
 	protected static final Object PARAMETER_SSL_OPTION = "sslOption";
 
 	protected static final Object PARAMETER_FILTER_DOCUMENT = "filterDocument";
@@ -94,8 +90,6 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	protected static final Object PARAMETER_INSTANCE_ID = "instanceId";
 
 	protected static final String MISSING_VALUE = "The following value must be specified as parameter or in the application configuration: ";
-
-	protected static final String PARAMETER_CREDENTIALS = "credentials";
 
 	// ------------------------------------------------------------------------
 	// Implementation.
@@ -191,13 +185,6 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	public void setApplicationConfigurationName(String applicationConfigurationName) {
 		_operatorConfiguration.set_applicationConfigurationName(applicationConfigurationName);
 	}
-
-	@Parameter(optional=true, description = "Specifies Streaming Analytics service credentials. Credentials are provided in JSON format. Relevant for IAM authentication to Streaming Analytics service case only. If parameter is set, then the parameters user and password are ignored.")
-	public void setCredentials(String credentials) {
-		_operatorConfiguration.set_credentials(credentials);
-	}	
-	
-
 	
 	/**
 	 * Initialize this operator. Called once before any tuples are processed.
@@ -217,8 +204,8 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 
 		// check required parameters
 		if (null == _operatorConfiguration.get_applicationConfigurationName()) {
-			if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password()) && (null == _operatorConfiguration.get_credentials())) {
-				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' or 'applicationConfigurationName' or 'credentials' be applied.");
+			if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password()) ) {
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' or 'applicationConfigurationName' be applied.");
 			}
 		}
 		else {
@@ -301,25 +288,6 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		}
 		return result;
 	}	
-	
-	protected String getCredentials() {
-		String result = "";
-		// prio: operator parameter credentials first, check app config if credentials parameter is not set 
-		if (null != _operatorConfiguration.get_credentials()) {
-			result = _operatorConfiguration.get_credentials();
-		}
-		if ("".equals(result)) {
-			String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
-			if (applicationConfigurationName != null) {
-				Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
-				if (properties.containsKey(PARAMETER_CREDENTIALS)) {
-					result = properties.get(PARAMETER_CREDENTIALS);
-				}
-			}
-		}
-		return result;
-	}	
-	
 
 	/**
 	 * Sets up a JMX connection. The connection URL, the user, and the password
@@ -334,8 +302,6 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		String user = _operatorConfiguration.get_user();
 		String password = _operatorConfiguration.get_password();
 		String sslOption = _operatorConfiguration.get_sslOption();
-		String iamApiKey = _operatorConfiguration.get_iamApiKey();
-		String iamTokenEndpoint = _operatorConfiguration.get_iamTokenEndpoint();
 		// Override defaults if the application configuration is specified
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {
@@ -352,12 +318,6 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 			if (properties.containsKey(PARAMETER_SSL_OPTION)) {
 				sslOption = properties.get(PARAMETER_SSL_OPTION);
 			}
-			if (properties.containsKey(PARAMETER_IAM_API_KEY)) {
-				iamApiKey = properties.get(PARAMETER_IAM_API_KEY);
-			}
-			if (properties.containsKey(PARAMETER_IAM_TOKEN_ENDPOINT)) {
-				iamTokenEndpoint = properties.get(PARAMETER_IAM_TOKEN_ENDPOINT);
-			}
 		}
 		// Ensure a valid configuration.
 		if (connectionURL == null) {
@@ -367,20 +327,13 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 				throw new Exception(MISSING_VALUE + PARAMETER_CONNECTION_URL);
 			}
 		}
-		if (iamApiKey == null) {
-			if (user == null) {
-				throw new Exception(MISSING_VALUE + PARAMETER_USER + " or " + PARAMETER_IAM_API_KEY);
-			}
-			if (password == null) {
-				throw new Exception(MISSING_VALUE + PARAMETER_PASSWORD);
-			}
+		if (user == null) {
+			throw new Exception(MISSING_VALUE + PARAMETER_USER);
 		}
-		else { 
-			// use IAM authentication
-			String token = getAccessToken(iamApiKey, iamTokenEndpoint);
-			user = "streams-bearer";
-			password = "bearertoken:"+token;
+		if (password == null) {
+			throw new Exception(MISSING_VALUE + PARAMETER_PASSWORD);
 		}
+
 		/*
 		 * Prepare the JMX environment settings.
 		 */
@@ -391,13 +344,6 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 
 		if (sslOption != null) {
 			env.put("jmx.remote.tls.enabled.protocols", sslOption);
-		}
-		else {
-			// not configured via parameter or application configuration
-			sslOption = autoDetectJmxSslOption(user, password);
-			if (sslOption != null) {
-				env.put("jmx.remote.tls.enabled.protocols", sslOption);
-			}
 		}
 
 		/*
@@ -448,49 +394,12 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	}
 	
 	private String autoDetectJmxConnect() throws Exception {
-		String result = null;
-
-		return result;
-	}	
-
-	private String getAccessToken(String apiKey, String url) throws Exception {		
-		String token = null;
-		_trace.debug("get access token with apiKey:" + apiKey);
-	
-		String[] cmd = { "/bin/sh", "-c", "curl -s -d grant_type=urn:ibm:params:oauth:grant-type:apikey -d apikey="+apiKey+" -H Content-type=application/x-www-form-urlencoded -H Accept=application/json "+url };
-			
-		StringBuffer output = new StringBuffer();
-		Process p;
-		try {
-			p = Runtime.getRuntime().exec(cmd);
-			p.waitFor();
-			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line = "";
-			while ((line = br.readLine())!= null) {
-				output.append(line);
-			}
-			String cmdResult = output.toString();
-			_trace.debug("cmdResult: " + cmdResult);
-			JSONArtifact root = JSON.parse(cmdResult);
-			JSONObject json = (JSONObject)root;
-			Object tokenObj = json.get("access_token");
-			token = tokenObj.toString();
-			
-			_trace.debug("token: " + token);
-		
-		} catch (Exception e) {
-			e.printStackTrace();
+		// STREAMS_JMX_CONNECT
+		final String STREAMS_JMX_CONNECT = System.getenv("STREAMS_JMX_CONNECT");
+		if (STREAMS_JMX_CONNECT == null || STREAMS_JMX_CONNECT.isEmpty()) {
+			_trace.error("STREAMS_JMX_CONNECT environment variable is not set.");
 		}
-		if (null == token) {
-			_trace.error("Unable to determine IAM access token");
-			throw new Exception("Unable to determine IAM access token");			
-		}		
-		return token;
-	}
-
-	private String autoDetectJmxSslOption(String user, String password) {		
-		String sslOption = null;
-
-		return sslOption;
+		return STREAMS_JMX_CONNECT;
 	}	
+	
 }

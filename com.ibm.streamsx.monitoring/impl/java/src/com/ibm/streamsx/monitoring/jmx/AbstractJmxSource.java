@@ -83,10 +83,7 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
     		"   * The *value* of the property could be pasted from the clipboard if you have done the *Create IBM Streaming Analytics Service Credentials* steps above. \\n" +
     		" 3. The operator will look for an application configuration, if the parameter `applicationConfigurationName` is set and will extract "
     		+ "the information needed to connect.\\n" +
-			"\\n"+
-			"\\n# Apply credentials as operator parameter\\n"+
-			"\\nFor Streaming Analytics service (IAM authentication) the following parameter should be used:"+
-			"\\n* credentials - JSON service credentials\\n"+		
+			"\\n"+	
 		    "\\n"+	
 		    "\\n# IBM Streams authentication\\n"+
 		    "\\nFor IBM Streams authentication the following authentication parameters should be used:\\n"+
