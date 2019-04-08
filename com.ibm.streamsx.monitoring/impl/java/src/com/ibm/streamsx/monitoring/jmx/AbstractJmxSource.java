@@ -20,7 +20,7 @@ import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.StreamingOutput;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 import com.ibm.streamsx.monitoring.jmx.internal.ConnectionNotificationTupleContainer;
-import com.ibm.streamsx.monitoring.jmx.internal.DomainHandler;
+import com.ibm.streamsx.monitoring.jmx.internal.InstanceHandler;
 import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.LogTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.MetricsTupleContainer;
@@ -103,7 +103,7 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 	 */
 	private static Logger _trace = Logger.getLogger(AbstractJmxSource.class.getName());
 	
-	protected DomainHandler _domainHandler = null;
+	protected InstanceHandler _instanceHandler = null;
 
 	/**
 	 * If the application configuration is used (applicationConfigurationName
@@ -131,9 +131,9 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 		 */
 		if (OpType.LOG_SOURCE != _operatorConfiguration.get_OperatorType()) {
 			setupFilters();
-			boolean isValidDomain = _operatorConfiguration.get_filters().matchesDomainId(_operatorConfiguration.get_domainId());
-			if (!isValidDomain) {
-				throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domainId() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
+			boolean isValidInstance = _operatorConfiguration.get_filters().matchesInstanceId(_operatorConfiguration.get_instanceId());
+			if (!isValidInstance) {
+				throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_instanceId() + " instance does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
 			}
 		}		
 		
@@ -156,10 +156,10 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 		setupJMXConnection();
 
 		/*
-		 * Further actions are handled in the domain handler that manages
+		 * Further actions are handled in the instance handler that manages
 		 * instances that manages jobs, etc.
 		 */
-		scanDomain();
+		scanInstance();
 	}
 
 	/**
@@ -185,16 +185,16 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 				}
 			}
 			if (isChanged) {
-				_domainHandler.close();
-				_domainHandler = null;
+				_instanceHandler.close();
+				_instanceHandler = null;
 				setupFilters();
-				scanDomain();
+				scanInstance();
 			}
 		}
 	}
 	
-	protected void scanDomain() {
-		_domainHandler = new DomainHandler(_operatorConfiguration, _operatorConfiguration.get_domainId());
+	protected void scanInstance() {
+		_instanceHandler = new InstanceHandler(_operatorConfiguration, _operatorConfiguration.get_instanceId());
 	}
 
 	/**
@@ -263,13 +263,13 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 		}
 	}
 
-	protected void closeDomainHandler() {
+	protected void closeInstanceHandler() {
 		try {
-			_domainHandler.close();
+			_instanceHandler.close();
 		}
 		catch (Exception ignore) {
 		}
-		_domainHandler = null;
+		_instanceHandler = null;
 		if (1 == get_isConnected().getValue()) {
 			// update metric to indicate connection is broken
 			get_nBrokenJMXConnections().increment();

@@ -30,8 +30,6 @@ public class OperatorInputPortHandler extends MetricOwningHandler implements Clo
 	 */
 	private static Logger _trace = Logger.getLogger(OperatorInputPortHandler.class.getName());
 
-	private String _domainId = null;
-
 	private String _instanceId = null;
 	
 	private BigInteger _jobId = null;
@@ -44,7 +42,7 @@ public class OperatorInputPortHandler extends MetricOwningHandler implements Clo
 	
 	private OperatorInputPortMXBean _port = null;
 
-	public OperatorInputPortHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId, BigInteger jobId, String jobName, String operatorName, Integer portIndex) {
+	public OperatorInputPortHandler(OperatorConfiguration operatorConfiguration, String instanceId, BigInteger jobId, String jobName, String operatorName, Integer portIndex) {
 
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 
@@ -53,7 +51,6 @@ public class OperatorInputPortHandler extends MetricOwningHandler implements Clo
 
 		// Store parameters for later use.
 		_operatorConfiguration = operatorConfiguration;
-		_domainId = domainId;
 		_instanceId = instanceId;
 		_jobId = jobId;
 		_jobName = jobName;
@@ -61,10 +58,10 @@ public class OperatorInputPortHandler extends MetricOwningHandler implements Clo
 		_portIndex = portIndex;
 
 		if (isDebugEnabled) {
-			_trace.debug("--> InputPortHandler(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
+			_trace.debug("--> InputPortHandler(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
 		}
 		
-		ObjectName operatorObjName = ObjectNameBuilder.operatorInputPort(_domainId, _instanceId, _jobId, _operatorName, _portIndex);
+		ObjectName operatorObjName = ObjectNameBuilder.operatorInputPort(_instanceId, _jobId, _operatorName, _portIndex);
 		_port = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), operatorObjName, OperatorInputPortMXBean.class, true);
 		
 		/*
@@ -73,19 +70,19 @@ public class OperatorInputPortHandler extends MetricOwningHandler implements Clo
 		registerMetrics();
 		
 		if (isDebugEnabled) {
-			_trace.debug("<-- InputPortHandler(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
+			_trace.debug("<-- InputPortHandler(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
 		}
 	}
 
 	@Override
 	protected boolean isRelevantMetric(String metricName) {
-		boolean isRelevant = _operatorConfiguration.get_filters().matchesOperatorInputPortMetricName(_domainId, _instanceId, _jobName, _operatorName, _portIndex, metricName);
+		boolean isRelevant = _operatorConfiguration.get_filters().matchesOperatorInputPortMetricName(_instanceId, _jobName, _operatorName, _portIndex, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
-				_trace.info("The following input port metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + _portIndex + ", metric=" + metricName);
+				_trace.info("The following input port metric meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + _portIndex + ", metric=" + metricName);
 			}
 			else { 
-				_trace.info("The following input port metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + _portIndex + ", metric=" + metricName);
+				_trace.info("The following input port metric does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + _portIndex + ", metric=" + metricName);
 			}
 		}
 		return isRelevant;
@@ -107,7 +104,7 @@ public class OperatorInputPortHandler extends MetricOwningHandler implements Clo
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 
 		if (isDebugEnabled) {
-			_trace.debug("--> captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
+			_trace.debug("--> captureMetrics(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
 		}
 		MetricsTupleContainer tc = _operatorConfiguration.get_tupleContainerMetricsSource();
 		tc.setOrigin("OperatorInputPort");
@@ -115,7 +112,7 @@ public class OperatorInputPortHandler extends MetricOwningHandler implements Clo
 		captureAndSubmitChangedMetrics();
 
 		if (isDebugEnabled) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
+			_trace.debug("<-- captureMetrics(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ", port=" + _portIndex + ")");
 		}
 	}
 

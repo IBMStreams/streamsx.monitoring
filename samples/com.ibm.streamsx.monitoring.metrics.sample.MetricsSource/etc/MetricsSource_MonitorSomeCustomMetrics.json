@@ -1,25 +1,19 @@
 [
 	{
-		"domainIdPatterns":".*",
-		"instances":
+		"instanceIdPatterns":".*",
+		"jobs":
 		[
 			{
-				"instanceIdPatterns":".*",
-				"jobs":
+				"jobNamePatterns":".*",
+				"operators":
 				[
 					{
-						"jobNamePatterns":".*",
-						"operators":
+						"operatorNamePatterns":"Storage",
+						"metricNamePatterns":
 						[
-							{
-								"operatorNamePatterns":"Storage",
-								"metricNamePatterns":
-								[
-									"rnd",
-									"inc",
-									"const"
-								]
-							}
+							"rnd",
+							"inc",
+							"const"
 						]
 					}
 				]

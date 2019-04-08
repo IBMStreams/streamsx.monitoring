@@ -129,7 +129,7 @@
              destfile="${releasefilename}"
     	     basedir="${basedir}"
              includes="com.ibm.streamsx.monitoring/** samples/**"
-             excludes="**/.gitignore com.ibm.streamsx.monitoring/.settings/** com.ibm.streamsx.monitoring/.project com.ibm.streamsx.monitoring/.classpat*"
+             excludes="**/.gitignore com.ibm.streamsx.monitoring/.settings/** com.ibm.streamsx.monitoring/ext.libs com.ibm.streamsx.monitoring/.project com.ibm.streamsx.monitoring/.classpat*"
     	/>
         <checksum file="${releasefilename}"/>
         <checksum algorithm="sha1" file="${releasefilename}"/>

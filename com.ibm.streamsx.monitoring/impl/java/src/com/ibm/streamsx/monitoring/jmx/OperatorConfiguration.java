@@ -47,14 +47,9 @@ public class OperatorConfiguration {
 	private String _sslOption = null;	
 	
 	/**
-	 * Specifies the domain that is monitored.
-	 */
-	private String _domainId = null;
-	
-	/**
 	 * Specifies the instance that is monitored.
 	 */	
-	private String _instanceIdFilter = ".*";
+	private String _instanceId = null;
 	
 	/**
 	 * Global Endpoint
@@ -84,7 +79,7 @@ public class OperatorConfiguration {
 
 	/**
 	 * Specifies the path to a JSON-formatted document that specifies the
-	 * domain, instance, job, operator, and metric name filters as regular
+	 * instance, job, operator, and metric name filters as regular
 	 * expressions. Each regular expression must follow the rules that are
 	 * specified for Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Pattern</a>.
 	 */
@@ -109,8 +104,6 @@ public class OperatorConfiguration {
 	private Filters _filters = new Filters();
 
 	private String _defaultFilterInstance = null;
-	
-	private String _defaultFilterDomain = null;	
 	
 	private MetricsTupleContainer _tupleContainerMetricsSource = null;
 	
@@ -207,23 +200,13 @@ public class OperatorConfiguration {
 		}
 	}	
 
-	public String get_domainId() {
-		return _domainId;
+	public String get_instanceId() {
+		return _instanceId;
 	}
 
-	public void set_domainId(String domainId) {
-		if (!("".equals(domainId))) {
-			this._domainId = domainId;
-		}
-	}
-
-	public String get_instanceIdFilter() {
-		return _instanceIdFilter;
-	}
-
-	public void set_instanceIdFilter(String instanceIdFilter) {
-		if (!("".equals(instanceIdFilter))) {
-			this._instanceIdFilter = instanceIdFilter;
+	public void set_instanceId(String instanceId) {
+		if (!("".equals(instanceId))) {
+			this._instanceId = instanceId;
 		}
 	}	
 	
@@ -338,25 +321,17 @@ public class OperatorConfiguration {
 		_defaultFilterInstance = instance;
 	}
 
-	public void set_defaultFilterDomain(String domain) {
-		_defaultFilterDomain = domain;
-	}
-	
 	public String get_defaultFilterDocument() {
 		String result = null;
 		if (_opType.equals(OpType.METRICS_SOURCE)) {
-			result = "[{\"domainIdPatterns\":\""
-					+ _defaultFilterDomain
-					+ "\",\"instances\":[{\"instanceIdPatterns\":\""
+			result = "[{\"instanceIdPatterns\":\""
 					+ _defaultFilterInstance
 					+ "\",\"jobs\":[{\"jobNamePatterns\":\".*\","
 					+ "\"pes\":[{\"metricNamePatterns\":\".*\",\"inputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"outputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"connections\":[{\"connectionIdPatterns\":\".*\",\"metricNamePatterns\":\".*\"}]}],"
 					+ "\"operators\":[{\"operatorNamePatterns\":\".*\",\"metricNamePatterns\":\".*\",\"inputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"outputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}]}]}]}]}]";
 		}
 		else if (_opType.equals(OpType.JOB_STATUS_SOURCE)) {
-			result = "[{\"domainIdPatterns\":\""
-					+ _defaultFilterDomain
-					+ "\",\"instances\":[{\"instanceIdPatterns\":\""
+			result = "[{\"instanceIdPatterns\":\""
 					+ _defaultFilterInstance
 					+ "\",\"jobs\":[{\"jobNamePatterns\":\".*\",}]}]}]";	
 		}

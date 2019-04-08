@@ -46,7 +46,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	
 	protected static final String DESC_PARAM_APPLICATION_CONFIGURATION_NAME = 
 			"Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] "
-			+ "that can contain domainId, connectionURL, user, password, credentials and filterDocument "
+			+ "that can contain instanceId, connectionURL, user, password, credentials and filterDocument "
 			+ "properties. The application configuration overrides values that "
 			+ "are specified with the corresponding parameters.";
 	
@@ -54,10 +54,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 			"Specifies the connection URL as returned by the `streamtool "
 			+ "getjmxconnect` command. If the **applicationConfigurationName** "
 			+ "parameter is specified, the application configuration can "
-			+ "override this parameter value."
-			+ "If not specified and the domainId parameter value equals the domain "
-			+ "id under which this operator is running, then the operator uses the "
-			+ "`streamtool getjmxconnect` command to get the value.";
+			+ "override this parameter value.";
 	
 	protected static final String DESC_PARAM_USER = 
 			"Specifies the user that is required for the JMX connection. If "
@@ -72,20 +69,9 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	protected static final String DESC_PARAM_SSL_OPTION = 
 			"Specifies the sslOption that is required for the JMX connection. If "
 			+ "the **applicationConfigurationName** parameter is specified, "
-			+ "the application configuration can override this parameter value."
-			+ "If not specified and the domainId parameter value equals the domain "
-			+ "id under which this operator is running, then the operator uses the "
-			+ "`streamtool getdomainproperty` command to get the value.";
-	
-	protected static final String DESC_PARAM_DOMAIN_ID = 
-			"Specifies the domain id that is monitored. If no domain id is "
-			+ "specified, the domain id under which this operator is running "
-			+ "is used. If the operator is running in a standalone application "
-			+ "the parameter is mandatory. If "
-			+ "the **applicationConfigurationName** parameter is specified, "
 			+ "the application configuration can override this parameter value.";
 	
-	protected static final String DESC_PARAM_INSTANCE_ID_FILTER = 
+	protected static final String DESC_PARAM_INSTANCE_ID = 
 			"Specifies the instance id filter used to select the instance(s) that is monitored. If no value is "
 			+ "specified, all instances are monitored per default. To monitor the instance id under which this operator is running, the value OWN can be specified when running in distributed mode."
 			+ " If the **applicationConfigurationName** parameter is specified, "
@@ -105,9 +91,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 
 	protected static final Object PARAMETER_FILTER_DOCUMENT = "filterDocument";
 	
-	protected static final Object PARAMETER_DOMAIN_ID = "domainId";
-	
-	protected static final Object PARAMETER_INSTANCE_ID_FILTER = "instanceIdFilter";
+	protected static final Object PARAMETER_INSTANCE_ID = "instanceId";
 
 	protected static final String MISSING_VALUE = "The following value must be specified as parameter or in the application configuration: ";
 
@@ -124,8 +108,6 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	
 	protected OperatorConfiguration _operatorConfiguration = new OperatorConfiguration();
 		
-	protected String _domainId = null; // domainId for this PE
-	
 	/**
 	 * The base directory of the application
 	 */	
@@ -193,21 +175,13 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	public void setSslOption(String sslOption) {
 		_operatorConfiguration.set_sslOption(sslOption);
 	}
-	
-	@Parameter(
-			optional=true,
-			description=AbstractJmxOperator.DESC_PARAM_DOMAIN_ID
-			)
-	public void setDomainId(String domainId) {
-		_operatorConfiguration.set_domainId(domainId);
-	}
 
 	@Parameter(
 			optional=true,
-			description=AbstractJmxOperator.DESC_PARAM_INSTANCE_ID_FILTER
+			description=AbstractJmxOperator.DESC_PARAM_INSTANCE_ID
 			)
-	public void setInstanceIdFilter(String instanceIdFilter) {
-		_operatorConfiguration.set_instanceIdFilter(instanceIdFilter);
+	public void setInstanceId(String instanceId) {
+		_operatorConfiguration.set_instanceId(instanceId);
 	}	
 	
 	@Parameter(
@@ -250,7 +224,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		else {
 			if (context.getPE().isStandalone()) {
 				if ((null == _operatorConfiguration.get_user()) && (null == _operatorConfiguration.get_password())) {
-					throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' and 'domainId' applied, when running in standalone mode. Application configuration is supported in distributed mode only.");
+					throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator requires parameters 'user' and 'password' and 'instanceId' applied, when running in standalone mode. Application configuration is supported in distributed mode only.");
 				}				
 			}
 		}
@@ -258,59 +232,26 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		this.baseDir = context.getPE().getApplicationDirectory();
 
 		/*
-		 * The domainId parameter is optional. If the application developer does
-		 * not set it, use the domain id under which the operator itself is
+		 * The instanceId parameter is optional. If the application developer does
+		 * not set it, use the instance id under which the operator itself is
 		 * running.
 		 */
-		if (_operatorConfiguration.get_domainId() == null) {
+		if (_operatorConfiguration.get_instanceId() == null) {
 			if (context.getPE().isStandalone()) {
-				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a domain id. The following value must be specified as parameter: domainId");
+				throw new com.ibm.streams.operator.DataException("The " + context.getName() + " operator runs in standalone mode and can, therefore, not automatically determine a instance id. The following value must be specified as parameter: instanceId");
 			}
-			String domainId = getApplicationConfigurationDomainId();
-			if ("".equals(domainId)) {
-				_operatorConfiguration.set_domainId(context.getPE().getDomainId());
-				_trace.info("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_domainId() + " domain.");
+			String instanceId = getApplicationConfigurationInstanceId();
+			if ("".equals(instanceId)) {
+				_operatorConfiguration.set_instanceId(context.getPE().getInstanceId());
+				_trace.info("The " + context.getName() + " operator automatically connects to the " + _operatorConfiguration.get_instanceId() + " instance.");
 			}
 			else {
-				_operatorConfiguration.set_domainId(domainId);
-				_trace.info("The " + context.getName() + " operator connects to the " + _operatorConfiguration.get_domainId() + " domain specified by application configuration.");
+				_operatorConfiguration.set_instanceId(instanceId);
+				_trace.info("The " + context.getName() + " operator connects to the " + _operatorConfiguration.get_instanceId() + " instance specified by application configuration.");
 			}
 		}
-		// used to determine if configured domain is the domain where the PE runs
-		// if is running in standalone, then the domainId parameter/application configuration is used 
-		_domainId = ((context.getPE().isStandalone()) ? _operatorConfiguration.get_domainId() : context.getPE().getDomainId());
-		_operatorConfiguration.set_defaultFilterDomain(_domainId);
+		_operatorConfiguration.set_defaultFilterInstance(_operatorConfiguration.get_instanceId());
 		
-		// Set the instance filter, default is ".*"
-		if (!(context.getPE().isStandalone())) {
-			String instanceFilter = getApplicationConfigurationInstanceId();
-			if (!"".equals(instanceFilter)) {
-				_operatorConfiguration.set_instanceIdFilter(instanceFilter);
-			}
-			if ("OWN".equals(_operatorConfiguration.get_instanceIdFilter())) {
-				_operatorConfiguration.set_instanceIdFilter(context.getPE().getInstanceId());
-			}
-		}
-		_trace.info("The " + context.getName() + " operator uses the instance ID filter: " + _operatorConfiguration.get_instanceIdFilter());
-		_operatorConfiguration.set_defaultFilterInstance(_operatorConfiguration.get_instanceIdFilter());
-		
-		
-
-		String credentials = getCredentials();
-		if (!"".equals(credentials)) {		
-            try {
-				// read the JSON service credentials applied in application configuration
-				String apikey = null;
-				JSONArtifact root = JSON.parse(credentials);
-				JSONObject json = (JSONObject)root;
-				Object apikeyObj = json.get("apikey");
-				apikey = apikeyObj.toString();
-				_trace.debug("apikey: " + apikey);
-				_operatorConfiguration.set_iamApiKey(apikey);
-            } catch (Exception e) {
-            	_trace.error("Failed to parse credentials property from application configuration '" + _operatorConfiguration.get_applicationConfigurationName() + "'. ERROR: '" + e.getMessage() + "'");
-            }
-		}
 	}	
 	
 	/**
@@ -348,25 +289,14 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		}
 	}
 	
-	protected String getApplicationConfigurationDomainId() {
-		String result = "";
-		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
-		if (applicationConfigurationName != null) {
-			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
-			if (properties.containsKey(PARAMETER_DOMAIN_ID)) {
-				result = properties.get(PARAMETER_DOMAIN_ID);
-			}
-		}
-		return result;
-	}
 
 	protected String getApplicationConfigurationInstanceId() {
 		String result = "";
 		String applicationConfigurationName = _operatorConfiguration.get_applicationConfigurationName();
 		if (applicationConfigurationName != null) {
 			Map<String,String> properties = getApplicationConfiguration(applicationConfigurationName);
-			if (properties.containsKey(PARAMETER_INSTANCE_ID_FILTER)) {
-				result = properties.get(PARAMETER_INSTANCE_ID_FILTER);
+			if (properties.containsKey(PARAMETER_INSTANCE_ID)) {
+				result = properties.get(PARAMETER_INSTANCE_ID);
 			}
 		}
 		return result;
@@ -458,11 +388,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 		String [] credentials = { user, password };
 		env.put("jmx.remote.credentials", credentials);
 		env.put("jmx.remote.protocol.provider.pkgs", "com.ibm.streams.management");
-		/*
-		 * get the value from: streamtool getdomainproperty jmx.sslOption
-		 * Code taken from:
-		 * http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.dev.doc/doc/jmxapi-lgop.html
-		 */
+
 		if (sslOption != null) {
 			env.put("jmx.remote.tls.enabled.protocols", sslOption);
 		}
@@ -523,39 +449,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 	
 	private String autoDetectJmxConnect() throws Exception {
 		String result = null;
-		_trace.debug("_domainId=[" + _domainId + "]");
-		_trace.debug("_operatorConfiguration.get_domainId()=[" + _operatorConfiguration.get_domainId() + "]");
-		if (_operatorConfiguration.get_domainId().equals(_domainId)) { // running in same domain as configured
-			_trace.debug("get connectionURL with streamtool getjmxconnect");
-			String cmd = "streamtool getjmxconnect -d "+ _domainId;
 
-			StringBuffer output = new StringBuffer();
-			Process p;
-			try {
-				p = Runtime.getRuntime().exec(cmd);
-				p.waitFor();
-				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				String line = "";
-				while ((line = br.readLine())!= null) {
-					output.append(line).append(",");
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			result = output.toString();
-			// Service URL must start with 
-			if (result.startsWith("service:jmx:")) {
-				_trace.info("connectionURL=[" + result + "]");
-				_operatorConfiguration.set_connectionURL(result);
-			}
-			else {
-				if (result.endsWith(",")) {
-					result = result.substring(0, result.length()-1);
-				}
-				_trace.error("Unable to determine "+PARAMETER_CONNECTION_URL+": " + result);
-				throw new Exception("Unable to determine "+PARAMETER_CONNECTION_URL);
-			}
-		}
 		return result;
 	}	
 
@@ -596,32 +490,7 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 
 	private String autoDetectJmxSslOption(String user, String password) {		
 		String sslOption = null;
-		if (_operatorConfiguration.get_domainId().equals(_domainId)) { // running in same domain as configured
-			_trace.debug("get jmx.sslOption with streamtool getdomainproperty");
-	
-			String[] cmd = { "/bin/sh", "-c", "echo "+password+" | streamtool getdomainproperty -d "+ _domainId + " -U "+user+" jmx.sslOption" };
-			
-			StringBuffer output = new StringBuffer();
-			Process p;
-			try {
-				p = Runtime.getRuntime().exec(cmd);
-				p.waitFor();
-				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				String line = "";
-				while ((line = br.readLine())!= null) {
-					output.append(line);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			String cmdResult = output.toString();
-			_trace.debug("cmdResult: " + cmdResult);
-			int idx = cmdResult.indexOf("=");
-			if (idx >=0) {
-				sslOption = cmdResult.substring(idx+1, cmdResult.length());
-				_trace.info("sslOption=[" + sslOption + "]");
-			}
-		}
+
 		return sslOption;
 	}	
 }

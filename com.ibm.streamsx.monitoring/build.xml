@@ -14,6 +14,7 @@
 	<property name="java.bin.dir" location="impl/java/bin" />
 	<property name="spl-mt" value="${streams.install}/bin/spl-make-toolkit" />
 	<property name="impl.lib.dir" location="impl/lib" />
+	<property name="ext.libs.dir" location="ext.libs" />
 	<property name="jarfile" value="com.ibm.streamsx.monitoring.jar" />
 	<property name="gensrc.dir" location="impl/java/src-gen"/>
 
@@ -35,9 +36,9 @@
 
 	<path id="cp.streams">
 		<pathelement location="${streams.install}/lib/com.ibm.streams.operator.samples.jar" />
-		<pathelement location="${streams.install}/lib/com.ibm.streams.management.jmxmp.jar" />
-		<pathelement location="${streams.install}/lib/com.ibm.streams.management.mx.jar" />
-		<pathelement location="${streams.install}/ext/lib/jmxremote_optional.jar" />
+		<pathelement location="${ext.libs.dir}/com.ibm.streams.management.jmxmp.jar" />
+		<pathelement location="${ext.libs.dir}/com.ibm.streams.management.mx.jar" />
+		<pathelement location="${ext.libs.dir}/jmxremote_optional.jar" />
 	</path>
 
 	<target name="compile" depends="init">

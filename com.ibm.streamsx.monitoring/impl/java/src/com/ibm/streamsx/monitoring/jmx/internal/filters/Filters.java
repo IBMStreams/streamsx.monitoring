@@ -29,15 +29,15 @@ public class Filters {
 	/**
 	 * 
 	 */
-	protected Map<String /* regular expression */, DomainFilter> _domainFilters = new HashMap<>();
+	protected Map<String /* regular expression */, InstanceFilter> _instanceFilters = new HashMap<>();
 
 	public Filters() {
 	}
 
-	public boolean matchesDomainId(String domainId) {
+	public boolean matchesInstanceId(String instanceId) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesDomainId(domainId);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesInstanceId(instanceId);
 			if (matches) {
 				break;
 			}
@@ -45,10 +45,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesInstanceId(String domainId, String instanceId) {
+	public boolean matchesJobName(String instanceId, String jobName) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesInstanceId(domainId, instanceId);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesJobName(instanceId, jobName);
 			if (matches) {
 				break;
 			}
@@ -56,10 +56,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesJobName(String domainId, String instanceId, String jobName) {
+	public boolean matchesOperatorName(String instanceId, String jobName, String operatorName) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesJobName(domainId, instanceId, jobName);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesOperatorName(instanceId, jobName, operatorName);
 			if (matches) {
 				break;
 			}
@@ -67,10 +67,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesOperatorName(String domainId, String instanceId, String jobName, String operatorName) {
+	public boolean matchesOperatorMetricName(String instanceId, String jobName, String operatorName, String metricName) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesOperatorName(domainId, instanceId, jobName, operatorName);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesOperatorMetricName(instanceId, jobName, operatorName, metricName);
 			if (matches) {
 				break;
 			}
@@ -78,10 +78,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesOperatorMetricName(String domainId, String instanceId, String jobName, String operatorName, String metricName) {
+	public boolean matchesOperatorInputPortIndex(String instanceId, String jobName, String operatorName, Integer portIndex) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesOperatorMetricName(domainId, instanceId, jobName, operatorName, metricName);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesOperatorInputPortIndex(instanceId, jobName, operatorName, portIndex);
 			if (matches) {
 				break;
 			}
@@ -89,10 +89,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesOperatorInputPortIndex(String domainId, String instanceId, String jobName, String operatorName, Integer portIndex) {
+	public boolean matchesOperatorInputPortMetricName(String instanceId, String jobName, String operatorName, Integer portIndex, String metricName) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesOperatorInputPortIndex(domainId, instanceId, jobName, operatorName, portIndex);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesOperatorInputPortMetricName(instanceId, jobName, operatorName, portIndex, metricName);
 			if (matches) {
 				break;
 			}
@@ -100,10 +100,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesOperatorInputPortMetricName(String domainId, String instanceId, String jobName, String operatorName, Integer portIndex, String metricName) {
+	public boolean matchesOperatorOutputPortIndex(String instanceId, String jobName, String operatorName, Integer portIndex) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesOperatorInputPortMetricName(domainId, instanceId, jobName, operatorName, portIndex, metricName);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesOperatorOutputPortIndex(instanceId, jobName, operatorName, portIndex);
 			if (matches) {
 				break;
 			}
@@ -111,10 +111,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesOperatorOutputPortIndex(String domainId, String instanceId, String jobName, String operatorName, Integer portIndex) {
+	public boolean matchesOperatorOutputPortMetricName(String instanceId, String jobName, String operatorName, Integer portIndex, String metricName) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesOperatorOutputPortIndex(domainId, instanceId, jobName, operatorName, portIndex);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesOperatorOutputPortMetricName(instanceId, jobName, operatorName, portIndex, metricName);
 			if (matches) {
 				break;
 			}
@@ -122,10 +122,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesOperatorOutputPortMetricName(String domainId, String instanceId, String jobName, String operatorName, Integer portIndex, String metricName) {
+	public boolean matchesPeId(String instanceId, String jobName, BigInteger peId) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesOperatorOutputPortMetricName(domainId, instanceId, jobName, operatorName, portIndex, metricName);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesPeId(instanceId, jobName, peId);
 			if (matches) {
 				break;
 			}
@@ -133,10 +133,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeId(String domainId, String instanceId, String jobName, BigInteger peId) {
+	public boolean matchesPeMetricName(String instanceId, String jobName, BigInteger peId, String metricName) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeId(domainId, instanceId, jobName, peId);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesPeMetricName(instanceId, jobName, peId, metricName);
 			if (matches) {
 				break;
 			}
@@ -144,10 +144,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeMetricName(String domainId, String instanceId, String jobName, BigInteger peId, String metricName) {
+	public boolean matchesPeInputPortIndex(String instanceId, String jobName, BigInteger peId, Integer portIndex) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeMetricName(domainId, instanceId, jobName, peId, metricName);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesPeInputPortIndex(instanceId, jobName, peId, portIndex);
 			if (matches) {
 				break;
 			}
@@ -155,10 +155,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortIndex(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex) {
+	public boolean matchesPeInputPortMetricName(String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeInputPortIndex(domainId, instanceId, jobName, peId, portIndex);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesPeInputPortMetricName(instanceId, jobName, peId, portIndex, metricName);
 			if (matches) {
 				break;
 			}
@@ -166,10 +166,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortMetricName(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
+	public boolean matchesPeOutputPortIndex(String instanceId, String jobName, BigInteger peId, Integer portIndex) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeInputPortMetricName(domainId, instanceId, jobName, peId, portIndex, metricName);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesPeOutputPortIndex(instanceId, jobName, peId, portIndex);
 			if (matches) {
 				break;
 			}
@@ -177,21 +177,10 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortIndex(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex) {
+	public boolean matchesPeOutputPortMetricName(String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeOutputPortIndex(domainId, instanceId, jobName, peId, portIndex);
-			if (matches) {
-				break;
-			}
-		}
-		return matches;
-	}
-
-	public boolean matchesPeOutputPortMetricName(String domainId, String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
-		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeOutputPortMetricName(domainId, instanceId, jobName, peId, portIndex, metricName);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesPeOutputPortMetricName(instanceId, jobName, peId, portIndex, metricName);
 			if (matches) {
 				break;
 			}
@@ -199,10 +188,10 @@ public class Filters {
 		return matches;
 	}
 	
-	public boolean matchesPeConnectionId(String domainId, String instanceId, String jobName, BigInteger peId, String connectionId) {
+	public boolean matchesPeConnectionId(String instanceId, String jobName, BigInteger peId, String connectionId) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeConnectionId(domainId, instanceId, jobName, peId, connectionId);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesPeConnectionId(instanceId, jobName, peId, connectionId);
 			if (matches) {
 				break;
 			}
@@ -210,10 +199,10 @@ public class Filters {
 		return matches;
 	}
 	
-	public boolean matchesPeConnectionMetricName(String domainId, String instanceId, String jobName, BigInteger peId, String connectionId, String metricName) {
+	public boolean matchesPeConnectionMetricName(String instanceId, String jobName, BigInteger peId, String connectionId, String metricName) {
 		boolean matches = false;
-		for(DomainFilter filter : _domainFilters.values()) {
-			matches = filter.matchesPeConnectionMetricName(domainId, instanceId, jobName, peId, connectionId, metricName);
+		for(InstanceFilter filter : _instanceFilters.values()) {
+			matches = filter.matchesPeConnectionMetricName(instanceId, jobName, peId, connectionId, metricName);
 			if (matches) {
 				break;
 			}
@@ -227,12 +216,12 @@ public class Filters {
 	 * 
 	 * @param filterDocument
 	 * Specifies the absolute path of a JSON-formatted file, which contains
-	 * the specification of the filter criteria for domain, instance, job,
+	 * the specification of the filter criteria for instance, job,
 	 * operator, and metric names.
 	 * 
 	 * @return
 	 * A tree of filter objects that is used to evaluate whether a given
-	 * domain, instance, job, operator, or metric name matches the specified
+	 * instance, job, operator, or metric name matches the specified
 	 * filter criteria.
 	 * 
 	 * @throws IOException
@@ -256,12 +245,12 @@ public class Filters {
 	 * 
 	 * @param inputStream
 	 * Specifies the input stream that provides a JSON-formatted text, which
-	 * contains the specification of the filter criteria for domain, instance,
+	 * contains the specification of the filter criteria for instance,
 	 * job, operator, and metric names.
 	 * 
 	 * @return
 	 * A tree of filter objects that is used to evaluate whether a given
-	 * domain, instance, job, operator, or metric name matches the specified
+	 * instance, job, operator, or metric name matches the specified
 	 * filter criteria.
 	 * 
 	 * @throws IOException
@@ -275,11 +264,11 @@ public class Filters {
 	static public Filters setupFilters(InputStream inputStream, OpType aType) throws IOException {
 		Filters filters = new Filters();
 		JSONArtifact root = JSON.parse(inputStream);
-		DomainParser domainParser = new DomainParser(aType);
-		if (domainParser.validate(root)) {
-			Set<DomainFilter> domainFilters = domainParser.buildFilters(root);
-			for (DomainFilter domainFilter : domainFilters) {
-				filters._domainFilters.put(domainFilter.getRegularExpression(), domainFilter);
+		InstanceParser instanceParser = new InstanceParser(aType);
+		if (instanceParser.validate(root)) {
+			Set<InstanceFilter> instanceFilters = instanceParser.buildFilters(root);
+			for (InstanceFilter instanceFilter : instanceFilters) {
+				filters._instanceFilters.put(instanceFilter.getRegularExpression(), instanceFilter);
 			}
 		}
 		return filters;

@@ -89,24 +89,19 @@ public class MetricsSource extends AbstractJmxSource {
 			+ "metric changes as tuple stream.\\n"
 			+ "\\n"
 			+ "As an application developer, you provide the so-called filter "
-			+ "document. The filter document specifies patterns for domain, "
-			+ "instance, job, operator, and metric names. It also specifies "
-			+ "which name patterns are related, for example: For a domain X "
-			+ "monitor all instances, whereas in each instance only jobs with "
-			+ "a Y in their names shall be evaluated. For another domain Z, "
-			+ "only jobs with a name ending with XYZ, are monitored, etc.\\n"
-			+ "\\n"
+			+ "document. The filter document specifies patterns for "
+			+ "instance, job, operator, and metric names.\\n"
 			+ "If the MetricsSource evaluates whether, for example, a custom "
 			+ "metric of an operator shall be retrieved periodically, the name "
 			+ "patterns are applied. A custom metric is uniquely identified "
-			+ "with the domain, instance, job, operator, and metric name. All "
+			+ "with the instance, job, operator, and metric name. All "
 			+ "these parts must match to the corresponding set of related name "
 			+ "patterns.\\n"
 			+ "\\n"
 			+ "Per default, the MetricsSource operator monitors all metrics "
-			+ "in the current domain and instance, if filter document is not specified."
+			+ "in the current instance, if filter document is not specified."
 			+ "\\n"
-			+ "The MetricsSource operator monitors filter-matching domains, "
+			+ "The MetricsSource operator monitors filter-matching "
 			+ "instances, and jobs that are running while the application that "
 			+ "uses the MetricsSource operator, starts. Furthermore, the "
 			+ "operator gets notifications for created and deleted instances, "
@@ -116,18 +111,12 @@ public class MetricsSource extends AbstractJmxSource {
 			+ "\\n"
 			+ "+ Filter document\\n"
 			+ "\\n"
-			+ "The filter document specifies patterns for domain, instance, "
+			+ "The filter document specifies patterns for instance, "
 			+ "job, operator, and metric names, and their relations.\\n"
 			+ "\\n"
 			+ "Only those objects (and their parents) that "
 			+ "match the specified filters, are monitored.\\n"
 			+ "\\n"
-			+ "It also specifies "
-			+ "which name patterns are related, for example: For a domain X "
-			+ "monitor all instances, whereas in each instance only jobs with "
-			+ "a Y in their names shall be evaluated. For another domain Z, "
-			+ "only jobs with a name ending with XYZ, are monitored, etc.\\n"
-			+ "\\n"	
 			+ "The filter document is a JSON-encoded text file or JSON-encoded String that is "
 			+ "configured with the **filterDocument** parameter.\\n"
 			+ "\\n"
@@ -143,10 +132,6 @@ public class MetricsSource extends AbstractJmxSource {
 			+ "\\n"			
 			+ "    [\\n"
 			+ "      {\\n"
-			+ "        \\\"domainIdPatterns\\\":\\\".*\\\",\\n"
-			+ "        \\\"instances\\\":\\n"
-			+ "        [\\n"
-			+ "          {\\n"
 			+ "            \\\"instanceIdPatterns\\\":\\\".*\\\",\\n"
 			+ "            \\\"jobs\\\":\\n"
 			+ "            [\\n"
@@ -207,13 +192,9 @@ public class MetricsSource extends AbstractJmxSource {
 			+ "      }\\n"
 			+ "    ]\\n"
 			+ "\\n"			
-			+ "The following filter document example selects two custom metrics names *nBytesWritten* and *nObjects* of a custom *Storage* operator in the *StreamsInstance* instance and *StreamsDomain* domain only:\\n"
+			+ "The following filter document example selects two custom metrics names *nBytesWritten* and *nObjects* of a custom *Storage* operator in the *StreamsInstance* instance only:\\n"
 			+ "\\n"			
 			+ "    [\\n"
-			+ "      {\\n"
-			+ "        \\\"domainIdPatterns\\\":\\\"StreamsDomain\\\",\\n"
-			+ "        \\\"instances\\\":\\n"
-			+ "        [\\n"
 			+ "          {\\n"
 			+ "            \\\"instanceIdPatterns\\\":\\\"StreamsInstance\\\",\\n"
 			+ "            \\\"jobs\\\":\\n"
@@ -252,7 +233,7 @@ public class MetricsSource extends AbstractJmxSource {
 	
 	private static final String DESC_PARAM_FILTER_DOCUMENT = 
 			"Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies "
-			+ "the domain, instance, job, operator, and metric name filters as "
+			+ "the instance, job, operator, and metric name filters as "
 			+ "regular expressions. Each regular expression must follow the "
 			+ "rules that are specified for Java "
 			+ "[https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. "
@@ -427,18 +408,18 @@ public class MetricsSource extends AbstractJmxSource {
 					_trace.warn("Reconnect");
 					setupJMXConnection();
 					connected = true;
-					scanDomain(); // create new DomainHandler
+					scanInstance(); // create new InstanceHandler
 				}		
 
 				if (connected) {
-					_domainHandler.healthCheck();				
-					_domainHandler.captureMetrics();
+					_instanceHandler.healthCheck();				
+					_instanceHandler.captureMetrics();
 				}
 			}
 			catch (Exception e) {
 				_trace.error("JMX connection error ", e);
 				connected = false;
-				closeDomainHandler();
+				closeInstanceHandler();
 				setupFilters();
 			}
 			/*

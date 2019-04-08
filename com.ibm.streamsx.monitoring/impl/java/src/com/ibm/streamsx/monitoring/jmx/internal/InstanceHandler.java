@@ -29,7 +29,7 @@ import com.ibm.streams.operator.Tuple;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration;
 
 /**
- * Listen for the following domain notifications:
+ * Listen for the following notifications:
  *
  * <ul>
  *   <li>com.ibm.streams.management.job.added
@@ -53,8 +53,6 @@ public class InstanceHandler implements NotificationListener, Closeable {
 
 	private OperatorConfiguration _operatorConfiguration = null;
 
-	private String _domainId = null;
-
 	private String _instanceId = null;
 	
 	private ObjectName _objName = null;
@@ -63,18 +61,17 @@ public class InstanceHandler implements NotificationListener, Closeable {
 
 	private Map<BigInteger /* jobId */, JobHandler> _jobHandlers = new HashMap<>();
 
-	public InstanceHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId) {
+	public InstanceHandler(OperatorConfiguration operatorConfiguration, String instanceId) {
 
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 		if (isDebugEnabled) {
-			_trace.debug("InstanceHandler(" + domainId + "," + instanceId + ")");
+			_trace.debug("InstanceHandler(" + instanceId + ")");
 		}
 		// Store parameters for later use.
 		_operatorConfiguration = operatorConfiguration;
-		_domainId = domainId;
 		_instanceId = instanceId;
 
-		_objName = ObjectNameBuilder.instance(_domainId, _instanceId);
+		_objName = ObjectNameBuilder.instance(_instanceId);
 		_instance = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), _objName, InstanceMXBean.class, true);
 		
 		/*
@@ -118,7 +115,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 				BigInteger jobId = (BigInteger)notification.getUserData();
 				
 				if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
-					final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _domainId, _instanceId, jobId, null, null, null, null, null);
+					final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _instanceId, jobId, null, null, null, null, null);
 					_operatorConfiguration.get_tupleContainerJobStatusSource().submit(tuple);		
 				}				
 				
@@ -140,7 +137,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 				if (_jobHandlers.containsKey(jobId)) {
 					
 					if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
-						final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _domainId, _instanceId, jobId, null, null, null, null, null);
+						final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _instanceId, jobId, null, null, null, null, null);
 						_operatorConfiguration.get_tupleContainerJobStatusSource().submit(tuple);
 					}
 					
@@ -171,20 +168,20 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		// the job-related beans. 
 		_instance.registerJob(jobId);
 		// Special handling required because we do not have the job name easily accessible.
-		ObjectName jobObjName = ObjectNameBuilder.job(_domainId, _instanceId, jobId);
+		ObjectName jobObjName = ObjectNameBuilder.job(_instanceId, jobId);
 		JobMXBean job = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), jobObjName, JobMXBean.class, true);
 		String jobName = job.getName();
-		boolean matches = _operatorConfiguration.get_filters().matchesJobName(_domainId, _instanceId, jobName);
+		boolean matches = _operatorConfiguration.get_filters().matchesJobName(_instanceId, jobName);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
-				_trace.info("The following job meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=" + jobName + ", jobId=" + jobId);
+				_trace.info("The following job meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=" + jobName + ", jobId=" + jobId);
 			}
 			else {
-				_trace.info("The following job does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=" + jobName + ", jobId=" + jobId);
+				_trace.info("The following job does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=" + jobName + ", jobId=" + jobId);
 			}
 		}
 		if (matches) {
-			_jobHandlers.put(jobId, new JobHandler(_operatorConfiguration, _domainId, _instanceId, jobId));
+			_jobHandlers.put(jobId, new JobHandler(_operatorConfiguration, _instanceId, jobId));
 		}
 		if (isDebugEnabled) {
 			_trace.debug("<-- addValidJob(" + jobId + ")");
@@ -198,14 +195,14 @@ public class InstanceHandler implements NotificationListener, Closeable {
 	public void captureMetrics() throws Exception {
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 		if (isDebugEnabled) {
-			_trace.debug("--> captureMetrics(domain=" + _domainId + ",instance=" + _instanceId + ")");
+			_trace.debug("--> captureMetrics(instance=" + _instanceId + ")");
 		}
 		_operatorConfiguration.get_tupleContainerMetricsSource().setInstanceId(_instanceId);
 		for(BigInteger jobId : _jobHandlers.keySet()) {
 			_jobHandlers.get(jobId).captureMetrics();
 		}
 		if (isDebugEnabled) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainId + ",instance=" + _instanceId + ")");
+			_trace.debug("<-- captureMetrics(instance=" + _instanceId + ")");
 		}
 	}
 
@@ -223,4 +220,14 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		_jobHandlers.clear();
 	}
 
+	public void healthCheck() {
+		if (_trace.isDebugEnabled()) {
+			_trace.debug("healthCheck");
+		}
+		com.ibm.streams.management.instance.InstanceMXBean.Status status = _instance.getStatus();
+		if (_trace.isDebugEnabled()) {
+			_trace.debug("InstanceMXBean.Status="+status.toString());
+		}
+	}
+	
 }

@@ -34,11 +34,6 @@ public class JobStatusTupleContainer {
 	private StreamingOutput<OutputTuple> _port = null;
 
 	/**
-	 * Index of the domainId attribute.
-	 */
-	private Integer _domainIdAttributeIndex = null;
-	
-	/**
 	 * Index of the instanceId attribute.
 	 */
 	private Integer _instanceIdAttributeIndex = null;
@@ -120,11 +115,6 @@ public class JobStatusTupleContainer {
 		_port = port;
 		
 		StreamSchema schema = port.getStreamSchema();
-		// Domain-related attributes.
-		if (_domainIdAttributeIndex == null) {
-			Attribute attribute = schema.getAttribute("domainId");
-			_domainIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
-		}
 		// Instance-related attributes.
 		if (_instanceIdAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("instanceId");
@@ -201,7 +191,6 @@ public class JobStatusTupleContainer {
 	public Tuple getTuple(
 			final Notification notification,
 			final Object handback,
-			final String domainId,
 			final String instanceId,
 			final BigInteger jobId,
 			final String jobName,
@@ -212,7 +201,6 @@ public class JobStatusTupleContainer {
 		return _port.getStreamSchema().getTuple(getAttributes(
 				notification,
 				handback,
-				domainId,
 				instanceId,
 				jobId,
 				jobName,
@@ -231,7 +219,6 @@ public class JobStatusTupleContainer {
 	protected Map<String, Object> getAttributes(
 			final Notification notification,
 			final Object handback,
-			final String domainId,
 			final String instanceId,
 			final BigInteger jobId,
 			final String jobName,
@@ -242,11 +229,6 @@ public class JobStatusTupleContainer {
 		
 		final Map<String, Object> attributes = new HashMap<String, Object>();
 		
-		if (_domainIdAttributeIndex != -1) {
-			if (domainId != null) {
-				attributes.put("domainId", new RString(domainId));
-			}
-		}
 		if (_instanceIdAttributeIndex != -1) {
 			if (instanceId != null) {
 				attributes.put("instanceId", new RString(instanceId));

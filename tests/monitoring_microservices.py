@@ -39,7 +39,7 @@ failed_pe_service()
 
 
 topo = Topology("SubscribeSample")
-jobs_status_schema = StreamSchema('tuple<rstring notifyType,rstring domainId,rstring instanceId,int64 jobId,rstring jobName,rstring resource,int64 peId,rstring peHealth,rstring peStatus,timestamp eventTimestamp>')
+jobs_status_schema = StreamSchema('tuple<rstring notifyType,rstring instanceId,int64 jobId,rstring jobName,rstring resource,int64 peId,rstring peHealth,rstring peStatus,timestamp eventTimestamp>')
 ts = topo.subscribe('streamsx/monitoring/jobs/status', schema=jobs_status_schema)
 ts.print()
 ts.isolate()

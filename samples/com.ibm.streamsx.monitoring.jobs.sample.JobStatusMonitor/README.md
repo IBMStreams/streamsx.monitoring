@@ -12,14 +12,6 @@ Build **Monitor** and **SampleJob** applications:
 
 Launch the **Monitor** application first. 
 
-#### Standalone mode
-
-The monitor application in standalone mode can not determine the `domainId`. Therefore you need to specify the `domainId` parameter.
-
-Update `domainId`, `user` and `password` parameters for your Streams environment.
-
-`./output/monitor/bin/standalone domainId=StreamsDomain user=streamsadmin password=password`
-
 #### Distributed mode
 
 For example with `user` and `password` submission parameters:
@@ -28,7 +20,7 @@ For example with `user` and `password` submission parameters:
 
 Update `user` and `password` submission parameters for your Streams environment.
 
-Alternative you can specify the `domainId`, `connectionURL`, `user`, `password`, and `filterDocument` properties in an [application configuration](https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html).
+Alternative you can specify the `instanceId`, `connectionURL`, `user`, `password`, and `filterDocument` properties in an [application configuration](https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html).
 Advantage of the use of an application configuration is, that you can update the `filterDocument` at runtime.
 
 ***Application configuration is supported in distributed mode only.***
@@ -50,9 +42,9 @@ Verify the notification events in the console output.
 One PE of the sample application has been forced to restart and the output contains "com.ibm.streams.management.pe.changed" notifications:
 
     ...
-    {notifyType="com.ibm.streams.management.pe.changed",domainId="StreamsDomain",instanceId="StreamsInstance",jobId=0,jobName="com.ibm.streamsx.monitoring.jobs.sample::SampleJob_0",resource="streamshost.ibm.com",peId=2,peHealth="partiallyUnhealthy",peStatus="restarting",eventTimestamp=(1505980604,904000000,0)}
+    {notifyType="com.ibm.streams.management.pe.changed",instanceId="StreamsInstance",jobId=0,jobName="com.ibm.streamsx.monitoring.jobs.sample::SampleJob_0",resource="streamshost.ibm.com",peId=2,peHealth="partiallyUnhealthy",peStatus="restarting",eventTimestamp=(1505980604,904000000,0)}
     ...
-    {notifyType="com.ibm.streams.management.pe.changed",domainId="StreamsDomain",instanceId="StreamsInstance",jobId=0,jobName="com.ibm.streamsx.monitoring.jobs.sample::SampleJob_0",resource="streamshost.ibm.com",peId=2,peHealth="healthy",peStatus="running",eventTimestamp=(1505980606,474000000,0)}
+    {notifyType="com.ibm.streams.management.pe.changed",instanceId="StreamsInstance",jobId=0,jobName="com.ibm.streamsx.monitoring.jobs.sample::SampleJob_0",resource="streamshost.ibm.com",peId=2,peHealth="healthy",peStatus="running",eventTimestamp=(1505980606,474000000,0)}
 
 
 ### Clean:

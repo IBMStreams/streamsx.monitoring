@@ -25,7 +25,7 @@ public class Metrics {
 	 */
 	public static final String METRIC_NAME = "metricName", METRIC_VALUE = "metricValue", LAST_TIME_RETRIEVED = "lastTimeRetrieved";
 	
-	public static final String[] METRIC_TYPES = new String[] { "domainId", "instanceId", "jobId", "jobName", "resource", "peId", "operatorName", 
+	public static final String[] METRIC_TYPES = new String[] { "instanceId", "jobId", "jobName", "resource", "peId", "operatorName", 
 															   "channel", "portIndex", "connectionId", "metricType", "metricKind", "metricName", 
 															   "metricValue", "lastTimeRetrieved"};
 

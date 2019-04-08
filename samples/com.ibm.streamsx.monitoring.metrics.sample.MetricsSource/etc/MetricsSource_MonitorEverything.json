@@ -1,60 +1,54 @@
 [
 	{
-		"domainIdPatterns":".*",
-		"instances":
+		"instanceIdPatterns":".*",
+		"jobs":
 		[
 			{
-				"instanceIdPatterns":".*",
-				"jobs":
+				"jobNamePatterns":".*",
+				"pes":
 				[
 					{
-						"jobNamePatterns":".*",
-						"pes":
+						"metricNamePatterns":".*",
+						"inputPorts":
 						[
 							{
-								"metricNamePatterns":".*",
-								"inputPorts":
-								[
-									{
-										"portIndexes":"*",
-										"metricNamePatterns":".*"
-									}
-								],
-								"outputPorts":
-								[
-									{
-										"portIndexes":"*",
-										"metricNamePatterns":".*"
-									}
-								],
-								"connections":
-								[
-									{
-										"connectionIdPatterns":".*",
-										"metricNamePatterns":".*"
-									}
-								]
+								"portIndexes":"*",
+								"metricNamePatterns":".*"
 							}
 						],
-						"operators":
+						"outputPorts":
 						[
 							{
-								"operatorNamePatterns":".*",
-								"metricNamePatterns":".*",
-								"inputPorts":
-								[
-									{
-										"portIndexes":"*",
-										"metricNamePatterns":".*"
-									}
-								],
-								"outputPorts":
-								[
-									{
-										"portIndexes":"*",
-										"metricNamePatterns":".*"
-									}
-								]
+								"portIndexes":"*",
+								"metricNamePatterns":".*"
+							}
+						],
+						"connections":
+						[
+							{
+								"connectionIdPatterns":".*",
+								"metricNamePatterns":".*"
+							}
+						]
+					}
+				],
+				"operators":
+				[
+					{
+						"operatorNamePatterns":".*",
+						"metricNamePatterns":".*",
+						"inputPorts":
+						[
+							{
+								"portIndexes":"*",
+								"metricNamePatterns":".*"
+							}
+						],
+						"outputPorts":
+						[
+							{
+								"portIndexes":"*",
+								"metricNamePatterns":".*"
 							}
 						]
 					}

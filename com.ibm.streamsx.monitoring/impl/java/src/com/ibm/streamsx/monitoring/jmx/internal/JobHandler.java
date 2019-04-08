@@ -38,7 +38,7 @@ import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 
 /**
- * Listen for the following domain notifications:
+ * Listen for the following notifications:
  *
  * <ul>
  *   <li>com.ibm.streams.management.job.added
@@ -62,8 +62,6 @@ public class JobHandler implements NotificationListener, Closeable {
 
 	private OperatorConfiguration _operatorConfiguration = null;
 
-	private String _domainId = null;
-
 	private String _instanceId = null;
 
 	private ObjectName _objName = null;
@@ -78,19 +76,18 @@ public class JobHandler implements NotificationListener, Closeable {
 
 	private Map<BigInteger /* peId */, PeHandler> _peHandlers = new HashMap<>();
 
-	public JobHandler(OperatorConfiguration applicationConfiguration, String domainId, String instanceId, BigInteger jobId) {
+	public JobHandler(OperatorConfiguration applicationConfiguration, String instanceId, BigInteger jobId) {
 
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 		if (isDebugEnabled) {
-			_trace.debug("JobHandler(" + domainId + "," + instanceId + "," + jobId + ")");
+			_trace.debug("JobHandler(" + instanceId + "," + jobId + ")");
 		}
 		// Store parameters for later use.
 		_operatorConfiguration = applicationConfiguration;
-		_domainId = domainId;
 		_instanceId = instanceId;
 		_jobId = jobId;
 
-		_objName = ObjectNameBuilder.job(_domainId, _instanceId, _jobId);
+		_objName = ObjectNameBuilder.job(_instanceId, _jobId);
 		_job = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), _objName, JobMXBean.class, true);
 
 		_jobName = _job.getName();
@@ -143,32 +140,32 @@ public class JobHandler implements NotificationListener, Closeable {
 	}
 
 	protected void addValidOperator(String operatorName) {
-		boolean matches = _operatorConfiguration.get_filters().matchesOperatorName(_domainId, _instanceId, _jobName, operatorName);
+		boolean matches = _operatorConfiguration.get_filters().matchesOperatorName(_instanceId, _jobName, operatorName);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
-				_trace.info("The following operator meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + operatorName);
+				_trace.info("The following operator meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + operatorName);
 			}
 			else { 
-				_trace.info("The following operator does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + operatorName);
+				_trace.info("The following operator does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + operatorName);
 			}
 		}
 		if (matches) {
-			_operatorHandlers.put(operatorName, new OperatorHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, operatorName));
+			_operatorHandlers.put(operatorName, new OperatorHandler(_operatorConfiguration, _instanceId, _jobId, _jobName, operatorName));
 		}
 	}
 	
 	protected void addPE(BigInteger peId) {
-		boolean matches = _operatorConfiguration.get_filters().matchesPeId(_domainId, _instanceId, _jobName, peId);
+		boolean matches = _operatorConfiguration.get_filters().matchesPeId(_instanceId, _jobName, peId);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
-				_trace.info("The following PE meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + peId);
+				_trace.info("The following PE meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + peId);
 			}
 			else { 
-				_trace.info("The following PE does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + peId);
+				_trace.info("The following PE does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + peId);
 			}
 		}
 		if (matches) {
-			_peHandlers.put(peId, new PeHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, peId));
+			_peHandlers.put(peId, new PeHandler(_operatorConfiguration, _instanceId, _jobId, _jobName, peId));
 		}
 	}
 	
@@ -182,7 +179,7 @@ public class JobHandler implements NotificationListener, Closeable {
 	public void captureMetrics() throws Exception {
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 		if (isDebugEnabled) {
-			_trace.debug("--> captureMetrics(domain=" + _domainId + ",instance=" + _instanceId + ",jobId=" + _jobId + ")");
+			_trace.debug("--> captureMetrics(instance=" + _instanceId + ",jobId=" + _jobId + ")");
 		}
 		MetricsTupleContainer schema = _operatorConfiguration.get_tupleContainerMetricsSource();
 		schema.setJobId(_jobId);
@@ -194,62 +191,8 @@ public class JobHandler implements NotificationListener, Closeable {
 			_peHandlers.get(peId).captureMetrics();
 		}
 		if (isDebugEnabled) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainId + ",instance=" + _instanceId + ",jobId=" + _jobId + ")");
+			_trace.debug("<-- captureMetrics(instance=" + _instanceId + ",jobId=" + _jobId + ")");
 		}
-// -----------------------------------------------------------------------------
-// SNAPSHOT METRICS CODE (BEGIN)
-// -----------------------------------------------------------------------------
-//		String uri = _job.snapshotMetrics();
-//		try {
-//			_trace.error("[" + _domainId + "," + _instanceId + "," + _jobName + "] capture metrics from URI: " + uri);
-//
-//			// TODO streamtool getdomainproperty jmx.sslOption
-//			String sslOption = "TLSv1";
-//			// set up trust manager to validate certificate issuer
-//			TrustManager [] tm = new TrustManager[] {new JmxTrustManager()};
-//			SSLContext ctxt = SSLContext.getInstance(sslOption);
-//			ctxt.init(null, tm, null);
-//
-//			// set up host name verifier to trust the server from which the certificate was sent
-//			HostnameVerifier hv = new HostnameVerifier() {
-//				public boolean verify(String urlHostName, SSLSession session) {
-//					// return false to reject
-//					return true;
-//				}
-//			};
-//
-//			URL url = new URL(uri);
-//			HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
-//			conn.setSSLSocketFactory(ctxt.getSocketFactory());
-//			conn.setHostnameVerifier(hv);
-//			conn.setRequestMethod("GET");
-//			conn.connect();
-//			InputStream response = conn.getInputStream();
-//			BufferedReader reader = new BufferedReader(new InputStreamReader(response));
-//			String line;
-//			while ((line = reader.readLine()) != null) {
-//				System.out.println(line);
-//			}
-//			reader.close();
-//			response.close();
-//			conn.disconnect();
-//
-//			if (_jobIdAttributeIndex != -1) {
-//				tuple.setLong(_jobIdAttributeIndex, _jobId.longValue());
-//			}
-//			if (_jobNameAttributeIndex != -1) {
-//				tuple.setString(_jobNameAttributeIndex, _jobName);
-//			}
-//			// Submit tuple to output stream            
-//			port.submit(tuple);
-//
-//		}
-//		catch(Exception e) {
-//			e.printStackTrace();
-//		}
-		// -----------------------------------------------------------------------------
-		// SNAPSHOT METRICS CODE (END)
-		// -----------------------------------------------------------------------------
 	}
 
 	/**

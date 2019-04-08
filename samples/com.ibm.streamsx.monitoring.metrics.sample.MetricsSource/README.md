@@ -12,14 +12,6 @@ Build **Monitor** and **SampleJob** applications:
 
 Launch the **Monitor** application first. 
 
-#### Standalone mode
-
-The monitor application in standalone mode can not determine the `domainId`. Therefore you need to specify the `domainId` parameter.
-
-Update `domainId`, `user` and `password` parameters for your Streams environment.
-
-`./output/monitor/bin/standalone domainId=StreamsDomain user=streamsadmin password=password`
-
 #### Distributed mode
 
 For example with `user` and `password` submission parameters:
@@ -28,7 +20,7 @@ For example with `user` and `password` submission parameters:
 
 Update `user` and `password` submission parameters for your Streams environment.
 
-Alternative you can specify the `domainId`, `connectionURL`, `user`, `password`, and `filterDocument` properties in an [application configuration](https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html).
+Alternative you can specify the `instanceId`, `connectionURL`, `user`, `password`, and `filterDocument` properties in an [application configuration](https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html).
 Advantage of the use of an application configuration is, that you can update the `filterDocument` at runtime.
 
 ***Application configuration is supported in distributed mode only.***
@@ -50,7 +42,7 @@ Verify the metrics notification tuples in the console output.
 The MetricsSource operator emits a metric tuple for each metric, for which the operator identifies a changed value.
 After each scan cycle, the operator emits a WindowMarker to this port.
 
-    MetricNotification: {domainId="StreamsDomain",instanceId="StreamsInstance",jobId=6,jobName="com.ibm.streamsx.monitoring.metrics.sample.MetricsSource::SampleJob_6",resource="streamshost.ibm.com",peId=10,origin=OperatorOutputPort,operatorName="Numbers",channel=-1,portIndex=0,connectionId="",metricType="system",metricKind="counter",metricName="nTuplesSubmitted",metricValue=3,lastTimeRetrieved=1505995655000}
+    MetricNotification: {instanceId="StreamsInstance",jobId=6,jobName="com.ibm.streamsx.monitoring.metrics.sample.MetricsSource::SampleJob_6",resource="streamshost.ibm.com",peId=10,origin=OperatorOutputPort,operatorName="Numbers",channel=-1,portIndex=0,connectionId="",metricType="system",metricKind="counter",metricName="nTuplesSubmitted",metricValue=3,lastTimeRetrieved=1505995655000}
     ...
     MetricNotifications: WindowMarker
 

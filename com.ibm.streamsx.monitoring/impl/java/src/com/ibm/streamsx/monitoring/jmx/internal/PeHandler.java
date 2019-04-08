@@ -40,8 +40,6 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	 */
 	private static Logger _trace = Logger.getLogger(PeHandler.class.getName());
 
-	private String _domainId = null;
-
 	private String _instanceId = null;
 	
 	private BigInteger _jobId = null;
@@ -60,21 +58,20 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	
 	private Map<String /* connection id */, PeConnectionHandler> _connectionHandlers = new HashMap<>();
 
-	public PeHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId, BigInteger jobId, String jobName, BigInteger peId) {
+	public PeHandler(OperatorConfiguration operatorConfiguration, String instanceId, BigInteger jobId, String jobName, BigInteger peId) {
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 		
 		if (_trace.isDebugEnabled()) {
-			_trace.debug("PeHandler(" + domainId + "," + instanceId + ")");
+			_trace.debug("PeHandler(" + instanceId + ")");
 		}
 		// Store parameters for later use.
 		_operatorConfiguration = operatorConfiguration;
-		_domainId = domainId;
 		_instanceId = instanceId;
 		_jobId = jobId;
 		_jobName = jobName;
 		_peId = peId;
 
-		_objName = ObjectNameBuilder.pe(_domainId, _instanceId, _peId);
+		_objName = ObjectNameBuilder.pe(_instanceId, _peId);
 		_pe = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), _objName, PeMXBean.class, true);
 		
 		/*
@@ -131,20 +128,20 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 			_trace.debug("notification: " + notification + ", userData=" + notification.getUserData());
 		}
 		if (OpType.JOB_STATUS_SOURCE == _operatorConfiguration.get_OperatorType()) {
-			final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _domainId, _instanceId, _jobId, _jobName, _pe.getResource(), _peId, _pe.getHealth(), _pe.getStatus());
+			final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _instanceId, _jobId, _jobName, _pe.getResource(), _peId, _pe.getHealth(), _pe.getStatus());
 			_operatorConfiguration.get_tupleContainerJobStatusSource().submit(tuple);
 		}
 	}
 
 	@Override
 	protected boolean isRelevantMetric(String metricName) {
-		boolean isRelevant = _operatorConfiguration.get_filters().matchesPeMetricName(_domainId, _instanceId, _jobName, _peId, metricName);
+		boolean isRelevant = _operatorConfiguration.get_filters().matchesPeMetricName(_instanceId, _jobName, _peId, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
-				_trace.info("The following pe metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", metric=" + metricName);
+				_trace.info("The following pe metric meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", metric=" + metricName);
 			}
 			else {
-				_trace.info("The following pe metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", metric=" + metricName);
+				_trace.info("The following pe metric does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", metric=" + metricName);
 			}
 		}
 		return isRelevant;
@@ -157,47 +154,47 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	}
 
 	protected void addValidInputPort(Integer portIndex) {
-		boolean matches = _operatorConfiguration.get_filters().matchesPeInputPortIndex(_domainId, _instanceId, _jobName, _peId, portIndex);
+		boolean matches = _operatorConfiguration.get_filters().matchesPeInputPortIndex(_instanceId, _jobName, _peId, portIndex);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
-				_trace.info("The following input port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
+				_trace.info("The following input port meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
 			}
 			else {
-				_trace.info("The following input port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
+				_trace.info("The following input port does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
 			}
 		}
 		if (matches) {
-			_inputPortHandlers.put(portIndex, new PeInputPortHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _peId, portIndex));
+			_inputPortHandlers.put(portIndex, new PeInputPortHandler(_operatorConfiguration, _instanceId, _jobId, _jobName, _peId, portIndex));
 		}
 	}
 
 	protected void addValidOutputPort(Integer portIndex) {
-		boolean matches = _operatorConfiguration.get_filters().matchesPeOutputPortIndex(_domainId, _instanceId, _jobName, _peId, portIndex);
+		boolean matches = _operatorConfiguration.get_filters().matchesPeOutputPortIndex(_instanceId, _jobName, _peId, portIndex);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
-				_trace.info("The following output port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
+				_trace.info("The following output port meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
 			}
 			else {
-				_trace.info("The following output port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
+				_trace.info("The following output port does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + portIndex);
 			}
 		}
 		if (matches) {
-			_outputPortHandlers.put(portIndex, new PeOutputPortHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _peId, portIndex));
+			_outputPortHandlers.put(portIndex, new PeOutputPortHandler(_operatorConfiguration, _instanceId, _jobId, _jobName, _peId, portIndex));
 		}
 	}
 	
 	protected void addValidConnection(String connectionId) {
-		boolean matches = _operatorConfiguration.get_filters().matchesPeConnectionId(_domainId, _instanceId, _jobName, _peId, connectionId);
+		boolean matches = _operatorConfiguration.get_filters().matchesPeConnectionId(_instanceId, _jobName, _peId, connectionId);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
-				_trace.info("The following output port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", connection=" + connectionId);
+				_trace.info("The following output port meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", connection=" + connectionId);
 			}
 			else {
-				_trace.info("The following output port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", connection=" + connectionId);
+				_trace.info("The following output port does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", connection=" + connectionId);
 			}
 		}
 		if (matches) {
-			_connectionHandlers.put(connectionId, new PeConnectionHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _peId, connectionId));
+			_connectionHandlers.put(connectionId, new PeConnectionHandler(_operatorConfiguration, _instanceId, _jobId, _jobName, _peId, connectionId));
 		}
 	}
 
@@ -212,7 +209,7 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 
 		if (isDebugEnabled) {
-			_trace.debug("--> captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ")");
+			_trace.debug("--> captureMetrics(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ")");
 		}
 		MetricsTupleContainer tc = _operatorConfiguration.get_tupleContainerMetricsSource();
 		tc.setOperatorName("");
@@ -238,7 +235,7 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 		}
 
 		if (isDebugEnabled) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ")");
+			_trace.debug("<-- captureMetrics(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ")");
 		}
 	}
 

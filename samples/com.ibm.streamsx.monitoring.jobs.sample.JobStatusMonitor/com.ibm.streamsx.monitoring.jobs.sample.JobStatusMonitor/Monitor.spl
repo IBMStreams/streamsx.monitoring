@@ -14,7 +14,7 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  * This sample application demonstrates the usage of the JobStatusMonitor operator and monitors all jobs and reports the Job/PE status events
  *
  * @param applicationConfigurationName
- * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
+ * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain instanceId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
  *
  * @param user
  * Specifies the user that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
@@ -23,14 +23,15 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  * Specifies the password that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
  *
  * @param filterDocument
- * Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the domain, instance and job filters as regular expressions. Each regular expression must follow the rules that are specified for Java [https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
- * If parameter is not set, then all jobs in current domain and instance are monitored.
+ * Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the instance and job filters as regular expressions. Each regular expression must follow the rules that are specified for Java [https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ * If parameter is not set, then all jobs in current instance are monitored.
  *
  * @param connectionURL
- * Specifies the connection URL as returned by the `streamtool getjmxconnect` command. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getjmxconnect` command to get the value.
+ * Specifies the connection URL as returned by the `streamtool getjmxconnect` command. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
  *
  * @param sslOption
- * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getdomainproperty` command to get the value.
+ * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ * 
  */
 public composite Monitor {
 
@@ -39,8 +40,8 @@ public composite Monitor {
 		expression<rstring> $user: getSubmissionTimeValue("user", ""); // optional, if set in application configuration
 		expression<rstring> $password: getSubmissionTimeValue("password", ""); // optional, if set in application configuration
 		expression<rstring> $filterDocument: getSubmissionTimeValue("filterDocument", ""); // uses default, if not set
-		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then domain settings are used, where the PE is running
-		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then domain settings are used, where the PE is running
+		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then instance settings are used, where the PE is running
+		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then instance settings are used, where the PE is running
 
 	graph
 

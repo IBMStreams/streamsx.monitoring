@@ -86,7 +86,7 @@ abstract class MetricOwningHandler {
 	
 	/**
 	 * Set the metric-relevant tuple attributes and submit the tuple.
-	 * All other domain-, instance-, job-, operator-, port-relevant
+	 * All other instance-, job-, operator-, port-relevant
 	 * tuple attributes are already set.
 	 * 
 	 * @param metric
