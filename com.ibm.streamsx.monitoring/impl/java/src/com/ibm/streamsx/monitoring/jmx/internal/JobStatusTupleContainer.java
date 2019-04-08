@@ -192,10 +192,10 @@ public class JobStatusTupleContainer {
 			final Notification notification,
 			final Object handback,
 			final String instanceId,
-			final BigInteger jobId,
+			final String jobId,
 			final String jobName,
 			final String resource,
-			final BigInteger peId,
+			final String peId,
 			final Object peHealth,
 			final Object peStatus) {
 		return _port.getStreamSchema().getTuple(getAttributes(
@@ -220,10 +220,10 @@ public class JobStatusTupleContainer {
 			final Notification notification,
 			final Object handback,
 			final String instanceId,
-			final BigInteger jobId,
+			final String jobId,
 			final String jobName,
 			final String resource,
-			final BigInteger peId,
+			final String peId,
 			final Object peHealth,
 			final Object peStatus) {
 		
@@ -236,7 +236,7 @@ public class JobStatusTupleContainer {
 		}
 		if (_jobIdAttributeIndex != -1) {
 			if (jobId != null) {
-				attributes.put("jobId", jobId.longValue());
+				attributes.put("jobId", Long.parseLong(jobId));
 			}
 		}
 		if (_jobNameAttributeIndex != -1) {
@@ -251,7 +251,7 @@ public class JobStatusTupleContainer {
 		}
 		if (_peIdAttributeIndex != -1) {
 			if (peId != null) {
-				attributes.put("peId", peId.longValue());
+				attributes.put("peId", Long.parseLong(peId));
 			}
 		}		
 		if (_peHealthAttributeIndex != -1) {

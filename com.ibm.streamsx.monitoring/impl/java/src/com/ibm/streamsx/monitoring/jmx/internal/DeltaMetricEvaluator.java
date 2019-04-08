@@ -32,12 +32,12 @@ public class DeltaMetricEvaluator implements IMetricEvaluator {
 	
 	@Override
 	public boolean isSubmittable(Metric metric) {
-		return (_lastValue == null) || (Math.abs(_lastValue - metric.getValue()) >= _delta);
+		return (_lastValue == null) || (Math.abs(_lastValue - metric.getValueAsLong()) >= _delta);
 	}
 
 	@Override
 	public void updateStatus(Metric metric) {
-		_lastValue = metric.getValue();
+		_lastValue = metric.getValueAsLong();
 	}
 
 }

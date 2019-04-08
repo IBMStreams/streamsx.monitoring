@@ -66,7 +66,7 @@ public class JobHandler implements NotificationListener, Closeable {
 
 	private ObjectName _objName = null;
 	
-	private BigInteger _jobId = null;
+	private String _jobId = null;
 	
 	private String _jobName = null;
 
@@ -74,9 +74,9 @@ public class JobHandler implements NotificationListener, Closeable {
 
 	private Map<String /* operatorName */, OperatorHandler> _operatorHandlers = new HashMap<>();
 
-	private Map<BigInteger /* peId */, PeHandler> _peHandlers = new HashMap<>();
+	private Map<String /* peId */, PeHandler> _peHandlers = new HashMap<>();
 
-	public JobHandler(OperatorConfiguration applicationConfiguration, String instanceId, BigInteger jobId) {
+	public JobHandler(OperatorConfiguration applicationConfiguration, String instanceId, String jobId) {
 
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 		if (isDebugEnabled) {
@@ -117,7 +117,7 @@ public class JobHandler implements NotificationListener, Closeable {
 		/*
 		 * Create handlers for operators that match the filter criteria.
 		 */
-		for(BigInteger peId : _job.getPes()) {
+		for(String peId : _job.getPes()) {
 			addPE(peId);
 		}
 
@@ -154,7 +154,7 @@ public class JobHandler implements NotificationListener, Closeable {
 		}
 	}
 	
-	protected void addPE(BigInteger peId) {
+	protected void addPE(String peId) {
 		boolean matches = _operatorConfiguration.get_filters().matchesPeId(_instanceId, _jobName, peId);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
@@ -187,7 +187,7 @@ public class JobHandler implements NotificationListener, Closeable {
 		for(String operatorName : _operatorHandlers.keySet()) {
 			_operatorHandlers.get(operatorName).captureMetrics();
 		}
-		for(BigInteger peId : _peHandlers.keySet()) {
+		for(String peId : _peHandlers.keySet()) {
 			_peHandlers.get(peId).captureMetrics();
 		}
 		if (isDebugEnabled) {

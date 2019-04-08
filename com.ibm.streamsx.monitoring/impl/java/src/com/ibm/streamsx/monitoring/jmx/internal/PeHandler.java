@@ -42,13 +42,13 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 
 	private String _instanceId = null;
 	
-	private BigInteger _jobId = null;
+	private String _jobId = null;
 	
 	private String _jobName = null;
 	
 	private ObjectName _objName = null;
 	
-	private BigInteger _peId = null;
+	private String _peId = null;
 	
 	private PeMXBean _pe = null;
 
@@ -58,7 +58,7 @@ public class PeHandler extends MetricOwningHandler implements NotificationListen
 	
 	private Map<String /* connection id */, PeConnectionHandler> _connectionHandlers = new HashMap<>();
 
-	public PeHandler(OperatorConfiguration operatorConfiguration, String instanceId, BigInteger jobId, String jobName, BigInteger peId) {
+	public PeHandler(OperatorConfiguration operatorConfiguration, String instanceId, String jobId, String jobName, String peId) {
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 		
 		if (_trace.isDebugEnabled()) {

@@ -32,17 +32,17 @@ public class PeOutputPortHandler extends MetricOwningHandler implements Closeabl
 
 	private String _instanceId = null;
 	
-	private BigInteger _jobId = null;
+	private String _jobId = null;
 	
 	private String _jobName = null;
 	
-	private BigInteger _peId = null;
+	private String _peId = null;
 	
 	private Integer _portIndex = null;
 	
 	private PeOutputPortMXBean _port = null;
 
-	public PeOutputPortHandler(OperatorConfiguration operatorConfiguration, String instanceId, BigInteger jobId, String jobName, BigInteger peId, Integer portIndex) {
+	public PeOutputPortHandler(OperatorConfiguration operatorConfiguration, String instanceId, String jobId, String jobName, String peId, Integer portIndex) {
 
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 

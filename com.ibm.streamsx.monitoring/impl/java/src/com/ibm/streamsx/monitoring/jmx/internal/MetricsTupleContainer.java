@@ -207,6 +207,11 @@ public class MetricsTupleContainer {
 			_tuple.setLong(_jobIdAttributeIndex, jobId.longValue());
 		}
 	}
+	public void setJobId(String jobId) {
+		if (_jobIdAttributeIndex != -1) {
+			_tuple.setLong(_jobIdAttributeIndex, Long.parseLong(jobId));
+		}
+	}
 
 	/**
 	 * Optionally set the job name in the output tuple.
@@ -296,6 +301,11 @@ public class MetricsTupleContainer {
 			_tuple.setLong(_peIdAttributeIndex, peId.longValue());
 		}
 	}
+	public void setPeId(String peId) {
+		if (_peIdAttributeIndex != -1) {
+			_tuple.setLong(_peIdAttributeIndex, Long.parseLong(peId));
+		}		
+	}	
 
 	/**
 	 * Optionally set the metric type in the output tuple.

@@ -32,17 +32,17 @@ public class PeConnectionHandler extends MetricOwningHandler implements Closeabl
 
 	private String _instanceId = null;
 	
-	private BigInteger _jobId = null;
+	private String _jobId = null;
 	
 	private String _jobName = null;
 	
-	private BigInteger _peId = null;
+	private String _peId = null;
 	
 	private String _connectionId = null;
 	
 	private PeConnectionMXBean _connection = null;
 
-	public PeConnectionHandler(OperatorConfiguration operatorConfiguration, String instanceId, BigInteger jobId, String jobName, BigInteger peId, String connectionId) {
+	public PeConnectionHandler(OperatorConfiguration operatorConfiguration, String instanceId, String jobId, String jobName, String peId, String connectionId) {
 
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 

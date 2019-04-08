@@ -10,7 +10,6 @@ package com.ibm.streamsx.monitoring.jmx.internal.filters;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -122,7 +121,7 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeId(String instanceId, String jobName, BigInteger peId) {
+	public boolean matchesPeId(String instanceId, String jobName, String peId) {
 		boolean matches = false;
 		for(InstanceFilter filter : _instanceFilters.values()) {
 			matches = filter.matchesPeId(instanceId, jobName, peId);
@@ -133,7 +132,7 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeMetricName(String instanceId, String jobName, BigInteger peId, String metricName) {
+	public boolean matchesPeMetricName(String instanceId, String jobName, String peId, String metricName) {
 		boolean matches = false;
 		for(InstanceFilter filter : _instanceFilters.values()) {
 			matches = filter.matchesPeMetricName(instanceId, jobName, peId, metricName);
@@ -144,7 +143,7 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortIndex(String instanceId, String jobName, BigInteger peId, Integer portIndex) {
+	public boolean matchesPeInputPortIndex(String instanceId, String jobName, String peId, Integer portIndex) {
 		boolean matches = false;
 		for(InstanceFilter filter : _instanceFilters.values()) {
 			matches = filter.matchesPeInputPortIndex(instanceId, jobName, peId, portIndex);
@@ -155,7 +154,7 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortMetricName(String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
+	public boolean matchesPeInputPortMetricName(String instanceId, String jobName, String peId, Integer portIndex, String metricName) {
 		boolean matches = false;
 		for(InstanceFilter filter : _instanceFilters.values()) {
 			matches = filter.matchesPeInputPortMetricName(instanceId, jobName, peId, portIndex, metricName);
@@ -166,7 +165,7 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortIndex(String instanceId, String jobName, BigInteger peId, Integer portIndex) {
+	public boolean matchesPeOutputPortIndex(String instanceId, String jobName, String peId, Integer portIndex) {
 		boolean matches = false;
 		for(InstanceFilter filter : _instanceFilters.values()) {
 			matches = filter.matchesPeOutputPortIndex(instanceId, jobName, peId, portIndex);
@@ -177,7 +176,7 @@ public class Filters {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortMetricName(String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
+	public boolean matchesPeOutputPortMetricName(String instanceId, String jobName, String peId, Integer portIndex, String metricName) {
 		boolean matches = false;
 		for(InstanceFilter filter : _instanceFilters.values()) {
 			matches = filter.matchesPeOutputPortMetricName(instanceId, jobName, peId, portIndex, metricName);
@@ -188,7 +187,7 @@ public class Filters {
 		return matches;
 	}
 	
-	public boolean matchesPeConnectionId(String instanceId, String jobName, BigInteger peId, String connectionId) {
+	public boolean matchesPeConnectionId(String instanceId, String jobName, String peId, String connectionId) {
 		boolean matches = false;
 		for(InstanceFilter filter : _instanceFilters.values()) {
 			matches = filter.matchesPeConnectionId(instanceId, jobName, peId, connectionId);
@@ -199,7 +198,7 @@ public class Filters {
 		return matches;
 	}
 	
-	public boolean matchesPeConnectionMetricName(String instanceId, String jobName, BigInteger peId, String connectionId, String metricName) {
+	public boolean matchesPeConnectionMetricName(String instanceId, String jobName, String peId, String connectionId, String metricName) {
 		boolean matches = false;
 		for(InstanceFilter filter : _instanceFilters.values()) {
 			matches = filter.matchesPeConnectionMetricName(instanceId, jobName, peId, connectionId, metricName);

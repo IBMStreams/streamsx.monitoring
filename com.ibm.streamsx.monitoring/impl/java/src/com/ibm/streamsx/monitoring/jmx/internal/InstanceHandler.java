@@ -59,7 +59,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 	
 	private InstanceMXBean _instance = null;
 
-	private Map<BigInteger /* jobId */, JobHandler> _jobHandlers = new HashMap<>();
+	private Map<String /* jobId */, JobHandler> _jobHandlers = new HashMap<>();
 
 	public InstanceHandler(OperatorConfiguration operatorConfiguration, String instanceId) {
 
@@ -92,7 +92,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		/*
 		 * Register existing jobs.
 		 */
-		for(BigInteger jobId : _instance.getJobs()) {
+		for(String jobId : _instance.getJobs()) {
 			addValidJob(jobId);
 		}
 		
@@ -108,11 +108,11 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		boolean isInfoEnabled = _trace.isInfoEnabled();
 
 		if (notification.getType().equals(Notifications.JOB_ADDED)) {
-			if(notification.getUserData() instanceof BigInteger) {
+			if(notification.getUserData() instanceof String) {
 				/*
 				 * Register existing jobs.
 				 */
-				BigInteger jobId = (BigInteger)notification.getUserData();
+				String jobId = (String)notification.getUserData();
 				
 				if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
 					final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _instanceId, jobId, null, null, null, null, null);
@@ -129,11 +129,11 @@ public class InstanceHandler implements NotificationListener, Closeable {
 			}
 		}
 		else if (notification.getType().equals(Notifications.JOB_REMOVED)) {
-			if(notification.getUserData() instanceof BigInteger) {
+			if(notification.getUserData() instanceof String) {
 				/*
 				 * Unregister existing jobs.
 				 */
-				BigInteger jobId = (BigInteger)notification.getUserData();
+				String jobId = (String)notification.getUserData();
 				if (_jobHandlers.containsKey(jobId)) {
 					
 					if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
@@ -159,7 +159,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		}
 	}
 
-	protected void addValidJob(BigInteger jobId) {
+	protected void addValidJob(String jobId) {
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 		if (isDebugEnabled) {
 			_trace.debug("--> addValidJob(" + jobId + ")");
@@ -198,7 +198,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 			_trace.debug("--> captureMetrics(instance=" + _instanceId + ")");
 		}
 		_operatorConfiguration.get_tupleContainerMetricsSource().setInstanceId(_instanceId);
-		for(BigInteger jobId : _jobHandlers.keySet()) {
+		for(String jobId : _jobHandlers.keySet()) {
 			_jobHandlers.get(jobId).captureMetrics();
 		}
 		if (isDebugEnabled) {

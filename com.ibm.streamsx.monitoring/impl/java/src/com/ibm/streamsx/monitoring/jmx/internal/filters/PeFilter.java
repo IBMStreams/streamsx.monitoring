@@ -60,7 +60,7 @@ final class PeFilter {
 		}
 	}
 
-	public boolean matchesPeMetricName(BigInteger peId, String metricName) {
+	public boolean matchesPeMetricName(String peId, String metricName) {
 		boolean matches = false;
 		for(MetricFilter filter : _metricFilters.values()) {
 			matches = filter.matchesMetricName(metricName);
@@ -71,7 +71,7 @@ final class PeFilter {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortIndex(BigInteger peId, Integer portIndex) {
+	public boolean matchesPeInputPortIndex(String peId, Integer portIndex) {
 		boolean matches = false;
 		for(PortFilter filter : _inputPortFilters.values()) {
 			matches = filter.matchesPortIndex(portIndex);
@@ -82,7 +82,7 @@ final class PeFilter {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortMetricName(BigInteger peId, Integer portIndex, String metricName) {
+	public boolean matchesPeInputPortMetricName(String peId, Integer portIndex, String metricName) {
 		boolean matches = false;
 		for(PortFilter filter : _inputPortFilters.values()) {
 			matches = filter.matchesPortMetricName(portIndex, metricName);
@@ -93,7 +93,7 @@ final class PeFilter {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortIndex(BigInteger peId, Integer portIndex) {
+	public boolean matchesPeOutputPortIndex(String peId, Integer portIndex) {
 		boolean matches = false;
 		for(PortFilter filter : _outputPortFilters.values()) {
 			matches = filter.matchesPortIndex(portIndex);
@@ -104,7 +104,7 @@ final class PeFilter {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortMetricName(BigInteger peId, Integer portIndex, String metricName) {
+	public boolean matchesPeOutputPortMetricName(String peId, Integer portIndex, String metricName) {
 		boolean matches = false;
 		for(PortFilter filter : _outputPortFilters.values()) {
 			matches = filter.matchesPortMetricName(portIndex, metricName);
@@ -115,7 +115,7 @@ final class PeFilter {
 		return matches;
 	}
 	
-	public boolean matchesPeConnectionId(BigInteger peId, String connectionId) {
+	public boolean matchesPeConnectionId(String peId, String connectionId) {
 		boolean matches = false;
 		for(ConnectionFilter filter : _connectionFilters.values()) {
 			matches = filter.matchesConnectionId(connectionId);
@@ -126,7 +126,7 @@ final class PeFilter {
 		return matches;
 	}
 	
-	public boolean matchesPeConnectionMetricName(BigInteger peId, String peConnection, String metricName) {
+	public boolean matchesPeConnectionMetricName(String peId, String peConnection, String metricName) {
 		boolean matches = false;
 		for(ConnectionFilter filter : _connectionFilters.values()) {
 			matches = filter.matchesConnectionMetricName(peConnection, metricName);

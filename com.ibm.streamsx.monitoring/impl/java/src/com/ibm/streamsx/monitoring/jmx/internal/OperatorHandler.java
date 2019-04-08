@@ -40,7 +40,7 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 
 	private String _instanceId = null;
 	
-	private BigInteger _jobId = null;
+	private String _jobId = null;
 	
 	private String _jobName = null;
 	
@@ -54,7 +54,7 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 
 	private Map<Integer /* port index */, OperatorOutputPortHandler> _outputPortHandlers = new HashMap<>();
 
-	public OperatorHandler(OperatorConfiguration operatorConfiguration, String instanceId, BigInteger jobId, String jobName, String operatorName) {
+	public OperatorHandler(OperatorConfiguration operatorConfiguration, String instanceId, String jobId, String jobName, String operatorName) {
 
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 		

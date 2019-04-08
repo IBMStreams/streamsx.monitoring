@@ -130,7 +130,7 @@ final class InstanceFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeId(String instanceId, String jobName, BigInteger peId) {
+	public boolean matchesPeId(String instanceId, String jobName, String peId) {
 		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
 		if (matches) {
 			for(JobFilter filter : _jobFilters.values()) {
@@ -143,7 +143,7 @@ final class InstanceFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeMetricName(String instanceId, String jobName, BigInteger peId, String metricName) {
+	public boolean matchesPeMetricName(String instanceId, String jobName, String peId, String metricName) {
 		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
 		if (matches) {
 			for(JobFilter filter : _jobFilters.values()) {
@@ -156,7 +156,7 @@ final class InstanceFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortIndex(String instanceId, String jobName, BigInteger peId, Integer portIndex) {
+	public boolean matchesPeInputPortIndex(String instanceId, String jobName, String peId, Integer portIndex) {
 		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
 		if (matches) {
 			for(JobFilter filter : _jobFilters.values()) {
@@ -169,7 +169,7 @@ final class InstanceFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeInputPortMetricName(String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
+	public boolean matchesPeInputPortMetricName(String instanceId, String jobName, String peId, Integer portIndex, String metricName) {
 		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
 		if (matches) {
 			for(JobFilter filter : _jobFilters.values()) {
@@ -182,7 +182,7 @@ final class InstanceFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortIndex(String instanceId, String jobName, BigInteger peId, Integer portIndex) {
+	public boolean matchesPeOutputPortIndex(String instanceId, String jobName, String peId, Integer portIndex) {
 		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
 		if (matches) {
 			for(JobFilter filter : _jobFilters.values()) {
@@ -195,7 +195,7 @@ final class InstanceFilter extends PatternMatcher {
 		return matches;
 	}
 
-	public boolean matchesPeOutputPortMetricName(String instanceId, String jobName, BigInteger peId, Integer portIndex, String metricName) {
+	public boolean matchesPeOutputPortMetricName(String instanceId, String jobName, String peId, Integer portIndex, String metricName) {
 		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
 		if (matches) {
 			for(JobFilter filter : _jobFilters.values()) {
@@ -208,7 +208,7 @@ final class InstanceFilter extends PatternMatcher {
 		return matches;
 	}
 	
-	public boolean matchesPeConnectionId(String instanceId, String jobName, BigInteger peId, String connectionId) {
+	public boolean matchesPeConnectionId(String instanceId, String jobName, String peId, String connectionId) {
 		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
 		if (matches) {
 			for(JobFilter filter : _jobFilters.values()) {
@@ -221,7 +221,7 @@ final class InstanceFilter extends PatternMatcher {
 		return matches;
 	}
 	
-	public boolean matchesPeConnectionMetricName(String instanceId, String jobName, BigInteger peId, String peConnection, String metricName) {
+	public boolean matchesPeConnectionMetricName(String instanceId, String jobName, String peId, String peConnection, String metricName) {
 		boolean matches = matchesInstanceId(instanceId) && (_jobFilters.size() > 0);
 		if (matches) {
 			for(JobFilter filter : _jobFilters.values()) {

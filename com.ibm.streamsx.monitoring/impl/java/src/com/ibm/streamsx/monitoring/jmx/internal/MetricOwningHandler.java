@@ -100,7 +100,7 @@ abstract class MetricOwningHandler {
 		tc.setMetricType(metric.getMetricType());
 		tc.setMetricKind(metric.getMetricKind());
 		tc.setMetricName(metric.getName());
-		tc.setMetricValue(metric.getValue());
+		tc.setMetricValue(metric.getValueAsLong());
 		tc.setLastTimeRetrieved(metric.getLastTimeRetrieved());
 		tc.submit();
 	}

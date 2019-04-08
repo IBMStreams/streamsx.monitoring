@@ -32,7 +32,7 @@ public class OperatorInputPortHandler extends MetricOwningHandler implements Clo
 
 	private String _instanceId = null;
 	
-	private BigInteger _jobId = null;
+	private String _jobId = null;
 	
 	private String _jobName = null;
 	
@@ -42,7 +42,7 @@ public class OperatorInputPortHandler extends MetricOwningHandler implements Clo
 	
 	private OperatorInputPortMXBean _port = null;
 
-	public OperatorInputPortHandler(OperatorConfiguration operatorConfiguration, String instanceId, BigInteger jobId, String jobName, String operatorName, Integer portIndex) {
+	public OperatorInputPortHandler(OperatorConfiguration operatorConfiguration, String instanceId, String jobId, String jobName, String operatorName, Integer portIndex) {
 
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 
