@@ -18,7 +18,7 @@
 
     <target name="cleantemp">
 	<delete>
-	    <fileset dir="${basedir}" includes="**/*.pyc,**/StreamsLogs*.tgz"/>
+	    <fileset dir="${basedir}" includes="**/*.pyc,job*.tar.gz"/>
 	</delete>
 	<delete includeemptydirs="true">
 	    <fileset dir="${basedir}" includes="**/__pycache__/**"/>
