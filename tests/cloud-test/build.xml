@@ -28,17 +28,12 @@
 	</delete>
     </target>
 
-    <target name="init" depends="indexTestToolkit">
-        <fail unless="env.STREAMING_ANALYTICS_SERVICE_NAME" message="Please set environment variable STREAMING_ANALYTICS_SERVICE_NAME."/>
-        <fail unless="env.VCAP_SERVICES" message="Please set environment variable VCAP_SERVICES."/>
-    </target>
-
-    <target name="test" depends="clean, init">
+    <target name="test" depends="clean">
         <exec executable="python3" failonerror="true">
             <arg value="-u"/>
             <arg value="-m"/>
             <arg value="unittest"/>        	
-            <arg value="test_streaming_analytics.TestCloud"/>
+            <arg value="test_monitoring_icp.TestDistributed"/>
         </exec>
     </target>
 

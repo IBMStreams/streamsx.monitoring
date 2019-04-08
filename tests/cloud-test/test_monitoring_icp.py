@@ -33,8 +33,9 @@ class TestDistributed(unittest.TestCase):
         tester.contents(test_op.stream, [{'result':'TEST_RESULT_PASS'}] )
 
         self.test_config[streamsx.topology.context.ConfigParams.SSL_VERIFY] = False
-
-        tester.test(self.test_ctxtype, self.test_config)
+        job_config = streamsx.topology.context.JobConfig(tracing='info')     
+        job_config.add(self.test_config)
+        tester.test(self.test_ctxtype, self.test_config, always_collect_logs=True)
 
     def _launch_sample_job(self):
         # this job is monitored by test.jobs::TestJobStatusSource application
