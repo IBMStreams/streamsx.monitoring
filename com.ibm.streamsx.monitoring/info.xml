@@ -6,8 +6,8 @@
 		<info:description><![CDATA[
 The **com.ibm.streamsx.monitoring** provides capabilities to create applications that monitor IBM Streams and its applications.
 
-This version is intended for use with IBM Streams version 5.x (connects to JMX server running with Streams V5).
-
+This version is intended for use with **IBM Streams version 5.x** (connects to JMX server running with **Streams V5**).
+Applications must be launched in Streams instance running in IBM Cloud Private for Data.
 
 The toolkit contains operators that uses the **JMX API** to monitor applications:
 * **com.ibm.streamsx.monitoring.metrics::MetricsSource** retrieves metrics from one or more jobs and provides them as tuple stream.
@@ -26,11 +26,8 @@ The samples directory contains the following sample applications demonstrating t
 
 Find a description of each sample in the README.md file of the sample directory.
 
-Either build the samples after importing the project into Streams Studio or from command line using the Makefile.
-The sample applications can be launched in standalone or distributed mode.
-
 		]]></info:description>
-		<info:version>3.0.0.__dev__</info:version>
+		<info:version>3.0.0</info:version>
 		<info:requiredProductVersion>4.3.0.0</info:requiredProductVersion>
 	</info:identity>
 	<info:dependencies/>

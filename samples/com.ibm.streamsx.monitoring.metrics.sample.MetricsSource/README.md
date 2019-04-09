@@ -12,26 +12,15 @@ Build **Monitor** and **SampleJob** applications:
 
 Launch the **Monitor** application first. 
 
-#### Distributed mode
-
-For example with `user` and `password` submission parameters:
-
-`streamtool submitjob output/monitor/com.ibm.streamsx.monitoring.metrics.sample.MetricsSource.Monitor.sab -P user=streamsadmin -P password=password`
-
 Update `user` and `password` submission parameters for your Streams environment.
 
 Alternative you can specify the `instanceId`, `connectionURL`, `user`, `password`, and `filterDocument` properties in an [application configuration](https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html).
 Advantage of the use of an application configuration is, that you can update the `filterDocument` at runtime.
 
-***Application configuration is supported in distributed mode only.***
-
-`streamtool submitjob output/monitor/com.ibm.streamsx.monitoring.metrics.sample.MetricsSource.Monitor.sab -P applicationConfigurationName=monitoring`
-
 ### Run sample application to be monitored
 
 Afterwards launch the **SampleJob** application to be monitored in distributed mode.
 
-`streamtool submitjob output/sample/com.ibm.streamsx.monitoring.metrics.sample.MetricsSource.SampleJob.sab`
 
 ### Result
 

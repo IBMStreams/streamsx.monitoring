@@ -72,8 +72,8 @@ public abstract class AbstractJmxOperator extends AbstractOperator {
 			+ "the application configuration can override this parameter value. Default is TLSv1.2";
 	
 	protected static final String DESC_PARAM_INSTANCE_ID = 
-			"Specifies the instance id filter used to select the instance(s) that is monitored. If no value is "
-			+ "specified, all instances are monitored per default. To monitor the instance id under which this operator is running, the value OWN can be specified when running in distributed mode."
+			"Specifies the instance id used to select the instance that is monitored. If no value is "
+			+ "specified, the instance id under which this operator is running is monitored."
 			+ " If the **applicationConfigurationName** parameter is specified, "
 			+ "the application configuration can override this parameter value.";	
 	

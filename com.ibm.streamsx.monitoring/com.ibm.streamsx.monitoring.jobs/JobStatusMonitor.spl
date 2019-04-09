@@ -27,17 +27,17 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  * Specifies the password that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
  *
  * @param filterDocument
- * Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the instanceinstance and job filters as regular expressions. Each regular expression must follow the rules that are specified for Java [https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ * Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies the instance and job filters as regular expressions. Each regular expression must follow the rules that are specified for Java [https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
  * If parameter is not set, then all jobs in current instance are monitored.
  *
  * @param connectionURL
- * Specifies the connection URL as returned by the `streamtool getjmxconnect` command. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.If not specified and the instanceId parameter value equals the instance id under which this operator is running, then the operator uses the `streamtool getjmxconnect` command to get the value.
+ * Specifies the connection URL. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified and the connection URL is used for the instance under which this operator is running.
  *
  * @param instanceId
  * Specifies the instance id that is monitored. If no instance id is specified, the instance id under which this operator is running is used. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
  *
  * @param sslOption
- * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified the default value `TLSv1.2 is` used. 
  * 
  * @param timeOut
  * Specifies the number of seconds during which no duplicate of a tuple is emitted. 

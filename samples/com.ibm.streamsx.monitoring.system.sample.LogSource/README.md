@@ -4,33 +4,30 @@ This sample SPL application demonstrates the use of LogSource operator to get th
 
 ### Use
 
+#### Launch with python script
+
+````
+cd ..
+python3 launch_logs_monitor_sample.py
+````
+
+#### Launch with Streams Console
+
 Build **Monitor** and **SampleJob** applications:
 
 `make`
 
-### Run Monitor application
+###### Run Monitor application
 
 Launch the **Monitor** application first. 
-
-#### Distributed mode
-
-For example with `user` and `password` submission parameters:
-
-`streamtool submitjob output/monitor/com.ibm.streamsx.monitoring.system.sample.LogSource.Monitor.sab -P user=streamsadmin -P password=password`
 
 Update `user` and `password` submission parameters for your Streams environment.
 
 Alternative you can specify the `instanceId`, `connectionURL`, `user` and `password` properties in an [application configuration](https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html).
 
-***Application configuration is supported in distributed mode only.***
-
-`streamtool submitjob output/monitor/com.ibm.streamsx.monitoring.system.sample.LogSource.Monitor.sab -P applicationConfigurationName=monitoring`
-
-### Run sample application to be monitored
+###### Run sample application to be monitored
 
 Afterwards launch the **SampleJob** application to be monitored in distributed mode.
-
-`streamtool submitjob output/sample/com.ibm.streamsx.monitoring.system.sample.LogSource.SampleJob.sab`
 
 ### Result
 

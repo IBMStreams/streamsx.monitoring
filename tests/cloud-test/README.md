@@ -2,6 +2,12 @@
 
 ## Before launching the test
 
+Setup your environment:
+
+* Python 3.6 installed
+* streamsx package 1.12.9 or later installed
+
+Set `STREAMS_USERNAME`, `STREAMS_PASSWORD` and `STREAMS_REST_URL` environment variables.
 
 ### Create Application Configuration
 
