@@ -4,11 +4,20 @@ This sample SPL application demonstrates the use of JobStatusMonitor operator to
 
 ### Use
 
+#### Launch with python script
+
+````
+cd ..
+python3 launch_job_status_monitor_sample.py
+````
+
+#### Launch with Streams Console
+
 Build **Monitor** and **SampleJob** applications:
 
 `make`
 
-### Run Monitor application
+##### Run Monitor application
 
 Launch the **Monitor** application first. 
 
@@ -17,11 +26,9 @@ Update `user` and `password` submission parameters for your Streams environment.
 Alternative you can specify the `instanceId`, `connectionURL`, `user`, `password`, and `filterDocument` properties in an [application configuration](https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html).
 Advantage of the use of an application configuration is, that you can update the `filterDocument` at runtime.
 
-### Run sample application to be monitored
+##### Run sample application to be monitored
 
 Afterwards launch the **SampleJob** application to be monitored in distributed mode.
-
-
 
 ### Result
 
