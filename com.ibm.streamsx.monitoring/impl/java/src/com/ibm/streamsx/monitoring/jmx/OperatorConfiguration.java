@@ -26,8 +26,8 @@ import com.ibm.streamsx.monitoring.jmx.internal.LogTupleContainer;
 public class OperatorConfiguration {
 
 	/**
-	 * Specifies the connection URL as returned by the {@code streamtool
-	 * getjmxconnect} command.
+	 * Specifies the connection URL as returned by the {@code 
+	 * STREAMS_JMX_CONNECT} environment variable.
 	 */
 	private String _connectionURL = null;
 
@@ -44,38 +44,12 @@ public class OperatorConfiguration {
 	/**
 	 * Specifies the sslOption that is required for the JMX connection.
 	 */
-	private String _sslOption = null;	
-	
-	/**
-	 * Specifies the domain that is monitored.
-	 */
-	private String _domainId = null;
+	private String _sslOption = "TLSv1.2";	
 	
 	/**
 	 * Specifies the instance that is monitored.
 	 */	
-	private String _instanceIdFilter = ".*";
-	
-	/**
-	 * Global Endpoint
-	 */
-	public static final String IAM_TOKEN_ENDPOINT = "https://iam.bluemix.net/identity/token";
-	
-	/**
-	 * Specifies the IAM token endpoint.
-	 */
-	
-	private String _iamTokenEndpoint = IAM_TOKEN_ENDPOINT;
-
-	/**
-	 * Specifies the IAM API key.
-	 */	
-	private String _iamApiKey = null;
-
-	/**
-	 * Specifies the Streaming Analytics service credentials in JSON format.
-	 */	
-	private String _credentials = null;	
+	private String _instanceId = null;
 	
 	/**
 	 * Specifies the name of the application configuration object.
@@ -84,7 +58,7 @@ public class OperatorConfiguration {
 
 	/**
 	 * Specifies the path to a JSON-formatted document that specifies the
-	 * domain, instance, job, operator, and metric name filters as regular
+	 * instance, job, operator, and metric name filters as regular
 	 * expressions. Each regular expression must follow the rules that are
 	 * specified for Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Pattern</a>.
 	 */
@@ -109,8 +83,6 @@ public class OperatorConfiguration {
 	private Filters _filters = new Filters();
 
 	private String _defaultFilterInstance = null;
-	
-	private String _defaultFilterDomain = null;	
 	
 	private MetricsTupleContainer _tupleContainerMetricsSource = null;
 	
@@ -167,36 +139,6 @@ public class OperatorConfiguration {
 		}
 	}
 
-	public String get_iamTokenEndpoint() {
-		return _iamTokenEndpoint;
-	}
-
-	public void set_iamTokenEndpoint(String iamTokenEndpoint) {
-		if (!("".equals(iamTokenEndpoint))) {
-			this._iamTokenEndpoint = iamTokenEndpoint;
-		}
-	}
-
-	public String get_iamApiKey() {
-		return _iamApiKey;
-	}
-
-	public void set_iamApiKey(String iamApiKey) {
-		if (!("".equals(iamApiKey))) {
-			this._iamApiKey = iamApiKey;
-		}
-	}
-	
-	public String get_credentials() {
-		return _credentials;
-	}
-
-	public void set_credentials(String credentials) {
-		if (!("".equals(credentials))) {
-			this._credentials = credentials;
-		}
-	}	
-
 	public String get_sslOption() {
 		return _sslOption;
 	}
@@ -207,23 +149,13 @@ public class OperatorConfiguration {
 		}
 	}	
 
-	public String get_domainId() {
-		return _domainId;
+	public String get_instanceId() {
+		return _instanceId;
 	}
 
-	public void set_domainId(String domainId) {
-		if (!("".equals(domainId))) {
-			this._domainId = domainId;
-		}
-	}
-
-	public String get_instanceIdFilter() {
-		return _instanceIdFilter;
-	}
-
-	public void set_instanceIdFilter(String instanceIdFilter) {
-		if (!("".equals(instanceIdFilter))) {
-			this._instanceIdFilter = instanceIdFilter;
+	public void set_instanceId(String instanceId) {
+		if (!("".equals(instanceId))) {
+			this._instanceId = instanceId;
 		}
 	}	
 	
@@ -338,25 +270,17 @@ public class OperatorConfiguration {
 		_defaultFilterInstance = instance;
 	}
 
-	public void set_defaultFilterDomain(String domain) {
-		_defaultFilterDomain = domain;
-	}
-	
 	public String get_defaultFilterDocument() {
 		String result = null;
 		if (_opType.equals(OpType.METRICS_SOURCE)) {
-			result = "[{\"domainIdPatterns\":\""
-					+ _defaultFilterDomain
-					+ "\",\"instances\":[{\"instanceIdPatterns\":\""
+			result = "[{\"instanceIdPatterns\":\""
 					+ _defaultFilterInstance
 					+ "\",\"jobs\":[{\"jobNamePatterns\":\".*\","
 					+ "\"pes\":[{\"metricNamePatterns\":\".*\",\"inputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"outputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"connections\":[{\"connectionIdPatterns\":\".*\",\"metricNamePatterns\":\".*\"}]}],"
 					+ "\"operators\":[{\"operatorNamePatterns\":\".*\",\"metricNamePatterns\":\".*\",\"inputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}],\"outputPorts\":[{\"portIndexes\":\"*\",\"metricNamePatterns\":\".*\"}]}]}]}]}]";
 		}
 		else if (_opType.equals(OpType.JOB_STATUS_SOURCE)) {
-			result = "[{\"domainIdPatterns\":\""
-					+ _defaultFilterDomain
-					+ "\",\"instances\":[{\"instanceIdPatterns\":\""
+			result = "[{\"instanceIdPatterns\":\""
 					+ _defaultFilterInstance
 					+ "\",\"jobs\":[{\"jobNamePatterns\":\".*\",}]}]}]";	
 		}

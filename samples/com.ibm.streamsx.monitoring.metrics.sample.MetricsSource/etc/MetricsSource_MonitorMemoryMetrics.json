@@ -1,22 +1,16 @@
 [
 	{
-		"domainIdPatterns":".*",
-		"instances":
+		"instanceIdPatterns":".*",
+		"jobs":
 		[
 			{
-				"instanceIdPatterns":".*",
-				"jobs":
+				"jobNamePatterns":".*",
+				"pes":
 				[
 					{
-						"jobNamePatterns":".*",
-						"pes":
+						"metricNamePatterns":
 						[
-							{
-								"metricNamePatterns":
-								[
-									"n(Resident)?MemoryConsumption"
-								]
-							}
+							"n(Resident)?MemoryConsumption"
 						]
 					}
 				]

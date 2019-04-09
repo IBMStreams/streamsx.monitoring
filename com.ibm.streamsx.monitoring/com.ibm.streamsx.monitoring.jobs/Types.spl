@@ -26,16 +26,11 @@ namespace com.ibm.streamsx.monitoring.jobs;
  *   The notification type, like *com.ibm.streams.management.job.added*, 
  *   *com.ibm.streams.management.job.removed* and *com.ibm.streams.management.pe.changed*.
  *
- * * **domainId**
- * 
- *   The notification belongs to a job that is running in a domain. The **domainId**
- *   attribute specifies the unique domain id.
- * 
  * * **instanceId**
  * 
- *   The notification belongs to a job that is running in an instance that belongs
- *   to a domain. The **instanceId** attribute specifies the unique instance
- *   id for the domain.
+ *   The notification belongs to a job that is running in an instance.
+ *   The **instanceId** attribute specifies the unique instance
+ *   id.
  * 
  * * **jobId**
  * 
@@ -84,7 +79,6 @@ namespace com.ibm.streamsx.monitoring.jobs;
  */
 type JobStatusNotification = tuple<
 	rstring notifyType,
-	rstring domainId,
 	rstring instanceId,
 	int64 jobId,
 	rstring jobName,

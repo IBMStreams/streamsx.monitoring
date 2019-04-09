@@ -77,7 +77,7 @@ public composite Origin {
 
 /**
  * The notification type specifies all attributes that can be used to uniquely
- * identify a changed metric value, starting with the domain and instance
+ * identify a changed metric value, starting with the instance
  * ids, job and other information, and finally the metric name and its
  * value.
  * 
@@ -86,16 +86,10 @@ public composite Origin {
  * The [com.ibm.streamsx.monitoring.metrics::MetricsSource|MetricsSource] operator
  * takes care to set existing attributes only.
  * 
- * * **domainId**
- * 
- *   The metric belongs to a job that is running in a domain. The **domainId**
- *   attribute specifies the unique domain id.
- * 
  * * **instanceId**
  * 
- *   The metric belongs to a job that is running in an instance that belongs
- *   to a domain. The **instanceId** attribute specifies the unique instance
- *   id for the domain.
+ *   The metric belongs to a job that is running in an instance. The **instanceId**
+ *   attribute specifies the unique instance id.
  * 
  * * **jobId**
  * 
@@ -179,7 +173,6 @@ public composite Origin {
  * 
  */
 type Notification = tuple<
-	rstring domainId,
 	rstring instanceId,
 	int64 jobId,
 	rstring jobName,

@@ -20,7 +20,6 @@ use com.ibm.streamsx.topology.topic::Publish;
  * 
  * Output JSON Schema:
  * \{
- *   "domainId" : string,
  *   "instanceId" : string,
  *   "jobId" : string,
  *   "jobName" : string,
@@ -48,7 +47,7 @@ use com.ibm.streamsx.topology.topic::Publish;
  * 
  * @param monitoringConfiguration
  * Application configuration name for the JMX connection details. Defaults to `monitoring` and can be set using the submission parameter `monitoringConfiguration`.
- * The [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.3.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
+ * The [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.3.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] can contain instanceId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
  *
  * @param metricsTopic
  * The name of the topic this service is publishing to. If parameter is not set, then the topic name `streamsx/monitoring/metrics/values` is used.

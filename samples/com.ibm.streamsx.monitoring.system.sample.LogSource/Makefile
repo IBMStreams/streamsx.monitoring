@@ -43,3 +43,5 @@ configure:
 	-streamtool rmappconfig --noprompt monitoring
 	streamtool mkappconfig --property user=$(STREAMS_USER) --property password=$(STREAMS_PASSWORD) monitoring
 
+tkidx:
+	$(STREAMS_INSTALL)/bin/spl-make-toolkit -i .

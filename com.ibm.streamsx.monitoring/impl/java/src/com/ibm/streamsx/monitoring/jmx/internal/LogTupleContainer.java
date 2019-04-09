@@ -32,11 +32,7 @@ public class LogTupleContainer {
 	 */
 	private StreamingOutput<OutputTuple> _port = null;
 
-	/**
-	 * Index of the domainId attribute.
-	 */
-	private Integer _domainIdAttributeIndex = null;
-	
+
 	/**
 	 * Index of the instanceId attribute.
 	 */
@@ -99,11 +95,6 @@ public class LogTupleContainer {
 		_port = port;
 		
 		StreamSchema schema = port.getStreamSchema();
-		// Domain-related attributes.
-		if (_domainIdAttributeIndex == null) {
-			Attribute attribute = schema.getAttribute("domainId");
-			_domainIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1);
-		}
 		// Instance-related attributes.
 		if (_instanceIdAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("instanceId");
@@ -163,7 +154,6 @@ public class LogTupleContainer {
 	 */
 	public Tuple getTuple(
 			final Notification notification,
-			final String domainId,
 			final String instance,
 			final String resource,
 			final BigInteger pe,
@@ -173,7 +163,6 @@ public class LogTupleContainer {
 			final boolean messagesSkipped) {
 		return _port.getStreamSchema().getTuple(getAttributes(
 				notification,
-				domainId,
 				instance,
 				resource,
 				pe,
@@ -192,7 +181,6 @@ public class LogTupleContainer {
 	 */
 	protected Map<String, Object> getAttributes(
 			final Notification notification,
-			final String domainId,
 			final String instanceId,
 			final String resource,
 			final BigInteger peId,
@@ -204,11 +192,6 @@ public class LogTupleContainer {
 		
 		final Map<String, Object> attributes = new HashMap<String, Object>();
 		
-		if (_domainIdAttributeIndex != -1) {
-			if (domainId != null) {
-				attributes.put("domainId", new RString(domainId));
-			}
-		}
 		if (_instanceIdAttributeIndex != -1) {
 			if (instanceId != null) {
 				attributes.put("instanceId", new RString(instanceId));

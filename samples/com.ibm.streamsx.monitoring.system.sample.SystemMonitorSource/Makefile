@@ -37,3 +37,5 @@ clean:
 	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE)
 	rm -rf $(OUTPUT_DIR)
 
+tkidx:
+	$(STREAMS_INSTALL)/bin/spl-make-toolkit -i .

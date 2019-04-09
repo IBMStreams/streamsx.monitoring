@@ -11,8 +11,8 @@ The toolkit contains operators that uses the **JMX API** to monitor applications
 
 Find the full documentation [here](https://ibmstreams.github.io/streamsx.monitoring/).
 
-## Streaming Analytics service on IBM Cloud
+## IBM Streams - IBM Cloud Private for Data 
 
-This toolkit is compatible with the Streaming Analytics service on IBM Cloud.
+This toolkit is compatible with the IBM Streams running in IBM Cloud Private for Data.
 
 

@@ -51,7 +51,7 @@ use com.ibm.streamsx.topology.topic::Publish;
  *    PE failed notification. Suitable for submitting to an alert system
  *    such as a Slack channel.
  *
- * @param tag Tag placed at the beginning of the text alert. Can be set using the submission parameter `tag`. Defaults to an empty string meaning the tag for each alert will be the domain identifier followed by the instance identifier.
+ * @param tag Tag placed at the beginning of the text alert. Can be set using the submission parameter `tag`. Defaults to an empty string meaning the tag for each alert will be the instance identifier.
  * @param stoppedDuration Duration in seconds a PE must be stopped before a notification is issued. Can be set using the submission parameter `stoppedDuration`. Defaults to sixty seconds.
 */
 public composite FailedPEService
@@ -148,7 +148,7 @@ public composite FailedPEService
          mutable rstring failed_tag = '';
        }
        onTuple Failed:
-         failed_tag = tag_ != '' ? tag_ : domainId + ':' + instanceId;
+         failed_tag = tag_ != '' ? tag_ : instanceId;
 
      output Alerts:
        string = failed_tag + ': ' +

@@ -8,18 +8,11 @@ import os
 import streamsx.rest as sr
 from streamsx.topology import context
 
-class TestCloud(unittest.TestCase):
-    """ Test invocations of composite operators in Streaming Analytics Service """
-
-    @classmethod
-    def setUpClass(self):
-        # start streams service
-        connection = sr.StreamingAnalyticsConnection()
-        service = connection.get_streaming_analytics()
-        result = service.start_instance()
+class TestDistributed(unittest.TestCase):
+    """ Test invocations of composite operators in IBM Streams """
 
     def setUp(self):
-        Tester.setup_streaming_analytics(self, force_remote_build=False)
+        Tester.setup_distributed(self)
 
     def _add_toolkits(self, topo):
         tk.add_toolkit(topo, './test_monitoring')
@@ -39,7 +32,10 @@ class TestCloud(unittest.TestCase):
         tester.tuple_count(test_op.stream, 1, exact=True)
         tester.contents(test_op.stream, [{'result':'TEST_RESULT_PASS'}] )
 
-        tester.test(self.test_ctxtype, self.test_config)
+        self.test_config[streamsx.topology.context.ConfigParams.SSL_VERIFY] = False
+        job_config = streamsx.topology.context.JobConfig(tracing='info')     
+        job_config.add(self.test_config)
+        tester.test(self.test_ctxtype, self.test_config, always_collect_logs=True)
 
     def _launch_sample_job(self):
         # this job is monitored by test.jobs::TestJobStatusSource application
@@ -48,11 +44,9 @@ class TestCloud(unittest.TestCase):
         self._add_toolkits(topo)
         # Call the crash composite
         test_op = op.Source(topo, "test.jobs::SampleCrashSource", 'tuple<boolean dummy>')
-        # prepare config and submit the job to Streaming Analytics service
         config={}
-        sc = sr.StreamingAnalyticsConnection()
-        config[context.ConfigParams.STREAMS_CONNECTION] = sc
-        return context.submit(context.ContextTypes.STREAMING_ANALYTICS_SERVICE, topo, config=config)
+        config[streamsx.topology.context.ConfigParams.SSL_VERIFY] = False
+        return context.submit(context.ContextTypes.DISTRIBUTED, topo, config=config)
 
 
     def test_metrics_monitor(self):

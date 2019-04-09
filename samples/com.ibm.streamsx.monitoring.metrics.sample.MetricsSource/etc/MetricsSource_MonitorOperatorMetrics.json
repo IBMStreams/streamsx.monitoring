@@ -1,25 +1,19 @@
 [
 	{
-		"domainIdPatterns":".*",
-		"instances":
+		"instanceIdPatterns":".*",
+		"jobs":
 		[
 			{
-				"instanceIdPatterns":".*",
-				"jobs":
+				"jobNamePatterns":".*",
+				"operators":
 				[
 					{
-						"jobNamePatterns":".*",
-						"operators":
+						"operatorNamePatterns":".*",
+						"outputPorts":
 						[
 							{
-								"operatorNamePatterns":".*",
-								"outputPorts":
-								[
-									{
-										"portIndexes":"*",
-										"metricNamePatterns":".*"
-									}
-								]
+								"portIndexes":"*",
+								"metricNamePatterns":".*"
 							}
 						]
 					}

@@ -19,10 +19,6 @@ import com.ibm.streams.operator.Type;
 
 public class MetricsTupleContainer {
 
-	/**
-	 * Index of the domainId attribute.
-	 */
-	private Integer _domainIdAttributeIndex = null;
 	
 	/**
 	 * Index of the instanceId attribute.
@@ -119,11 +115,6 @@ public class MetricsTupleContainer {
 		_port = port;
 		_tuple = port.newTuple();
 		StreamSchema schema = port.getStreamSchema();
-		// Domain-related attributes.
-		if (_domainIdAttributeIndex == null) {
-			Attribute attribute = schema.getAttribute("domainId");
-			_domainIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
-		}
 		// Instance-related attributes.
 		if (_instanceIdAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("instanceId");
@@ -194,16 +185,6 @@ public class MetricsTupleContainer {
 		}
 	}
 		
-	/**
-	 * Optionally set the domain id in the output tuple.
-	 * 
-	 * @param domainId
-	 */
-	public void setDomainId(String domainId) {
-		if (_domainIdAttributeIndex != -1) {
-			_tuple.setString(_domainIdAttributeIndex, domainId);
-		}
-	}
 
 	/**
 	 * Optionally set the instance id in the output tuple.
@@ -224,6 +205,11 @@ public class MetricsTupleContainer {
 	public void setJobId(BigInteger jobId) {
 		if (_jobIdAttributeIndex != -1) {
 			_tuple.setLong(_jobIdAttributeIndex, jobId.longValue());
+		}
+	}
+	public void setJobId(String jobId) {
+		if (_jobIdAttributeIndex != -1) {
+			_tuple.setLong(_jobIdAttributeIndex, Long.parseLong(jobId));
 		}
 	}
 
@@ -315,6 +301,11 @@ public class MetricsTupleContainer {
 			_tuple.setLong(_peIdAttributeIndex, peId.longValue());
 		}
 	}
+	public void setPeId(String peId) {
+		if (_peIdAttributeIndex != -1) {
+			_tuple.setLong(_peIdAttributeIndex, Long.parseLong(peId));
+		}		
+	}	
 
 	/**
 	 * Optionally set the metric type in the output tuple.

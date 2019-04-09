@@ -38,11 +38,9 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 	 */
 	private static Logger _trace = Logger.getLogger(OperatorHandler.class.getName());
 
-	private String _domainId = null;
-
 	private String _instanceId = null;
 	
-	private BigInteger _jobId = null;
+	private String _jobId = null;
 	
 	private String _jobName = null;
 	
@@ -56,22 +54,21 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 
 	private Map<Integer /* port index */, OperatorOutputPortHandler> _outputPortHandlers = new HashMap<>();
 
-	public OperatorHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId, BigInteger jobId, String jobName, String operatorName) {
+	public OperatorHandler(OperatorConfiguration operatorConfiguration, String instanceId, String jobId, String jobName, String operatorName) {
 
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 		
 		if (_trace.isDebugEnabled()) {
-			_trace.debug("OperatorHandler(" + domainId + "," + instanceId + ")");
+			_trace.debug("OperatorHandler(" + instanceId + ")");
 		}
 		// Store parameters for later use.
 		_operatorConfiguration = operatorConfiguration;
-		_domainId = domainId;
 		_instanceId = instanceId;
 		_jobId = jobId;
 		_jobName = jobName;
 		_operatorName = operatorName;
 
-		_objName = ObjectNameBuilder.operator(_domainId, _instanceId, _jobId, _operatorName);
+		_objName = ObjectNameBuilder.operator(_instanceId, _jobId, _operatorName);
 		_operator = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), _objName, OperatorMXBean.class, true);
 		
 		/*
@@ -141,13 +138,13 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 
 	@Override
 	protected boolean isRelevantMetric(String metricName) {
-		boolean isRelevant = _operatorConfiguration.get_filters().matchesOperatorMetricName(_domainId, _instanceId, _jobName, _operatorName, metricName);
+		boolean isRelevant = _operatorConfiguration.get_filters().matchesOperatorMetricName(_instanceId, _jobName, _operatorName, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
-				_trace.info("The following operator custom metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", metric=" + metricName);
+				_trace.info("The following operator custom metric meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", metric=" + metricName);
 			}
 			else {
-				_trace.info("The following operator custom metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", metric=" + metricName);
+				_trace.info("The following operator custom metric does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", metric=" + metricName);
 			}
 		}
 		return isRelevant;
@@ -160,32 +157,32 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 	}
 
 	protected void addValidInputPort(Integer portIndex) {
-		boolean matches = _operatorConfiguration.get_filters().matchesOperatorInputPortIndex(_domainId, _instanceId, _jobName, _operatorName, portIndex);
+		boolean matches = _operatorConfiguration.get_filters().matchesOperatorInputPortIndex(_instanceId, _jobName, _operatorName, portIndex);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
-				_trace.info("The following input port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
+				_trace.info("The following input port meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
 			}
 			else {
-				_trace.info("The following input port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
+				_trace.info("The following input port does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
 			}
 		}
 		if (matches) {
-			_inputPortHandlers.put(portIndex, new OperatorInputPortHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _operatorName, portIndex));
+			_inputPortHandlers.put(portIndex, new OperatorInputPortHandler(_operatorConfiguration, _instanceId, _jobId, _jobName, _operatorName, portIndex));
 		}
 	}
 
 	protected void addValidOutputPort(Integer portIndex) {
-		boolean matches = _operatorConfiguration.get_filters().matchesOperatorOutputPortIndex(_domainId, _instanceId, _jobName, _operatorName, portIndex);
+		boolean matches = _operatorConfiguration.get_filters().matchesOperatorOutputPortIndex(_instanceId, _jobName, _operatorName, portIndex);
 		if (_trace.isInfoEnabled()) {
 			if (matches) {
-				_trace.info("The following output port meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
+				_trace.info("The following output port meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
 			}
 			else {
-				_trace.info("The following output port does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
+				_trace.info("The following output port does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], operator=" + _operatorName + ", port=" + portIndex);
 			}
 		}
 		if (matches) {
-			_outputPortHandlers.put(portIndex, new OperatorOutputPortHandler(_operatorConfiguration, _domainId, _instanceId, _jobId, _jobName, _operatorName, portIndex));
+			_outputPortHandlers.put(portIndex, new OperatorOutputPortHandler(_operatorConfiguration, _instanceId, _jobId, _jobName, _operatorName, portIndex));
 		}
 	}
 
@@ -201,7 +198,7 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 
 		if (isDebugEnabled) {
-			_trace.debug("--> captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ")");
+			_trace.debug("--> captureMetrics(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ")");
 		}
 
 		MetricsTupleContainer tc = _operatorConfiguration.get_tupleContainerMetricsSource();
@@ -225,7 +222,7 @@ public class OperatorHandler extends MetricOwningHandler implements Notification
 		}
 
 		if (isDebugEnabled) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ")");
+			_trace.debug("<-- captureMetrics(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", operator=" + _operatorName + ")");
 		}
 	}
 
