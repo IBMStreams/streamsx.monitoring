@@ -130,11 +130,12 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		boolean isInfoEnabled = _trace.isInfoEnabled();
 
 		if (notification.getType().equals(Notifications.JOB_ADDED)) {
-			if(notification.getUserData() instanceof String) {
+			if(notification.getUserData() instanceof BigInteger) {
 				/*
 				 * Register existing jobs.
 				 */
-				String jobId = (String)notification.getUserData();
+				BigInteger jobIdLong = (BigInteger)notification.getUserData();
+				String jobId = jobIdLong.toString();
 				
 				if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
 					final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _instanceId, jobId, null, null, null, null, null);
@@ -151,11 +152,12 @@ public class InstanceHandler implements NotificationListener, Closeable {
 			}
 		}
 		else if (notification.getType().equals(Notifications.JOB_REMOVED)) {
-			if(notification.getUserData() instanceof String) {
+			if(notification.getUserData() instanceof BigInteger) {
 				/*
 				 * Unregister existing jobs.
 				 */
-				String jobId = (String)notification.getUserData();
+				BigInteger jobIdLong = (BigInteger)notification.getUserData();
+				String jobId = jobIdLong.toString();				
 				if (_jobHandlers.containsKey(jobId)) {
 					
 					if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
