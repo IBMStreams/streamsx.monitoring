@@ -7,7 +7,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+/**/impl/lib/*.jar
 *.war
 *.ear
 
@@ -15,3 +15,6 @@
 hs_err_pid*
 /.README.md.html
 /.project
+
+.DS_Store
+/**/.DS_Store
