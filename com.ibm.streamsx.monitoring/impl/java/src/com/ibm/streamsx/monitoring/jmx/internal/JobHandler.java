@@ -212,5 +212,8 @@ public class JobHandler implements NotificationListener, Closeable {
 		}
 		_peHandlers.clear();
 	}
-
+	
+	public String getJobName() {
+		return _jobName;
+	}
 }
