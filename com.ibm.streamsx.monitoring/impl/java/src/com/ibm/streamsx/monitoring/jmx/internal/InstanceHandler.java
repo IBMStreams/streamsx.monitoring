@@ -116,13 +116,14 @@ public class InstanceHandler implements NotificationListener, Closeable {
 				 * Register existing jobs.
 				 */
 				BigInteger jobId = (BigInteger)notification.getUserData();
-				
+						
+				String jobName = addValidJob(jobId);
+
 				if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
-					final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _domainId, _instanceId, jobId, null, null, null, null, null);
+					final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _domainId, _instanceId, jobId, jobName, null, null, null, null);
 					_operatorConfiguration.get_tupleContainerJobStatusSource().submit(tuple);		
-				}				
-				
-				addValidJob(jobId);
+				}
+
 				if (isInfoEnabled) {
 					_trace.info("received JOB_ADDED notification: jobId=" + jobId);
 				}
@@ -139,8 +140,10 @@ public class InstanceHandler implements NotificationListener, Closeable {
 				BigInteger jobId = (BigInteger)notification.getUserData();
 				if (_jobHandlers.containsKey(jobId)) {
 					
+					String jobName = _jobHandlers.get(jobId).getJobName();
+
 					if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
-						final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _domainId, _instanceId, jobId, null, null, null, null, null);
+						final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _domainId, _instanceId, jobId, jobName, null, null, null, null);
 						_operatorConfiguration.get_tupleContainerJobStatusSource().submit(tuple);
 					}
 					
@@ -162,7 +165,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		}
 	}
 
-	protected void addValidJob(BigInteger jobId) {
+	protected String addValidJob(BigInteger jobId) {
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 		if (isDebugEnabled) {
 			_trace.debug("--> addValidJob(" + jobId + ")");
@@ -189,6 +192,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		if (isDebugEnabled) {
 			_trace.debug("<-- addValidJob(" + jobId + ")");
 		}
+		return jobName;
 	}
 	
 	/**
