@@ -134,6 +134,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 				/*
 				 * Register existing jobs.
 				 */
+
 				BigInteger jobIdLong = (BigInteger)notification.getUserData();
 				String jobId = jobIdLong.toString();
 				
@@ -143,6 +144,7 @@ public class InstanceHandler implements NotificationListener, Closeable {
 					_operatorConfiguration.get_tupleContainerJobStatusSource().submit(tuple);		
 				}
 				
+
 				if (isInfoEnabled) {
 					_trace.info("received JOB_ADDED notification: jobId=" + jobId);
 				}
@@ -161,8 +163,10 @@ public class InstanceHandler implements NotificationListener, Closeable {
 				if (_jobHandlers.containsKey(jobId)) {
 					
 					String jobName = _jobHandlers.get(jobId).getJobName();
+
 					if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
 						final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _instanceId, jobId, jobName, null, null, null, null);
+
 						_operatorConfiguration.get_tupleContainerJobStatusSource().submit(tuple);
 					}
 					
@@ -257,7 +261,9 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		}
 	}
 
+
 	protected String addValidJob(String jobId) {
+
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 		if (isDebugEnabled) {
 			_trace.debug("--> addValidJob(" + jobId + ")");
