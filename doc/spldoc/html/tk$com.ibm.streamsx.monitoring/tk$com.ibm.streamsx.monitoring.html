@@ -7,22 +7,22 @@
 <meta name="copyright" content="(C) Copyright 2005"/>
 <meta name="DC.rights.owner" content="(C) Copyright 2005"/>
 <meta name="DC.Type" content="reference"/>
-<meta name="DC.Title" content="Toolkit com.ibm.streamsx.monitoring 2.0.0"/>
+<meta name="DC.Title" content="Toolkit com.ibm.streamsx.monitoring 3.0.2"/>
 <meta name="DC.Format" content="XHTML"/>
 <meta name="DC.Identifier" content="spldoc_toolkit"/>
 <link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
 <link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
-<title>Toolkit com.ibm.streamsx.monitoring 2.0.0</title>
+<title>Toolkit com.ibm.streamsx.monitoring 3.0.2</title>
 </head>
 <body id="spldoc_toolkit">
 
 
-<h1 class="title topictitle1 spltoolkitname">Toolkit <tt class="ph tt">com.ibm.streamsx.monitoring 2.0.0</tt></h1>
+<h1 class="title topictitle1 spltoolkitname">Toolkit <tt class="ph tt">com.ibm.streamsx.monitoring 3.0.2</tt></h1>
 
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; com.ibm.streamsx.monitoring 2.0.0</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; com.ibm.streamsx.monitoring 3.0.2</p>
 
 </div>
 
@@ -30,6 +30,9 @@
 
 
 <p class="p">The <strong class="ph b">com.ibm.streamsx.monitoring</strong> provides capabilities to create applications that monitor IBM Streams and its applications.
+</p>
+
+<p class="p">This version is intended for use with <strong class="ph b">IBM Streams version 5.x</strong> (connects to JMX server running with <strong class="ph b">Streams V5</strong>). Applications must be launched in Streams instance running in IBM Cloud Pak for Data.
 </p>
 
 <div class="p">The toolkit contains operators that uses the <strong class="ph b">JMX API</strong> to monitor applications:
@@ -44,70 +47,7 @@
 
 </div>
 
-<p class="p">IBM Streams supports standard and custom metrics that are assigned to operators and operator ports in a Streams application, for example, the number of received and sent tuples. These metrics can be monitored with the Streams console or Streams Studio to identify whether a Streams application runs as expected or whether it has some issues.
-</p>
-
-<p class="p">IBM Streams provides the <a class="xref" href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.toolkits.doc/spldoc/dita/tk$spl/op$spl.adapter$MetricsSink.html">spl.adapter::MetricsSink</a> operator to set metrics values from within a Streams applications, and SPL functions in the <a class="xref" href="http://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.toolkits.doc/spldoc/dita/tk$spl/ns$spl.utility.html">spl.utility</a> namespace to create custom metrics, and to set and get metrics values:
-</p>
-
-<div class="p">
-<ul class="ul">
-<li class="li"> spl.utility::createCustomMetric</li>
-
-<li class="li"> spl.utility::getCustomMetricNames</li>
-
-<li class="li"> spl.utility::getCustomMetricValue</li>
-
-<li class="li"> spl.utility::getInputPortMetricValue</li>
-
-<li class="li"> spl.utility::getOutputPortMetricValue</li>
-
-<li class="li"> spl.utility::hasCustomMetric</li>
-
-<li class="li"> spl.utility::setCustomMetricValue</li>
-
-</ul>
-
-</div>
-
-<p class="p">The functions are limited to the operator that owns a metric. An operator A cannot access the metrics of an operator B.
-</p>
-
-<p class="p">If you want to monitor Streams or Streams applications with non-Streams applications, you can use the following API:
-</p>
-
-<div class="p">
-<ul class="ul">
-<li class="li"> <a class="xref" href="http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.ref.doc/doc/jmxapi.html">JMX</a></li>
-
-<li class="li"> <a class="xref" href="http://www.ibm.com/support/knowledgecenter/SSCRJU_4.2.0/com.ibm.streams.restapi.doc/doc/restapis.html">REST</a></li>
-
-</ul>
-
-</div>
-
-<p class="p">The com.ibm.streamsx.monitoring toolkit completes this list of APIs with the <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">com.ibm.streamsx.monitoring.metrics::MetricsSource</a> operator that uses the JMX API to retrieve metrics from one or more jobs, and provides them as tuple stream.
-</p>
-
-  <dl class="dl"><dt class="dt dlterm"><a class="xref" href="tk$com.ibm.streamsx.monitoring$1.html">Using the toolkit with IBM Streaming Analytics service</a>
-</dt>
-<dd class="dd">
-</dd>
-</dl>
-
-  <dl class="dl"><dt class="dt dlterm"><a class="xref" href="tk$com.ibm.streamsx.monitoring$2.html">Developing and running applications that use the com.ibm.streamsx.monitoring toolkit</a>
-</dt>
-<dd class="dd">
-</dd>
-</dl>
-
-  <dl class="dl"><dt class="dt dlterm"><a class="xref" href="tk$com.ibm.streamsx.monitoring$3.html">Using the sample applications</a>
-</dt>
-<dd class="dd">
-</dd>
-</dl>
-
-  <dl class="dl"><dt class="dt dlterm"><a class="xref" href="tk$com.ibm.streamsx.monitoring$4.html">Using the microservices</a>
+  <dl class="dl"><dt class="dt dlterm"><a class="xref" href="tk$com.ibm.streamsx.monitoring$1.html">Using the sample applications</a>
 </dt>
 <dd class="dd">
 </dd>
@@ -117,13 +57,13 @@
   
   <dt class="dt dlterm">Version</dt>
 
-  <dd class="dd">2.0.0</dd>
+  <dd class="dd">3.0.2</dd>
 
   
   
   <dt class="dt dlterm">Required Product Version</dt>
 
-  <dd class="dd">4.1.0.0</dd>
+  <dd class="dd">4.3.0.0</dd>
 
   
   

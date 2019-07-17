@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="SPL File status.spl"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_compilationunit"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>SPL File status.spl</title>
+</head>
+<body id="spldoc_compilationunit">
+
+
+<h1 class="title topictitle1">SPL File <tt class="ph tt">status.spl</tt></h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.services.html">com.ibm.streamsx.monitoring.jobs.services</a> &gt; status.spl</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Content</h2>
+  
+  <dl class="dl">
+    <dt class="dt dlterm"/>
+<dd class="dd"/>
+
+    
+      <dt class="dt dlterm splhead-2">Operators</dt>
+
+      <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.jobs.services$status.html#spldoc_compilationunit__composite_operator__JobStatusService">JobStatusService</a></strong>: Microservice that publishes job status notifications.
+</li>
+
+</ul>
+
+      </dd>
+
+    
+  </dl>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Composites</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__JobStatusService"><h2 class="title sectiontitle splpart">composite JobStatusService</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.jobs.services$JobStatusService.svg" width="232" height="154"/>
+</div>
+
+<div class="section">
+
+<p class="p">Microservice that publishes job status notifications.
+</p>
+
+<p class="p">Invokes <a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.html">JobStatusSource</a> monitoring all jobs and publishes its two output streams. Use of this microservice allows a single connection to JMX while supporting multiple microservices consuming and analyzing job status notifications.
+</p>
+
+<p class="p">Consuming microservices can use the <a class="xref" href="spl$com.ibm.streamsx.monitoring.jobs.services$subscriber.html#spldoc_compilationunit__composite_operator__JobStatusSubscriber">JobStatusSubscriber</a> utility operator to subscribe to streams from this microservice.
+</p>
+
+<p class="p">When an instance has an application configuration named <tt class="ph tt">monitoring</tt> containing the required JMX connection information then this microservice can be launched without setting any parameters.
+</p>
+
+<p class="p"><strong class="ph b">Published topics</strong>
+</p>
+
+<div class="p">
+<ul class="ul">
+<li class="li"> <tt class="ph tt">streamsx/monitoring/jobs/status</tt> - Job and PE status notifications    with stream type <a class="xref" href="spl$com.ibm.streamsx.monitoring.jobs$Types.html#spldoc_compilationunit__type__JobStatusNotification">JobStatusNotification</a>.</li>
+
+<li class="li"> <tt class="ph tt">streamsx/monitoring/jobs/connection</tt> - JMX connection notifications    with stream type <a class="xref" href="spl$com.ibm.streamsx.monitoring.jmx$Types.html#spldoc_compilationunit__type__ConnectionNotification">ConnectionNotification</a>.</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">monitoringConfiguration</strong>: Application configuration name for the JMX    connection details. Defaults to <tt class="ph tt">monitoring</tt> and can be set using    the submission parameter <tt class="ph tt">monitoringConfiguration</tt>. 
+</li>
+
+<li class="sli"><strong class="ph b">checkPeriod</strong>: Period in seconds the <a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.html">JobStatusSource</a> operator    checks for updates in the application configuration    specified by <tt class="ph tt">monitoring</tt>. Defaults to 300.0 and can be set using    the submission parameter <tt class="ph tt">scanPeriod</tt>.
+</li>
+
+</ul>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+</div>
+
+
+</body>
+</html>

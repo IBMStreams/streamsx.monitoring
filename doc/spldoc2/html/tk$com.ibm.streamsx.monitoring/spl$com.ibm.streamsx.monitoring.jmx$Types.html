@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="SPL File Types.spl"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_compilationunit"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>SPL File Types.spl</title>
+</head>
+<body id="spldoc_compilationunit">
+
+
+<h1 class="title topictitle1">SPL File <tt class="ph tt">Types.spl</tt></h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jmx.html">com.ibm.streamsx.monitoring.jmx</a> &gt; Types.spl</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Content</h2>
+  
+  <dl class="dl">
+    <dt class="dt dlterm"/>
+<dd class="dd"/>
+
+    
+      <dt class="dt dlterm splhead-2">Types</dt>
+
+      <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.jmx$Types.html#spldoc_compilationunit__type__ConnectionNotification">ConnectionNotification</a></strong>: Tuple type for JMX connection notifications.
+</li>
+
+</ul>
+
+      </dd>
+
+    
+  </dl>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Types</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__type__ConnectionNotification"><h2 class="title sectiontitle splpart">ConnectionNotification</h2>
+  
+</div>
+<div class="section">
+
+<p class="p">Tuple type for JMX connection notifications.
+</p>
+
+<div class="p">The ConnectionNotification type specifies attributes that are filled by the operators
+<ul class="ul">
+<li class="li"> <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">MetricsSource</a></li>
+
+<li class="li"> <a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.html">JobStatusSource</a></li>
+
+<li class="li"> <a class="xref" href="op$com.ibm.streamsx.monitoring.system$LogSource.html">LogSource</a></li>
+
+</ul>
+on the optional second output port.
+</div>
+
+<p class="p">The attribute names are fixed but if you are not interested in all information, create your own type with a subset of attributes. The operators takes care to set existing attributes only.
+</p>
+
+<div class="p">
+<ul class="ul">
+<li class="li"> <strong class="ph b">notifyType</strong>
+<p class="p">  The notification type, like <em class="ph i">jmx.remote.connection.opened</em>,    <em class="ph i">jmx.remote.connection.closed</em>, <em class="ph i">jmx.remote.connection.failed</em> and <em class="ph i">jmx.remote.connection.notifs.lost</em>.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">source</strong>
+</p>
+
+<p class="p">  The notification source.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">sequence</strong>
+</p>
+
+<p class="p">  The notification sequence number.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">eventTimestamp</strong>
+</p>
+
+<p class="p">  The timestamp of the notification.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">message</strong>
+</p>
+
+<p class="p">  The message of the notification. 
+</p>
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="section">
+   <p class="p">
+<tt class="ph tt">ConnectionNotification = tuple&lt;rstring notifyType, rstring source, int64 sequence, timestamp eventTimestamp, rstring message&gt;;</tt>
+   </p>
+
+</div>
+
+</div>
+
+
+</body>
+</html>

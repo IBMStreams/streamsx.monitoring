@@ -52,13 +52,11 @@
       ><set attributeName="visibility" from="hidden" end="sdt0.mouseout" to="visible" begin="sdt0.mouseover"
     /></g
     ><g visibility="hidden" style="stroke:none;font-style:italic;font-size:12px;font-family:&apos;Helvetica&apos;,&apos;SansSerif&apos;;"
-    ><rect x="47.65" y="60.0" width="381.47998" style="fill:rgb(230,230,255);stroke:rgb(0,0,80);" rx="2.0" ry="2.0" height="47.0"
-      /><text x="48.65" y="73.0"
+    ><rect x="47.65" y="75.0" width="381.47998" style="fill:rgb(230,230,255);stroke:rgb(0,0,80);" rx="2.0" ry="2.0" height="32.0"
+      /><text x="48.65" y="88.0"
       >Optional: applicationConfigurationName, connectionURL, </text
-      ><text x="48.65" y="88.0"
-      >credentials, domainId, instanceIdFilter, password, </text
       ><text x="48.65" y="103.0"
-      >sslOption, user</text
+      >instanceId, password, sslOption, user</text
       ><set attributeName="visibility" from="hidden" end="sdt1.mouseout" to="visible" begin="sdt1.mouseover"
     /></g
     ><g visibility="hidden" style="stroke:none;font-style:italic;font-size:12px;font-family:&apos;Helvetica&apos;,&apos;SansSerif&apos;;"

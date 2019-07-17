@@ -22,16 +22,13 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; <a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.html">JobStatusSource</a> &gt; Filter document</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 3.0.2</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; <a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.html">JobStatusSource</a> &gt; Filter document</p>
 
 </div>
 
 
 <div class="section">
-<p class="p">The filter document specifies patterns for domain, instance and job and their relations.
-</p>
-
-<p class="p">It also specifies which name patterns are related, for example: For a domain X monitor all instances, whereas in each instance only jobs with a Y in their names shall be evaluated. For another domain Z, only jobs with a name ending with XYZ, are monitored, etc.
+<p class="p">The filter document specifies patterns for instance and job and their relations.
 </p>
 
 <p class="p">The filter document is a JSON-encoded text file or JSON-encoded String that is configured with the <strong class="ph b">filterDocument</strong> parameter.
@@ -47,17 +44,11 @@
 <pre class="pre codeblock">
 [
   {
-    "domainIdPatterns":".*",
-    "instances":
+    "instanceIdPatterns":".*",
+    "jobs":
     [
       {
-        "instanceIdPatterns":".*",
-        "jobs":
-        [
-          {
-            "jobNamePatterns":".*",
-          }
-        ]
+        "jobNamePatterns":".*",
       }
     ]
   }
@@ -67,24 +58,18 @@
 
 </div>
 
-<p class="p">The following filter document example selects events from jobs in the <em class="ph i">StreamsInstance</em> instance and <em class="ph i">StreamsDomain</em> domain only:
+<p class="p">The following filter document example selects events from jobs in the <em class="ph i">StreamsInstance</em> instance only:
 </p>
 
 <div class="p">
 <pre class="pre codeblock">
 [
   {
-    "domainIdPatterns":"StreamsDomain",
-    "instances":
+    "instanceIdPatterns":"StreamsInstance",
+    "jobs":
     [
       {
-        "instanceIdPatterns":"StreamsInstance",
-        "jobs":
-        [
-          {
-            "jobNamePatterns":".*",
-          }
-        ]
+         "jobNamePatterns":".*",
       }
     ]
   }

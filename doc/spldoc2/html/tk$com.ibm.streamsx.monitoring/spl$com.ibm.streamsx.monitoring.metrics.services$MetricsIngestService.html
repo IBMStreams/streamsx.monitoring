@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="SPL File MetricsIngestService.spl"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_compilationunit"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>SPL File MetricsIngestService.spl</title>
+</head>
+<body id="spldoc_compilationunit">
+
+
+<h1 class="title topictitle1">SPL File <tt class="ph tt">MetricsIngestService.spl</tt></h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.metrics.services.html">com.ibm.streamsx.monitoring.metrics.services</a> &gt; MetricsIngestService.spl</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Content</h2>
+  
+  <dl class="dl">
+    <dt class="dt dlterm"/>
+<dd class="dd"/>
+
+    
+      <dt class="dt dlterm splhead-2">Operators</dt>
+
+      <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics.services$MetricsIngestService.html#spldoc_compilationunit__composite_operator__MetricsIngestService">MetricsIngestService</a></strong>: Microservice that publishes metrics values notifications.
+</li>
+
+</ul>
+
+      </dd>
+
+    
+  </dl>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Composites</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__MetricsIngestService"><h2 class="title sectiontitle splpart">composite MetricsIngestService</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.monitoring/op$com.ibm.streamsx.monitoring.metrics.services$MetricsIngestService.svg" width="342" height="154"/>
+</div>
+
+<div class="section">
+
+<p class="p">Microservice that publishes metrics values notifications.
+</p>
+
+<p class="p">Invokes Invokes <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">com.ibm.streamsx.monitoring.metrics::MetricsSource</a> monitoring jobs and publishes the metrics tuples with streams type <a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__type__Notification">com.ibm.streamsx.monitoring.metrics::Notification</a> and in JSON format.
+</p>
+
+<p class="p">Output JSON Schema: {   "domainId" : string,   "instanceId" : string,   "jobId" : string,   "jobName" : string,   "resource" : string,   "peId" : long,   "operatorName" : string,   "channel" : int,   "portIndex" : int,   "connectionId" : string,   "metricType" : string,   "metricKind" : string,   "metricName" : string,   "metricValue" : long,   "lastTimeRetrieved" : long }
+</p>
+
+<div class="p">This composite depends on the following toolkits:
+<ul class="ul">
+<li class="li"> <strong class="ph b">com.ibm.streamsx.topology</strong></li>
+
+<li class="li"> <strong class="ph b">com.ibm.streamsx.json</strong></li>
+
+</ul>
+
+</div>
+
+<p class="p"><strong class="ph b">Published topic</strong>
+</p>
+
+<div class="p">
+<ul class="ul">
+<li class="li"> <tt class="ph tt">streamsx/monitoring/metrics/values</tt> - Metrics value notifications    with stream type <a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__type__Notification">com.ibm.streamsx.monitoring.metrics::Notification</a>.</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">monitoringConfiguration</strong>: Application configuration name for the JMX connection details. Defaults to <tt class="ph tt">monitoring</tt> and can be set using the submission parameter <tt class="ph tt">monitoringConfiguration</tt>. The <a class="xref" href="https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.3.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html">application configuration object</a> can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters. 
+</li>
+
+<li class="sli"><strong class="ph b">metricsTopic</strong>: The name of the topic this service is publishing to. If parameter is not set, then the topic name <tt class="ph tt">streamsx/monitoring/metrics/values</tt> is used. 
+</li>
+
+<li class="sli"><strong class="ph b">emitMetricTuple</strong>: Specifies when to emit a tuple for a metric. Supported modes are the following string values: "onChangedValue" (default) and "periodic".
+</li>
+
+</ul>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+</div>
+
+
+</body>
+</html>

@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.metrics.html">com.ibm.streamsx.monitoring.metrics</a> &gt; Types.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 3.0.2</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.metrics.html">com.ibm.streamsx.monitoring.metrics</a> &gt; Types.spl</p>
 
 </div>
 
@@ -47,7 +47,7 @@
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__type__Alert">Alert</a></strong>
 </li>
 
-<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__type__Notification">Notification</a></strong>: The notification type specifies all attributes that can be used to uniquely identify a changed metric value, starting with the domain and instance ids, job and other information, and finally the metric name and its value.
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__type__Notification">Notification</a></strong>: The notification type specifies all attributes that can be used to uniquely identify a changed metric value, starting with the instance ids, job and other information, and finally the metric name and its value.
 </li>
 
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.monitoring.metrics$Types.html#spldoc_compilationunit__composite_type__Origin.Type">Origin.Type</a></strong>: The origin type specifies the metric owner, which can be following: 
@@ -184,7 +184,7 @@
 </div>
 <div class="section">
 
-<p class="p">The notification type specifies all attributes that can be used to uniquely identify a changed metric value, starting with the domain and instance ids, job and other information, and finally the metric name and its value.
+<p class="p">The notification type specifies all attributes that can be used to uniquely identify a changed metric value, starting with the instance ids, job and other information, and finally the metric name and its value.
 </p>
 
 <p class="p">The attribute names are fixed but if you are not interested in all information, create your own type with a subset of attributes. The <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsSource.html">MetricsSource</a> operator takes care to set existing attributes only.
@@ -192,16 +192,8 @@
 
 <div class="p">
 <ul class="ul">
-<li class="li"> <strong class="ph b">domainId</strong>
-<p class="p">  The metric belongs to a job that is running in a domain. The <strong class="ph b">domainId</strong>   attribute specifies the unique domain id.
-</p>
-</li>
-
-<li class="li">
-<p class="p"> <strong class="ph b">instanceId</strong>
-</p>
-
-<p class="p">  The metric belongs to a job that is running in an instance that belongs   to a domain. The <strong class="ph b">instanceId</strong> attribute specifies the unique instance   id for the domain.
+<li class="li"> <strong class="ph b">instanceId</strong>
+<p class="p">  The metric belongs to a job that is running in an instance. The <strong class="ph b">instanceId</strong>   attribute specifies the unique instance id.
 </p>
 </li>
 
@@ -325,7 +317,7 @@
 
 <div class="section">
    <p class="p">
-<tt class="ph tt">Notification = tuple&lt;rstring domainId, rstring instanceId, int64 jobId, rstring jobName, rstring resource, int64 peId, Origin.Type origin, rstring operatorName, int32 channel, int32 portIndex, rstring connectionId, rstring metricType, rstring metricKind, rstring metricName, int64 metricValue, int64 lastTimeRetrieved&gt;;</tt>
+<tt class="ph tt">Notification = tuple&lt;rstring instanceId, int64 jobId, rstring jobName, rstring resource, int64 peId, Origin.Type origin, rstring operatorName, int32 channel, int32 portIndex, rstring connectionId, rstring metricType, rstring metricKind, rstring metricName, int64 metricValue, int64 lastTimeRetrieved&gt;;</tt>
    </p>
 
 </div>

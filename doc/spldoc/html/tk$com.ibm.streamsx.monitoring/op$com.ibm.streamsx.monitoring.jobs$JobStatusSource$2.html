@@ -22,83 +22,12 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; <a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.html">JobStatusSource</a> &gt; Supported Authentication Schemes</p>
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 3.0.2</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.jobs.html">com.ibm.streamsx.monitoring.jobs</a> &gt; <a class="xref" href="op$com.ibm.streamsx.monitoring.jobs$JobStatusSource.html">JobStatusSource</a> &gt; Supported Authentication Schemes</p>
 
 </div>
 
 
 <div class="section">
-<p class="p">Authentication can be configured with operator parameters or application configuration.
-</p>
-
-</div>
-
-<div class="section"><h2 class="title sectiontitle">Authentication with application configuration
-</h2>
-
-<p class="p"><strong class="ph b">Create IBM Streaming Analytics Service Credentials</strong>
-</p>
-
-<p class="p">A service credential provides the necessary information to connect an application to Streaming Analytics service packaged in a JSON document. Service credentials are always associated with a Service ID, and new Service IDs can be created along with a new credential.
-</p>
-
-<p class="p">Use the following steps to create a service credential:
-</p>
-
-<div class="p">
-<ol class="ol">
-<li class="li"> Log in to the IBM Cloud console and navigate to your instance of Streaming Analytics service.</li>
-
-<li class="li"> In the side navigation, click Service Credentials.</li>
-
-<li class="li"> Click New credential and provide the necessary information.</li>
-
-<li class="li"> Click Add to generate service credential.</li>
-
-<li class="li"> Click View credentials and copy JSON into clipboard.</li>
-
-</ol>
-
-</div>
-
-<p class="p"><strong class="ph b">Save Credentials in Application Configuration Property</strong>
-</p>
-
-<p class="p">With this option, users can copy their IBM Streaming Analytics Credentials JSON from the IBM Streaming Analytics service and store it in an application configuration property called <tt class="ph tt">credentials</tt>. When the operator starts, it will look for that property and extract the information needed to connect. The following steps outline how this can be done: 
-</p>
-
-<div class="p">
-<ol class="ol">
-<li class="li"> Create an application configuration called <tt class="ph tt">monitor</tt>. You need to set the operator parameter <tt class="ph tt">applicationConfigurationName</tt>.</li>
-
-<li class="li"> Create a property in the <tt class="ph tt">monitor</tt> application configuration <em class="ph i">named</em> <tt class="ph tt">credentials</tt>.
-<ul class="ul">
-<li class="li"> The <em class="ph i">value</em> of the property should be the raw IBM Streaming Analytics Service Credentials JSON</li>
-
-<li class="li"> The <em class="ph i">value</em> of the property could be pasted from the clipboard if you have done the <em class="ph i">Create IBM Streaming Analytics Service Credentials</em> steps above. </li>
-
-</ul>
-</li>
-
-<li class="li"> The operator will look for an application configuration, if the parameter <tt class="ph tt">applicationConfigurationName</tt> is set and will extract the information needed to connect.</li>
-
-</ol>
-
-</div>
-
-</div>
-
-<div class="section"><h2 class="title sectiontitle">Apply credentials as operator parameter
-</h2>
-
-<div class="p">For Streaming Analytics service (IAM authentication) the following parameter should be used:
-<ul class="ul">
-<li class="li"> credentials - JSON service credentials</li>
-
-</ul>
-
-</div>
-
 </div>
 
 <div class="section"><h2 class="title sectiontitle">IBM Streams authentication
@@ -112,11 +41,37 @@
 <li class="li"> user</li>
 
 <li class="li">
-<p class="p"> password 
+<p class="p"> password
 </p>
 </li>
 
 </ul>
+
+</div>
+
+<p class="p">Authentication can be configured with operator parameters or application configuration.
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Authentication with application configuration
+</h2>
+
+<p class="p"><strong class="ph b">Save Credentials in Application Configuration Property</strong>
+</p>
+
+<p class="p">The following steps outline how this can be done: 
+</p>
+
+<div class="p">
+<ol class="ol">
+<li class="li"> Create an application configuration called <tt class="ph tt">monitoring</tt>. You need to set the operator parameter <tt class="ph tt">applicationConfigurationName</tt>.</li>
+
+<li class="li"> Create two properties in the <tt class="ph tt">monitoring</tt> application configuration <em class="ph i">named</em> <tt class="ph tt">user</tt> and <tt class="ph tt">password</tt>.</li>
+
+<li class="li"> The operator will look for an application configuration, if the parameter <tt class="ph tt">applicationConfigurationName</tt> is set and will extract the information needed to connect.</li>
+
+</ol>
 
 </div>
 

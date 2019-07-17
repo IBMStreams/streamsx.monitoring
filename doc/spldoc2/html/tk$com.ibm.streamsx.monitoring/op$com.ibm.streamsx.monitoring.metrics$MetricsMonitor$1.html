@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Threshold document"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_page"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>Threshold document</title>
+</head>
+<body id="spldoc_page">
+
+
+<h1 class="title topictitle1">Threshold document</h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">IBMStreams streamsx.monitoring Toolkit</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.monitoring.html">com.ibm.streamsx.monitoring 2.0.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.monitoring.metrics.html">com.ibm.streamsx.monitoring.metrics</a> &gt; <a class="xref" href="op$com.ibm.streamsx.monitoring.metrics$MetricsMonitor.html">MetricsMonitor</a> &gt; Threshold document</p>
+
+</div>
+
+
+<div class="section">
+<p class="p">The threshold document contains a list of threshold rules. Each threshold rule is defined as a JSON object. This JSON object contains 3 properties:
+</p>
+
+<p class="p"><strong class="ph b">metricName</strong>: String specifying which metric to monitor.
+</p>
+
+<p class="p"><strong class="ph b">thresholds (optional)</strong>: JSON object specifying 1 or more thresholds (example format below). There are 4 supported threshold types the user can select from:
+</p>
+
+<div class="p">
+<ul class="ul">
+<li class="li"> <strong class="ph b">value</strong>: A value to evaluate incoming metric values against.</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">rate</strong>: The rate of incoming metric values, given a timeframe.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">rollingAverage</strong>: The rolling average of incoming metric values, given a timeframe.
+</p>
+</li>
+
+<li class="li">
+<p class="p"> <strong class="ph b">increasePercentage</strong>: The percentage that incoming metric values are increasing/decreasing, given a timeframe.
+</p>
+</li>
+
+</ul>
+
+</div>
+
+<p class="p">Note that you may choose to add an operator ("&gt;", "&gt;=", "&lt;", or "&lt;=") in front of the threshold value to indicate whether you want to monitor for values above or below a certain threshold.
+</p>
+
+<p class="p"><strong class="ph b">filters (optional)</strong>: JSON object specifying 1 or more filters. Filters give users the option to further filter which metrics they want monitored. Simply provide an attribute of the incoming metric tuples as a key, and a regular expression as the value (example format below).
+</p>
+
+<p class="p">The following threshold document monitors the <strong class="ph b">com.ibm.streamsx.monitoring.metrics.sample.</strong> sample application for when its nResidentMemoryConsumption goes above 10000KB:
+</p>
+
+<div class="p">
+<pre class="pre codeblock">
+[
+  {
+    "metricName":"nResidentMemoryConsumption",
+    "thresholds":
+    {
+      "value":"&gt;10000",
+    },
+    "filters":
+    {
+      "jobName":"com.ibm.streamsx.monitoring.metrics.sample.*"
+    }
+  }
+]
+</pre>
+
+
+</div>
+
+<p class="p">The following threshold document monitors the <strong class="ph b">com.ibm.streamsx.monitoring.sample.MetricsMonitor.HighCongestion</strong> sample application for when its congestionFactor has a rolling average greater than 80 over a timeframe of 20s:
+</p>
+
+<div class="p">
+<pre class="pre codeblock">
+[
+  {
+    "metricName":"congestionFactor",
+    "thresholds":
+    {
+      "value":"&gt;=80,20000",
+    },
+    "filters":
+    {
+      "jobName":"com.ibm.streamsx.sample.MetricsMonitor.HighCongestion.*"
+    }
+  }
+]
+</pre>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+</body>
+</html>
