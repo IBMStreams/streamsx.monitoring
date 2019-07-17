@@ -11,8 +11,12 @@ The toolkit contains operators that uses the **JMX API** to monitor applications
 
 Find the full documentation [here](https://ibmstreams.github.io/streamsx.monitoring/).
 
-## IBM Streams - IBM Cloud Pak for Data 
+## IBM Streams 5.x - IBM Cloud Pak for Data 
 
-This toolkit is compatible with the IBM Streams running in IBM Cloud Pak for Data.
+This toolkit is compatible with the IBM Streams version 5.x running in IBM Cloud Pak for Data.
 
 
+## IBM Streams 4.3.x - Streaming Analytics service on IBM Cloud
+
+For IBM Streams version 4.3.x and Streaming Analytics service on IBM Cloud you need to use version **2** of the `com.ibm.streamsx.monitoring` toolkit.
+* Monitoring toolkit release for Streams 4.3: [v2.0.1](https://github.com/IBMStreams/streamsx.monitoring/releases/tag/v2.0.1)
