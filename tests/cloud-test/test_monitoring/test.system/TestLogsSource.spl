@@ -34,7 +34,7 @@ public composite TestLogsSource(output ResultStream) {
 				if (I.notifyType == "com.ibm.streams.management.log.application.warning") {
 					warnLogReceived = true;
 				}
-				if ((!done1Sent) && (warnLogReceived) && (errLogReceived)) {
+				if ((!done1Sent) && (errLogReceived)) {
 					submit({result="TEST_RESULT_PASS"}, ResultStream);
 					done1Sent = true;
 				}

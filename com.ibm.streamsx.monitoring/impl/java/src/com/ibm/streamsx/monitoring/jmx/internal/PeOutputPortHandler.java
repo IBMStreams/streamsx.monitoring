@@ -30,21 +30,19 @@ public class PeOutputPortHandler extends MetricOwningHandler implements Closeabl
 	 */
 	private static Logger _trace = Logger.getLogger(PeOutputPortHandler.class.getName());
 
-	private String _domainId = null;
-
 	private String _instanceId = null;
 	
-	private BigInteger _jobId = null;
+	private String _jobId = null;
 	
 	private String _jobName = null;
 	
-	private BigInteger _peId = null;
+	private String _peId = null;
 	
 	private Integer _portIndex = null;
 	
 	private PeOutputPortMXBean _port = null;
 
-	public PeOutputPortHandler(OperatorConfiguration operatorConfiguration, String domainId, String instanceId, BigInteger jobId, String jobName, BigInteger peId, Integer portIndex) {
+	public PeOutputPortHandler(OperatorConfiguration operatorConfiguration, String instanceId, String jobId, String jobName, String peId, Integer portIndex) {
 
 		super(MetricsRegistrationMode.DynamicMetricsRegistration);
 
@@ -53,7 +51,6 @@ public class PeOutputPortHandler extends MetricOwningHandler implements Closeabl
 
 		// Store parameters for later use.
 		_operatorConfiguration = operatorConfiguration;
-		_domainId = domainId;
 		_instanceId = instanceId;
 		_jobId = jobId;
 		_jobName = jobName;
@@ -61,10 +58,10 @@ public class PeOutputPortHandler extends MetricOwningHandler implements Closeabl
 		_portIndex = portIndex;
 
 		if (isDebugEnabled) {
-			_trace.debug("--> OutputPortHandler(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ", port=" + _portIndex + ")");
+			_trace.debug("--> OutputPortHandler(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ", port=" + _portIndex + ")");
 		}
 		
-		ObjectName objName = ObjectNameBuilder.peOutputPort(_domainId, _instanceId, _peId, _portIndex);
+		ObjectName objName = ObjectNameBuilder.peOutputPort(_instanceId, _peId, _portIndex);
 		_port = JMX.newMXBeanProxy(_operatorConfiguration.get_mbeanServerConnection(), objName, PeOutputPortMXBean.class, true);
 		
 		/*
@@ -73,19 +70,19 @@ public class PeOutputPortHandler extends MetricOwningHandler implements Closeabl
 		registerMetrics();
 		
 		if (isDebugEnabled) {
-			_trace.debug("<-- OutputPortHandler(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ", port=" + _portIndex + ")");
+			_trace.debug("<-- OutputPortHandler(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ", port=" + _portIndex + ")");
 		}
 	}
 
 	@Override
 	protected boolean isRelevantMetric(String metricName) {
-		boolean isRelevant = _operatorConfiguration.get_filters().matchesPeOutputPortMetricName(_domainId, _instanceId, _jobName, _peId, _portIndex, metricName);
+		boolean isRelevant = _operatorConfiguration.get_filters().matchesPeOutputPortMetricName(_instanceId, _jobName, _peId, _portIndex, metricName);
 		if (_trace.isInfoEnabled()) {
 			if (isRelevant) {
-				_trace.info("The following output port metric meets the filter criteria and is therefore, monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + _portIndex + ", metric=" + metricName);
+				_trace.info("The following output port metric meets the filter criteria and is therefore, monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + _portIndex + ", metric=" + metricName);
 			}
 			else { 
-				_trace.info("The following output port metric does not meet the filter criteria and is therefore, not monitored: domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + _portIndex + ", metric=" + metricName);
+				_trace.info("The following output port metric does not meet the filter criteria and is therefore, not monitored: instance=" + _instanceId + ", job=[" + _jobId + "][" + _jobName + "], peId=" + _peId + ", port=" + _portIndex + ", metric=" + metricName);
 			}
 		}
 		return isRelevant;
@@ -107,7 +104,7 @@ public class PeOutputPortHandler extends MetricOwningHandler implements Closeabl
 		boolean isDebugEnabled = _trace.isDebugEnabled();
 
 		if (isDebugEnabled) {
-			_trace.debug("--> captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ", port=" + _portIndex + ")");
+			_trace.debug("--> captureMetrics(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ", port=" + _portIndex + ")");
 		}
 		MetricsTupleContainer tc = _operatorConfiguration.get_tupleContainerMetricsSource();
 		tc.setOrigin("PeOutputPort");
@@ -115,7 +112,7 @@ public class PeOutputPortHandler extends MetricOwningHandler implements Closeabl
 		captureAndSubmitChangedMetrics();
 
 		if (isDebugEnabled) {
-			_trace.debug("<-- captureMetrics(domain=" + _domainId + ", instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ", port=" + _portIndex + ")");
+			_trace.debug("<-- captureMetrics(instance=" + _instanceId + ", job=[" + _jobId + "]:" + _jobName + ", peId=" + _peId + ", port=" + _portIndex + ")");
 		}
 	}
 

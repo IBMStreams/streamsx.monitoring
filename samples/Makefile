@@ -15,3 +15,6 @@ all:
 clean: 
 	for x in $(DIRS); do cd $$x; make clean; cd -; done
 
+tkidx: 
+	for x in $(DIRS); do cd $$x; make tkidx; cd -; done
+

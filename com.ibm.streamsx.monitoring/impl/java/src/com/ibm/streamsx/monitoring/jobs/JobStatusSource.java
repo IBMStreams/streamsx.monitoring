@@ -86,9 +86,9 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "* com.ibm.streams.management.pe.changed\\n"			
 			+ "\\n"
 			+ "Per default, the JobStatusSource operator monitors all jobs "
-			+ "in the current domain and instance, if filter document is not specified.\\n"
+			+ "in the current instance, if filter document is not specified.\\n"
 			+ "\\n"
-			+ "The JobStatusSource operator monitors filter-matching domains, "
+			+ "The JobStatusSource operator monitors filter-matching "
 			+ "instances, and jobs that are running while the application that "
 			+ "uses the JobStatusSource operator, starts. Furthermore, the "
 			+ "operator gets notifications for created and deleted instances, "
@@ -98,15 +98,9 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "\\n"
 			+ "+ Filter document\\n"
 			+ "\\n"
-			+ "The filter document specifies patterns for domain, instance and "
+			+ "The filter document specifies patterns for instance and "
 			+ "job and their relations.\\n"
 			+ "\\n"
-			+ "It also specifies "
-			+ "which name patterns are related, for example: For a domain X "
-			+ "monitor all instances, whereas in each instance only jobs with "
-			+ "a Y in their names shall be evaluated. For another domain Z, "
-			+ "only jobs with a name ending with XYZ, are monitored, etc.\\n"
-			+ "\\n"	
 			+ "The filter document is a JSON-encoded text file or JSON-encoded String that is "
 			+ "configured with the **filterDocument** parameter.\\n"
 			+ "\\n"
@@ -122,37 +116,25 @@ public class JobStatusSource extends AbstractJmxSource {
 			+ "\\n"			
 			+ "    [\\n"
 			+ "      {\\n"
-			+ "        \\\"domainIdPatterns\\\":\\\".*\\\",\\n"
-			+ "        \\\"instances\\\":\\n"
+			+ "        \\\"instanceIdPatterns\\\":\\\".*\\\",\\n"
+			+ "        \\\"jobs\\\":\\n"
 			+ "        [\\n"
 			+ "          {\\n"
-			+ "            \\\"instanceIdPatterns\\\":\\\".*\\\",\\n"
-			+ "            \\\"jobs\\\":\\n"
-			+ "            [\\n"
-			+ "              {\\n"
-			+ "                \\\"jobNamePatterns\\\":\\\".*\\\",\\n"
-			+ "              }\\n"
-			+ "            ]\\n"
+			+ "            \\\"jobNamePatterns\\\":\\\".*\\\",\\n"
 			+ "          }\\n"
 			+ "        ]\\n"
 			+ "      }\\n"
 			+ "    ]\\n"
 			+ "\\n"			
-			+ "The following filter document example selects events from jobs in the *StreamsInstance* instance and *StreamsDomain* domain only:\\n"
+			+ "The following filter document example selects events from jobs in the *StreamsInstance* instance only:\\n"
 			+ "\\n"			
 			+ "    [\\n"
 			+ "      {\\n"
-			+ "        \\\"domainIdPatterns\\\":\\\"StreamsDomain\\\",\\n"
-			+ "        \\\"instances\\\":\\n"
+			+ "        \\\"instanceIdPatterns\\\":\\\"StreamsInstance\\\",\\n"
+			+ "        \\\"jobs\\\":\\n"
 			+ "        [\\n"
 			+ "          {\\n"
-			+ "            \\\"instanceIdPatterns\\\":\\\"StreamsInstance\\\",\\n"
-			+ "            \\\"jobs\\\":\\n"
-			+ "            [\\n"
-			+ "              {\\n"
-			+ "                \\\"jobNamePatterns\\\":\\\".*\\\",\\n"
-			+ "              }\\n"
-			+ "            ]\\n"
+			+ "             \\\"jobNamePatterns\\\":\\\".*\\\",\\n"
 			+ "          }\\n"
 			+ "        ]\\n"
 			+ "      }\\n"
@@ -170,7 +152,7 @@ public class JobStatusSource extends AbstractJmxSource {
 
 	private static final String DESC_PARAM_FILTER_DOCUMENT = 
 			"Specifies the either a path to a JSON-formatted document or a JSON-formatted String that specifies "
-			+ "the domain, instance and job as "
+			+ "the instance and job as "
 			+ "regular expressions. Each regular expression must follow the "
 			+ "rules that are specified for Java "
 			+ "[https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html|Pattern]. "
@@ -246,11 +228,11 @@ public class JobStatusSource extends AbstractJmxSource {
 								_trace.warn("Reconnect");
 								setupJMXConnection();
 								_connected = true;
-								scanDomain(); // create new DomainHandler
+								scanInstance(); // create new InstanceHandler
 							}
 
 							if (_connected) {
-								_domainHandler.healthCheck();
+								_instanceHandler.healthCheck();
 								
 								if (_operatorConfiguration.get_applicationConfigurationName() != null) {
 									detectAndProcessChangedFilterDocumentInApplicationConfiguration();
@@ -260,7 +242,7 @@ public class JobStatusSource extends AbstractJmxSource {
 						catch (Exception e) {
 							_trace.error("JMX connection error ", e);
 							_connected = false;
-							closeDomainHandler();
+							closeInstanceHandler();
 						}							
 					}
 				}, 5000l, Double.valueOf(_operatorConfiguration.get_checkPeriod() * 1000.0).longValue(), TimeUnit.MILLISECONDS);

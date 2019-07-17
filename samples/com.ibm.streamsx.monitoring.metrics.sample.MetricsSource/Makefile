@@ -40,6 +40,9 @@ clean:
 	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE)
 	rm -rf $(OUTPUT_DIR)
 
+tkidx:
+	$(STREAMS_INSTALL)/bin/spl-make-toolkit -i .
+
 configure:
 	-streamtool rmappconfig --noprompt monitoring
 	streamtool mkappconfig --property connectionURL=`streamtool getjmxconnect` --property user=$(STREAMS_USER) --property password=$(STREAMS_PASSWORD) monitoring

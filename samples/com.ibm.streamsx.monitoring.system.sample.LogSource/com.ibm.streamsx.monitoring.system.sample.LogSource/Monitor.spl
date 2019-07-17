@@ -15,7 +15,7 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  * This sample application demonstrates the usage of the LogSource operator and monitors log events
  *
  * @param applicationConfigurationName
- * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain domainId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
+ * Specifies the name of [https://www.ibm.com/support/knowledgecenter/en/SSCRJU_4.2.0/com.ibm.streams.admin.doc/doc/creating-secure-app-configs.html|application configuration object] that can contain instanceId, connectionURL, user, password, and filterDocument properties. The application configuration overrides values that are specified with the corresponding parameters.
  *
  * @param user
  * Specifies the user that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
@@ -24,26 +24,19 @@ use com.ibm.streamsx.monitoring.jmx::ConnectionNotification;
  * Specifies the password that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
  *
  * @param connectionURL
- * Specifies the connection URL as returned by the `streamtool getjmxconnect` command. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getjmxconnect` command to get the value.
- *
- * @param domainId
- * Specifies the domain id that is monitored. If no domain id is specified, the domain id under which this operator is running is used. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
+ * Specifies the connection URL as returned by the `streamtool getjmxconnect` command. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value
  *
  * @param sslOption
- * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value. If not specified and the domainId parameter value equals the domain id under which this operator is running, then the operator uses the `streamtool getdomainproperty` command to get the value.
+ * Specifies the sslOption that is required for the JMX connection. If the **applicationConfigurationName** parameter is specified, the application configuration can override this parameter value.
  *
- * @param credentials
- * Specifies Streaming Analytics service credentials in JSON format. Relevant for IAM authentication case only. If parameter is set, then the parameters user and password are ignored. If the **applicationConfigurationName** parameter is specified, the application configuration with the property credentials can override this parameter value.
  */
-composite Monitor {
+public composite Monitor {
 	param
-		expression<rstring> $applicationConfigurationName: getSubmissionTimeValue("applicationConfigurationName", ""); // optional, if user and password are set
+		expression<rstring> $applicationConfigurationName: getSubmissionTimeValue("applicationConfigurationName", "monitoring"); // optional, if user and password are set
 		expression<rstring> $user: getSubmissionTimeValue("user", ""); // optional, if set in application configuration
 		expression<rstring> $password: getSubmissionTimeValue("password", ""); // optional, if set in application configuration
-		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then domain settings are used, where the PE is running
-		expression<rstring> $domainId: getSubmissionTimeValue("domainId", ""); // optional, if not set, then domain settings are used, where the PE is running
-		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then domain settings are used, where the PE is running
-		expression<rstring> $credentials: getSubmissionTimeValue("credentials", "");
+		expression<rstring> $connectionURL: getSubmissionTimeValue("connectionURL", ""); // optional, if not set, then instance settings are used, where the PE is running
+		expression<rstring> $sslOption: getSubmissionTimeValue("sslOption", ""); // optional, if not set, then instance settings are used, where the PE is running
 
 	graph
 
@@ -58,9 +51,7 @@ composite Monitor {
 				user: $user;
 				password: $password;
 				connectionURL: $connectionURL;
-				domainId: $domainId;
 				sslOption: $sslOption;
-				credentials: $credentials;
 		}
 		
 		/*

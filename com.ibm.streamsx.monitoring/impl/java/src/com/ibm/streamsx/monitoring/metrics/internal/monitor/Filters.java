@@ -18,7 +18,7 @@ import com.ibm.streams.operator.Tuple;
 
 /**
  * Filters is a container for the filters inside a ThresholdObject. 
- * There can be many filters defined inside a ThresholdObject (eg. domainId, 
+ * There can be many filters defined inside a ThresholdObject (e.g.  
  * instanceId, jobName, etc.).
  */
 public class Filters {
