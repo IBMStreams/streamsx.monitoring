@@ -13,7 +13,7 @@ use com.ibm.streamsx.monitoring.system::* ;
 * The status attribute contains addtional information retrieved from top command if the detail parameter is set to true.
 * Otherwise the status attribute contains the date and time only.
 */
-composite Monitor
+public composite Monitor
 {
     param
         expression<int32> $period :(int32) getSubmissionTimeValue("period", "3") ;
@@ -38,7 +38,7 @@ composite Monitor
         stream<rstring result2> printLogs = Custom(SysMon) {
             logic
                 state : {
-                    mutable int32 i = 0;
+                    mutable int64 i = 0l;
                     mutable rstring headerLine =
                         "Date and time , CPU usage % , Memory usage (%) , Memory total (KB) , Memory used (KB)" ;
                     mutable rstring result = "";
@@ -47,7 +47,7 @@ composite Monitor
                 onTuple SysMon: {
                    result = status + " , " +(rstring) cpuUsage + " , " +(rstring) memUsage 
                                 + " , " +(rstring)memTotal + " , " +(rstring) memUsed;
-                    if (i == 0) {
+                    if (i == 0l) {
                         result = headerLine + "\n" + result;
                         // add header to result
                     }

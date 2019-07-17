@@ -22,7 +22,7 @@ Build the **Monitor** application:
 
 Verify the **SystemMonitorSource** tuples in the console output.
 
-*In the Streaming Analytics service, go to the Log Viewer and Click on the PE's Console Log to view output.*
+*In the Streams Console, go to the Log Viewer and Click on the PE's Console Log to view output.*
 
     Date and time , CPU usage % , Memory usage (%) , Memory total (KB) , Memory used (KB)
     ...

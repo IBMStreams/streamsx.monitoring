@@ -86,7 +86,7 @@ abstract class MetricOwningHandler {
 	
 	/**
 	 * Set the metric-relevant tuple attributes and submit the tuple.
-	 * All other domain-, instance-, job-, operator-, port-relevant
+	 * All other instance-, job-, operator-, port-relevant
 	 * tuple attributes are already set.
 	 * 
 	 * @param metric
@@ -100,7 +100,7 @@ abstract class MetricOwningHandler {
 		tc.setMetricType(metric.getMetricType());
 		tc.setMetricKind(metric.getMetricKind());
 		tc.setMetricName(metric.getName());
-		tc.setMetricValue(metric.getValue());
+		tc.setMetricValue(metric.getValueAsLong());
 		tc.setLastTimeRetrieved(metric.getLastTimeRetrieved());
 		tc.submit();
 	}

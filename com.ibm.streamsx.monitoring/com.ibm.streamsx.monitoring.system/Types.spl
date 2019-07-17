@@ -54,14 +54,10 @@ type SystemStatus = tuple<
  *   The notification type com.ibm.streams.management.log.application.error or
  *   com.ibm.streams.management.log.application.warning.
  * 
- * * **domainId**
- * 
- *   The domain ID.
- * 
  * * **instanceId**
  * 
  *   The **instanceId** attribute specifies the unique instance
- *   id for the domain.
+ *   id
  * 
  * * **jobId**
  * 
@@ -106,7 +102,6 @@ type SystemStatus = tuple<
  */
 type LogNotification = tuple<
 	rstring notifyType,
-	rstring domainId,	
 	rstring instanceId,
 	int64 jobId,
 	rstring resource,

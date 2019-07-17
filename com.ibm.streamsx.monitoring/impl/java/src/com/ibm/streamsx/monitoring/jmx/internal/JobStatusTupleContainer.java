@@ -34,11 +34,6 @@ public class JobStatusTupleContainer {
 	private StreamingOutput<OutputTuple> _port = null;
 
 	/**
-	 * Index of the domainId attribute.
-	 */
-	private Integer _domainIdAttributeIndex = null;
-	
-	/**
 	 * Index of the instanceId attribute.
 	 */
 	private Integer _instanceIdAttributeIndex = null;
@@ -120,11 +115,6 @@ public class JobStatusTupleContainer {
 		_port = port;
 		
 		StreamSchema schema = port.getStreamSchema();
-		// Domain-related attributes.
-		if (_domainIdAttributeIndex == null) {
-			Attribute attribute = schema.getAttribute("domainId");
-			_domainIdAttributeIndex = Integer.valueOf(attribute != null && attribute.getType().getMetaType() == Type.MetaType.RSTRING ? attribute.getIndex() : -1) ;
-		}
 		// Instance-related attributes.
 		if (_instanceIdAttributeIndex == null) {
 			Attribute attribute = schema.getAttribute("instanceId");
@@ -201,18 +191,16 @@ public class JobStatusTupleContainer {
 	public Tuple getTuple(
 			final Notification notification,
 			final Object handback,
-			final String domainId,
 			final String instanceId,
-			final BigInteger jobId,
+			final String jobId,
 			final String jobName,
 			final String resource,
-			final BigInteger peId,
+			final String peId,
 			final Object peHealth,
 			final Object peStatus) {
 		return _port.getStreamSchema().getTuple(getAttributes(
 				notification,
 				handback,
-				domainId,
 				instanceId,
 				jobId,
 				jobName,
@@ -231,22 +219,16 @@ public class JobStatusTupleContainer {
 	protected Map<String, Object> getAttributes(
 			final Notification notification,
 			final Object handback,
-			final String domainId,
 			final String instanceId,
-			final BigInteger jobId,
+			final String jobId,
 			final String jobName,
 			final String resource,
-			final BigInteger peId,
+			final String peId,
 			final Object peHealth,
 			final Object peStatus) {
 		
 		final Map<String, Object> attributes = new HashMap<String, Object>();
 		
-		if (_domainIdAttributeIndex != -1) {
-			if (domainId != null) {
-				attributes.put("domainId", new RString(domainId));
-			}
-		}
 		if (_instanceIdAttributeIndex != -1) {
 			if (instanceId != null) {
 				attributes.put("instanceId", new RString(instanceId));
@@ -254,7 +236,7 @@ public class JobStatusTupleContainer {
 		}
 		if (_jobIdAttributeIndex != -1) {
 			if (jobId != null) {
-				attributes.put("jobId", jobId.longValue());
+				attributes.put("jobId", Long.parseLong(jobId));
 			}
 		}
 		if (_jobNameAttributeIndex != -1) {
@@ -269,7 +251,7 @@ public class JobStatusTupleContainer {
 		}
 		if (_peIdAttributeIndex != -1) {
 			if (peId != null) {
-				attributes.put("peId", peId.longValue());
+				attributes.put("peId", Long.parseLong(peId));
 			}
 		}		
 		if (_peHealthAttributeIndex != -1) {

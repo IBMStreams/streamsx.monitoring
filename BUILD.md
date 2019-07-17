@@ -6,7 +6,7 @@ This toolkit uses Apache Ant 1.8 (or later) to build.
 
 This toolkit requires 
 
-* IBM Streams 4.1 or later
+* IBM Streams 4.3 or later
 * Java 1.8
 
 It is recommended to use the Java version that is part of the Streams installation.

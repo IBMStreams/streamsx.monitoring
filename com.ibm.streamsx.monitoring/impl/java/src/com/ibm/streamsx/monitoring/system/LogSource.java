@@ -141,16 +141,16 @@ public class LogSource extends AbstractJmxSource {
 								_trace.warn("Reconnect");
 								setupJMXConnection();
 								_connected = true;
-								scanDomain(); // create new DomainHandler
+								scanInstance(); // create new InstanceHandler
 							}
 							if (_connected) {
-								_domainHandler.healthCheck();
+								_instanceHandler.healthCheck();
 							}
 						}
 						catch (Exception e) {
 							_trace.error("JMX connection error ", e);
 							_connected = false;
-							closeDomainHandler();
+							closeInstanceHandler();
 						}							
 					}
 				}, 3000l, Double.valueOf(5 * 1000.0).longValue(), TimeUnit.MILLISECONDS);

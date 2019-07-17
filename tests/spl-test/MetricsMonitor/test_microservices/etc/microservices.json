@@ -1,9 +1,0 @@
-[
-  {
-    "metricName":"inc",
-    "thresholds":
-    {
-      "value":">100"
-    }
-  }
-]

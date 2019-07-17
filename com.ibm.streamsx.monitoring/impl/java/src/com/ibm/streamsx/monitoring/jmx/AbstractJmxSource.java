@@ -20,7 +20,7 @@ import com.ibm.streams.operator.OutputTuple;
 import com.ibm.streams.operator.StreamingOutput;
 import com.ibm.streamsx.monitoring.jmx.OperatorConfiguration.OpType;
 import com.ibm.streamsx.monitoring.jmx.internal.ConnectionNotificationTupleContainer;
-import com.ibm.streamsx.monitoring.jmx.internal.DomainHandler;
+import com.ibm.streamsx.monitoring.jmx.internal.InstanceHandler;
 import com.ibm.streamsx.monitoring.jmx.internal.JobStatusTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.LogTupleContainer;
 import com.ibm.streamsx.monitoring.jmx.internal.MetricsTupleContainer;
@@ -55,43 +55,25 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 	public static final String AUTHENTICATION_DESC =
 			"\\n"+
 			"\\n+ Supported Authentication Schemes" +
+		    "\\n"+	
+		    "\\n# IBM Streams authentication\\n"+
+		    "\\nFor IBM Streams authentication the following authentication parameters should be used:\\n"+
+			"\\n* user\\n"+
+			"\\n* password\\n"+
 			"\\n"+
 			"\\nAuthentication can be configured with operator parameters or application configuration."+
 			"\\n"+			
 			"\\n# Authentication with application configuration\\n"+
 			"\\n"+
-			"**Create IBM Streaming Analytics Service Credentials**\\n" +
-    		"\\nA service credential provides the necessary information to connect an application to Streaming Analytics service packaged in a JSON document. Service credentials are always associated with a Service ID, and new Service IDs can be created along with a new credential.\\n" +
-    		"\\nUse the following steps to create a service credential:\\n" +
-    		"\\n" + 
-    		" 1. Log in to the IBM Cloud console and navigate to your instance of Streaming Analytics service.\\n" +
-    		" 2. In the side navigation, click Service Credentials.\\n" +
-    		" 3. Click New credential and provide the necessary information.\\n" +
-    		" 4. Click Add to generate service credential.\\n" +
-    		" 5. Click View credentials and copy JSON into clipboard.\\n" +
-			"\\n"+		
 			"**Save Credentials in Application Configuration Property**\\n" + 
-    		"\\n" + 
-    		"With this option, users can copy their IBM Streaming Analytics Credentials JSON from the IBM Streaming Analytics service and "
-    		+ "store it in an application configuration property called `credentials`. When the operator starts, "
-    		+ "it will look for that property and extract the information needed to connect. "
+    		"\\n" 
     		+ "The following steps outline how this can be done: \\n" + 
     		"\\n" + 
-    		" 1. Create an application configuration called `monitor`. You need to set the operator parameter `applicationConfigurationName`.\\n" + 
-    		" 2. Create a property in the `monitor` application configuration *named* `credentials`.\\n" + 
-    		"   * The *value* of the property should be the raw IBM Streaming Analytics Service Credentials JSON\\n" +
-    		"   * The *value* of the property could be pasted from the clipboard if you have done the *Create IBM Streaming Analytics Service Credentials* steps above. \\n" +
+    		" 1. Create an application configuration called `monitoring`. You need to set the operator parameter `applicationConfigurationName`.\\n" + 
+    		" 2. Create two properties in the `monitoring` application configuration *named* `user` and `password`.\\n" + 
     		" 3. The operator will look for an application configuration, if the parameter `applicationConfigurationName` is set and will extract "
     		+ "the information needed to connect.\\n" +
-			"\\n"+
-			"\\n# Apply credentials as operator parameter\\n"+
-			"\\nFor Streaming Analytics service (IAM authentication) the following parameter should be used:"+
-			"\\n* credentials - JSON service credentials\\n"+		
-		    "\\n"+	
-		    "\\n# IBM Streams authentication\\n"+
-		    "\\nFor IBM Streams authentication the following authentication parameters should be used:\\n"+
-			"\\n* user\\n"+
-			"\\n* password\\n"
+			"\\n"
 	        ;		
 	
 	// ------------------------------------------------------------------------
@@ -103,7 +85,7 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 	 */
 	private static Logger _trace = Logger.getLogger(AbstractJmxSource.class.getName());
 	
-	protected DomainHandler _domainHandler = null;
+	protected InstanceHandler _instanceHandler = null;
 
 	/**
 	 * If the application configuration is used (applicationConfigurationName
@@ -131,9 +113,9 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 		 */
 		if (OpType.LOG_SOURCE != _operatorConfiguration.get_OperatorType()) {
 			setupFilters();
-			boolean isValidDomain = _operatorConfiguration.get_filters().matchesDomainId(_operatorConfiguration.get_domainId());
-			if (!isValidDomain) {
-				throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_domainId() + " domain does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
+			boolean isValidInstance = _operatorConfiguration.get_filters().matchesInstanceId(_operatorConfiguration.get_instanceId());
+			if (!isValidInstance) {
+				throw new com.ibm.streams.operator.DataException("The " + _operatorConfiguration.get_instanceId() + " instance does not match the specified filter criteria in " + _operatorConfiguration.get_filterDocument());
 			}
 		}		
 		
@@ -156,10 +138,10 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 		setupJMXConnection();
 
 		/*
-		 * Further actions are handled in the domain handler that manages
+		 * Further actions are handled in the instance handler that manages
 		 * instances that manages jobs, etc.
 		 */
-		scanDomain();
+		scanInstance();
 	}
 
 	/**
@@ -185,16 +167,16 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 				}
 			}
 			if (isChanged) {
-				_domainHandler.close();
-				_domainHandler = null;
+				_instanceHandler.close();
+				_instanceHandler = null;
 				setupFilters();
-				scanDomain();
+				scanInstance();
 			}
 		}
 	}
 	
-	protected void scanDomain() {
-		_domainHandler = new DomainHandler(_operatorConfiguration, _operatorConfiguration.get_domainId());
+	protected void scanInstance() {
+		_instanceHandler = new InstanceHandler(_operatorConfiguration, _operatorConfiguration.get_instanceId());
 	}
 
 	/**
@@ -263,13 +245,13 @@ public abstract class AbstractJmxSource extends AbstractJmxOperator {
 		}
 	}
 
-	protected void closeDomainHandler() {
+	protected void closeInstanceHandler() {
 		try {
-			_domainHandler.close();
+			_instanceHandler.close();
 		}
 		catch (Exception ignore) {
 		}
-		_domainHandler = null;
+		_instanceHandler = null;
 		if (1 == get_isConnected().getValue()) {
 			// update metric to indicate connection is broken
 			get_nBrokenJMXConnections().increment();
