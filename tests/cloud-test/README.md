@@ -1,13 +1,13 @@
-# Setup for testing with ICP4D Streams instance
+# Setup for testing with CP4D Streams instance
 
 ## Before launching the test
 
 Setup your environment:
 
 * Python 3.6 installed
-* streamsx package 1.12.9 or later installed
+* streamsx package 1.13.5 or later installed
 
-Set `STREAMS_USERNAME`, `STREAMS_PASSWORD` and `STREAMS_REST_URL` environment variables.
+Set `STREAMS_USERNAME`, `STREAMS_PASSWORD`, `STREAMS_INSTANCE_ID` and `CP4D_URL` environment variables.
 
 ### Create Application Configuration
 
