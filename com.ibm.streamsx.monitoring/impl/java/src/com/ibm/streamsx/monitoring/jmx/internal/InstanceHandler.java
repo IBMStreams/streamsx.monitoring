@@ -130,36 +130,45 @@ public class InstanceHandler implements NotificationListener, Closeable {
 		boolean isInfoEnabled = _trace.isInfoEnabled();
 
 		if (notification.getType().equals(Notifications.JOB_ADDED)) {
+			String jobId = null;
 			if(notification.getUserData() instanceof BigInteger) {
-				/*
-				 * Register existing jobs.
-				 */
-
 				BigInteger jobIdLong = (BigInteger)notification.getUserData();
-				String jobId = jobIdLong.toString();
-				
+				jobId = jobIdLong.toString();
+			} 
+			else if(notification.getUserData() instanceof String) {
+				jobId = (String) notification.getUserData();
+			}
+			else {
+				_trace.error("received JOB_ADDED notification: user data is not an instance of BigInteger or String");
+			}
+			if (null != jobId) {
 				String jobName = addValidJob(jobId);
 				if (null != _operatorConfiguration.get_tupleContainerJobStatusSource()) {
 					final Tuple tuple = _operatorConfiguration.get_tupleContainerJobStatusSource().getTuple(notification, handback, _instanceId, jobId, jobName, null, null, null, null);
 					_operatorConfiguration.get_tupleContainerJobStatusSource().submit(tuple);		
-				}
-				
+				}		
 
 				if (isInfoEnabled) {
 					_trace.info("received JOB_ADDED notification: jobId=" + jobId);
 				}
 			}
-			else {
-				_trace.error("received JOB_ADDED notification: user data is not an instance of BigInteger");
-			}
 		}
 		else if (notification.getType().equals(Notifications.JOB_REMOVED)) {
+			String jobId = null;
 			if(notification.getUserData() instanceof BigInteger) {
+				BigInteger jobIdLong = (BigInteger)notification.getUserData();
+				jobId = jobIdLong.toString();
+			}
+			else if(notification.getUserData() instanceof String) {
+				jobId = (String) notification.getUserData();
+			}
+			else {
+				_trace.error("received JOB_REMOVED notification: user data is not an instance of BigInteger or String");
+			}
+			if (null != jobId) {
 				/*
 				 * Unregister existing jobs.
 				 */
-				BigInteger jobIdLong = (BigInteger)notification.getUserData();
-				String jobId = jobIdLong.toString();				
 				if (_jobHandlers.containsKey(jobId)) {
 					
 					String jobName = _jobHandlers.get(jobId).getJobName();
@@ -178,9 +187,6 @@ public class InstanceHandler implements NotificationListener, Closeable {
 				else if (isInfoEnabled) {
 					_trace.info("received JOB_REMOVED notification for job that is not monitored: jobId=" + jobId);
 				}
-			}
-			else {
-				_trace.error("received JOB_REMOVED notification: user data is not an instance of BigInteger");
 			}
 		}
 		else {

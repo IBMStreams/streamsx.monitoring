@@ -33,7 +33,7 @@
             <arg value="-u"/>
             <arg value="-m"/>
             <arg value="unittest"/>        	
-            <arg value="test_monitoring_icp.TestDistributed"/>
+            <arg value="test_monitoring.TestDistributed"/>
         </exec>
     </target>
 
