@@ -32,8 +32,8 @@ class TestDistributed(unittest.TestCase):
         tester.tuple_count(test_op.stream, 1, exact=True)
         tester.contents(test_op.stream, [{'result':'TEST_RESULT_PASS'}] )
 
-        self.test_config[streamsx.topology.context.ConfigParams.SSL_VERIFY] = False
-        job_config = streamsx.topology.context.JobConfig(tracing='info')     
+        self.test_config[context.ConfigParams.SSL_VERIFY] = False
+        job_config = context.JobConfig(tracing='info')     
         job_config.add(self.test_config)
         tester.test(self.test_ctxtype, self.test_config, always_collect_logs=True)
 
@@ -45,7 +45,7 @@ class TestDistributed(unittest.TestCase):
         # Call the crash composite
         test_op = op.Source(topo, "test.jobs::SampleCrashSource", 'tuple<boolean dummy>')
         config={}
-        config[streamsx.topology.context.ConfigParams.SSL_VERIFY] = False
+        config[context.ConfigParams.SSL_VERIFY] = False
         return context.submit(context.ContextTypes.DISTRIBUTED, topo, config=config)
 
 

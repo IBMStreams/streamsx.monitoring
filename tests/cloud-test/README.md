@@ -18,7 +18,7 @@ Test applications require an application configuration with the name "monitoring
 ant test
 ```
 
-    python3 -u -m unittest test_monitoring_icp.TestDistributed.test_metrics_monitor
+    python3 -u -m unittest test_monitoring.TestDistributed.test_metrics_monitor
 
 # Clean-up
 
