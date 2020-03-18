@@ -13,12 +13,27 @@ Set `STREAMS_USERNAME`, `STREAMS_PASSWORD`, `STREAMS_INSTANCE_ID` and `CP4D_URL`
 
 Test applications require an application configuration with the name "monitoring".
 
+```
+streamsx-streamtool --disable-ssl-verify rmappconfig monitoring --noprompt
+streamsx-streamtool --disable-ssl-verify mkappconfig --property user=$STREAMS_USERNAME --property password=$STREAMS_PASSWORD monitoring
+```
+
 # Run the tests
 ```
 ant test
 ```
 
-    python3 -u -m unittest test_monitoring.TestDistributed.test_metrics_monitor
+or
+
+```
+python3 -u -m unittest test_monitoring.TestDistributed
+```
+
+## Run a single test
+
+```
+python3 -u -m unittest test_monitoring.TestDistributed.test_metrics_monitor
+```
 
 # Clean-up
 
