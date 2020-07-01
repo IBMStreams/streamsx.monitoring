@@ -14,6 +14,11 @@ sidebar:
 
 Current Branches:
 
-* main -- released versions and active development
+* develop -- released versions and active development
 
+### Workflow
 
+The recommended workflow is forking workflow.
+https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow
+
+Fork this repository and develop in feature branches in your fork. When ready, sumbmit a pull request against the target branch.
